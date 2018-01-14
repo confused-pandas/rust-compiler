@@ -1,0 +1,56 @@
+﻿Projet Compilation
+
+
+Objectif : Ecrire un compilateur pour le langage Mini-Rust en utilisant l’outil ANTLR, il faut générer dans un fichier du code assembleur microPIUP / ASM
+
+
+
+
+ANTLR : génère l’analyseur lexical et syntaxique descandant
+microPIUP / ASM 
+
+
+
+
+Etapes :
+
+
+1. Grammaire LL(1) pour Mini-Rust TP4
+2. Arbre Abstrait (AST)  TP4
+3. Table des symboles (TDS) TP6
+4. Contrôles sémantiques TP6
+5. Génération du code TP7
+
+
+
+
+Fonctions :
+
+
+* Signaler les erreurs (lignes, message explicite)
+   * Lexicales 
+   * Syntaxiques (s’arrête si rencontré)
+   * Sémantiques        (poursuit)
+* Tests
+* Exemples de programmes à préparer pour la soutenance
+* Rapport
+* Sources
+* Utilisation de Git
+
+
+
+
+
+
+Informations utiles :
+
+
+Types : 
+* Boolean => bool -----------------> let x = true; let y: bool = false;
+* Char => ‘ ‘     -----------------> let x = ‘b’;     4 bytes
+* Integer signed => i8, i16, i32, i64 -----------------> let x = 14;  let y: i8 = 250;
+* Integer unsigned => u8, u16, u32, u64
+* Float => f32, f64
+* Array =>  DEFAULT IMMUTABLE---------------> let a = [1, 2, 3]; let a: [i32; 3];              MUTABLE ------------>  let mut m = [1, 2, 3];
+* Tuples
+* String
