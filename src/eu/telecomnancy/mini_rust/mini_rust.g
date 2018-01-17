@@ -2,6 +2,7 @@ grammar mini_rust;
 
 options {
   language = Java;
+  k = 1;
 }
 
 @header {
@@ -41,11 +42,6 @@ block
 	'}'
 	;
 
-assign
-	:
-	IDENT '=' expr
-	;
-
 variable
 	:
 	'let' ('mut')? IDENT '=' expr
@@ -55,7 +51,7 @@ atom
 	:
 	  '(' expr ')'
 	| number
-	| IDENT
+	//| IDENT
 	;
 	
 unary 
@@ -91,7 +87,7 @@ logical_or
 expr
 	:
 	  logical_or
-	| assign
+	| IDENT ('=' expr)?
 	;
 
 type
