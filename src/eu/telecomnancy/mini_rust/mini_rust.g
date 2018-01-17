@@ -2,7 +2,6 @@ grammar mini_rust;
 
 options {
   language = Java;
-  k = 1;
 }
 
 @header {
@@ -63,7 +62,6 @@ block
 	'}'
 	;
 
-<<<<<<< HEAD
 arguments
   :
   (argument (',' argument)*)?
@@ -79,8 +77,6 @@ assign
 	IDENT '=' expr
 	;
 
-=======
->>>>>>> 2332c9e4432e2b3453a58afe241fb7191cf5475f
 variable
 	:
 	'let' ('mut')? IDENT '=' expr
