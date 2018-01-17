@@ -73,9 +73,24 @@ binary_add
   binary_mul (('+' | '-') binary_mul)*
   ;
   
+relational_operator
+  :
+  binary_add (('==' | '!=' | '<' | '<=' | '>' | '>=') binary_add)*
+  ;
+
+logical_and
+  :
+  relational_operator ('&&' relational_operator)*
+  ;
+
+logical_or
+  :
+  logical_and ('||' logical_and)*
+  ;
+  
 expr
 	:
-	  atom
+	  logical_or
 	| assign
 	;
 
