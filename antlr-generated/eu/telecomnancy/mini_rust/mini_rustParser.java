@@ -1,4 +1,4 @@
-// $ANTLR 3.3 Nov 30, 2010 12:50:56 /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g 2018-01-17 15:29:21
+// $ANTLR 3.3 Nov 30, 2010 12:50:56 /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g 2018-01-17 15:32:06
 
   package eu.telecomnancy.mini_rust;
 
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 public class mini_rustParser extends Parser {
     public static final String[] tokenNames = new String[] {
-        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "IDENT", "INTEGER", "FLOAT", "WS", "';'", "'while '", "'{'", "'}'", "'='", "'let'", "'mut'", "'('", "')'", "'-'", "'!'", "'*'", "'&'", "'/'", "'+'", "'u32'"
+        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "IDENT", "INTEGER", "FLOAT", "WS", "';'", "'while '", "'{'", "'}'", "'='", "'let'", "'mut'", "'('", "')'", "'-'", "'!'", "'*'", "'&'", "'/'", "'+'", "'i8'", "'i16'", "'i32'", "'i64'", "'u8'", "'u16'", "'u32'", "'u64'", "'f32'", "'f64'"
     };
     public static final int EOF=-1;
     public static final int T__8=8;
@@ -29,6 +29,15 @@ public class mini_rustParser extends Parser {
     public static final int T__21=21;
     public static final int T__22=22;
     public static final int T__23=23;
+    public static final int T__24=24;
+    public static final int T__25=25;
+    public static final int T__26=26;
+    public static final int T__27=27;
+    public static final int T__28=28;
+    public static final int T__29=29;
+    public static final int T__30=30;
+    public static final int T__31=31;
+    public static final int T__32=32;
     public static final int IDENT=4;
     public static final int INTEGER=5;
     public static final int FLOAT=6;
@@ -726,13 +735,21 @@ public class mini_rustParser extends Parser {
 
 
     // $ANTLR start "type"
-    // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:82:1: type : 'u32' ;
+    // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:82:1: type : ( 'i8' | 'i16' | 'i32' | 'i64' | 'u8' | 'u16' | 'u32' | 'u64' | 'f32' | 'f64' );
     public final void type() throws RecognitionException {
         try {
-            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:83:2: ( 'u32' )
-            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:84:2: 'u32'
+            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:83:2: ( 'i8' | 'i16' | 'i32' | 'i64' | 'u8' | 'u16' | 'u32' | 'u64' | 'f32' | 'f64' )
+            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:
             {
-            match(input,23,FOLLOW_23_in_type315); 
+            if ( (input.LA(1)>=23 && input.LA(1)<=32) ) {
+                input.consume();
+                state.errorRecovery=false;
+            }
+            else {
+                MismatchedSetException mse = new MismatchedSetException(null,input);
+                throw mse;
+            }
+
 
             }
 
@@ -749,10 +766,10 @@ public class mini_rustParser extends Parser {
 
 
     // $ANTLR start "number"
-    // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:87:1: number : ( INTEGER | FLOAT );
+    // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:96:1: number : ( INTEGER | FLOAT );
     public final void number() throws RecognitionException {
         try {
-            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:88:2: ( INTEGER | FLOAT )
+            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:97:2: ( INTEGER | FLOAT )
             // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:
             {
             if ( (input.LA(1)>=INTEGER && input.LA(1)<=FLOAT) ) {
@@ -819,7 +836,7 @@ public class mini_rustParser extends Parser {
     public static final BitSet FOLLOW_binary_mul_in_binary_add279 = new BitSet(new long[]{0x0000000000420002L});
     public static final BitSet FOLLOW_atom_in_expr298 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_assign_in_expr303 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_23_in_type315 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_in_type0 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_set_in_number0 = new BitSet(new long[]{0x0000000000000002L});
 
 }

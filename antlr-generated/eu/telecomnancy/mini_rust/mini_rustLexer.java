@@ -1,4 +1,4 @@
-// $ANTLR 3.3 Nov 30, 2010 12:50:56 /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g 2018-01-17 15:29:21
+// $ANTLR 3.3 Nov 30, 2010 12:50:56 /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g 2018-01-17 15:32:07
 
   package eu.telecomnancy.mini_rust;
 
@@ -26,6 +26,15 @@ public class mini_rustLexer extends Lexer {
     public static final int T__21=21;
     public static final int T__22=22;
     public static final int T__23=23;
+    public static final int T__24=24;
+    public static final int T__25=25;
+    public static final int T__26=26;
+    public static final int T__27=27;
+    public static final int T__28=28;
+    public static final int T__29=29;
+    public static final int T__30=30;
+    public static final int T__31=31;
+    public static final int T__32=32;
     public static final int IDENT=4;
     public static final int INTEGER=5;
     public static final int FLOAT=6;
@@ -352,10 +361,10 @@ public class mini_rustLexer extends Lexer {
         try {
             int _type = T__23;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:26:7: ( 'u32' )
-            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:26:9: 'u32'
+            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:26:7: ( 'i8' )
+            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:26:9: 'i8'
             {
-            match("u32"); 
+            match("i8"); 
 
 
             }
@@ -368,13 +377,202 @@ public class mini_rustLexer extends Lexer {
     }
     // $ANTLR end "T__23"
 
+    // $ANTLR start "T__24"
+    public final void mT__24() throws RecognitionException {
+        try {
+            int _type = T__24;
+            int _channel = DEFAULT_TOKEN_CHANNEL;
+            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:27:7: ( 'i16' )
+            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:27:9: 'i16'
+            {
+            match("i16"); 
+
+
+            }
+
+            state.type = _type;
+            state.channel = _channel;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end "T__24"
+
+    // $ANTLR start "T__25"
+    public final void mT__25() throws RecognitionException {
+        try {
+            int _type = T__25;
+            int _channel = DEFAULT_TOKEN_CHANNEL;
+            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:28:7: ( 'i32' )
+            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:28:9: 'i32'
+            {
+            match("i32"); 
+
+
+            }
+
+            state.type = _type;
+            state.channel = _channel;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end "T__25"
+
+    // $ANTLR start "T__26"
+    public final void mT__26() throws RecognitionException {
+        try {
+            int _type = T__26;
+            int _channel = DEFAULT_TOKEN_CHANNEL;
+            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:29:7: ( 'i64' )
+            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:29:9: 'i64'
+            {
+            match("i64"); 
+
+
+            }
+
+            state.type = _type;
+            state.channel = _channel;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end "T__26"
+
+    // $ANTLR start "T__27"
+    public final void mT__27() throws RecognitionException {
+        try {
+            int _type = T__27;
+            int _channel = DEFAULT_TOKEN_CHANNEL;
+            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:30:7: ( 'u8' )
+            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:30:9: 'u8'
+            {
+            match("u8"); 
+
+
+            }
+
+            state.type = _type;
+            state.channel = _channel;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end "T__27"
+
+    // $ANTLR start "T__28"
+    public final void mT__28() throws RecognitionException {
+        try {
+            int _type = T__28;
+            int _channel = DEFAULT_TOKEN_CHANNEL;
+            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:31:7: ( 'u16' )
+            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:31:9: 'u16'
+            {
+            match("u16"); 
+
+
+            }
+
+            state.type = _type;
+            state.channel = _channel;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end "T__28"
+
+    // $ANTLR start "T__29"
+    public final void mT__29() throws RecognitionException {
+        try {
+            int _type = T__29;
+            int _channel = DEFAULT_TOKEN_CHANNEL;
+            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:32:7: ( 'u32' )
+            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:32:9: 'u32'
+            {
+            match("u32"); 
+
+
+            }
+
+            state.type = _type;
+            state.channel = _channel;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end "T__29"
+
+    // $ANTLR start "T__30"
+    public final void mT__30() throws RecognitionException {
+        try {
+            int _type = T__30;
+            int _channel = DEFAULT_TOKEN_CHANNEL;
+            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:33:7: ( 'u64' )
+            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:33:9: 'u64'
+            {
+            match("u64"); 
+
+
+            }
+
+            state.type = _type;
+            state.channel = _channel;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end "T__30"
+
+    // $ANTLR start "T__31"
+    public final void mT__31() throws RecognitionException {
+        try {
+            int _type = T__31;
+            int _channel = DEFAULT_TOKEN_CHANNEL;
+            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:34:7: ( 'f32' )
+            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:34:9: 'f32'
+            {
+            match("f32"); 
+
+
+            }
+
+            state.type = _type;
+            state.channel = _channel;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end "T__31"
+
+    // $ANTLR start "T__32"
+    public final void mT__32() throws RecognitionException {
+        try {
+            int _type = T__32;
+            int _channel = DEFAULT_TOKEN_CHANNEL;
+            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:35:7: ( 'f64' )
+            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:35:9: 'f64'
+            {
+            match("f64"); 
+
+
+            }
+
+            state.type = _type;
+            state.channel = _channel;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end "T__32"
+
     // $ANTLR start "IDENT"
     public final void mIDENT() throws RecognitionException {
         try {
             int _type = IDENT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:94:2: ( ( 'a' .. 'z' | 'A' .. 'Z' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' )* )
-            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:95:2: ( 'a' .. 'z' | 'A' .. 'Z' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' )*
+            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:103:2: ( ( 'a' .. 'z' | 'A' .. 'Z' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' )* )
+            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:104:2: ( 'a' .. 'z' | 'A' .. 'Z' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' )*
             {
             if ( (input.LA(1)>='A' && input.LA(1)<='Z')||(input.LA(1)>='a' && input.LA(1)<='z') ) {
                 input.consume();
@@ -385,7 +583,7 @@ public class mini_rustLexer extends Lexer {
                 recover(mse);
                 throw mse;}
 
-            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:95:24: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' )*
+            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:104:24: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' )*
             loop1:
             do {
                 int alt1=2;
@@ -434,10 +632,10 @@ public class mini_rustLexer extends Lexer {
         try {
             int _type = INTEGER;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:99:2: ( ( '-' )? ( '0' .. '9' )+ )
-            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:100:2: ( '-' )? ( '0' .. '9' )+
+            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:108:2: ( ( '-' )? ( '0' .. '9' )+ )
+            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:109:2: ( '-' )? ( '0' .. '9' )+
             {
-            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:100:2: ( '-' )?
+            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:109:2: ( '-' )?
             int alt2=2;
             int LA2_0 = input.LA(1);
 
@@ -446,7 +644,7 @@ public class mini_rustLexer extends Lexer {
             }
             switch (alt2) {
                 case 1 :
-                    // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:100:3: '-'
+                    // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:109:3: '-'
                     {
                     match('-'); 
 
@@ -455,7 +653,7 @@ public class mini_rustLexer extends Lexer {
 
             }
 
-            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:100:9: ( '0' .. '9' )+
+            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:109:9: ( '0' .. '9' )+
             int cnt3=0;
             loop3:
             do {
@@ -469,7 +667,7 @@ public class mini_rustLexer extends Lexer {
 
                 switch (alt3) {
             	case 1 :
-            	    // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:100:10: '0' .. '9'
+            	    // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:109:10: '0' .. '9'
             	    {
             	    matchRange('0','9'); 
 
@@ -501,10 +699,10 @@ public class mini_rustLexer extends Lexer {
         try {
             int _type = FLOAT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:104:2: ( ( '-' )? ( '0' .. '9' )* '.' ( '0' .. '9' ) )
-            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:105:2: ( '-' )? ( '0' .. '9' )* '.' ( '0' .. '9' )
+            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:113:2: ( ( '-' )? ( '0' .. '9' )* '.' ( '0' .. '9' ) )
+            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:114:2: ( '-' )? ( '0' .. '9' )* '.' ( '0' .. '9' )
             {
-            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:105:2: ( '-' )?
+            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:114:2: ( '-' )?
             int alt4=2;
             int LA4_0 = input.LA(1);
 
@@ -513,7 +711,7 @@ public class mini_rustLexer extends Lexer {
             }
             switch (alt4) {
                 case 1 :
-                    // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:105:3: '-'
+                    // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:114:3: '-'
                     {
                     match('-'); 
 
@@ -522,7 +720,7 @@ public class mini_rustLexer extends Lexer {
 
             }
 
-            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:105:9: ( '0' .. '9' )*
+            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:114:9: ( '0' .. '9' )*
             loop5:
             do {
                 int alt5=2;
@@ -535,7 +733,7 @@ public class mini_rustLexer extends Lexer {
 
                 switch (alt5) {
             	case 1 :
-            	    // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:105:10: '0' .. '9'
+            	    // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:114:10: '0' .. '9'
             	    {
             	    matchRange('0','9'); 
 
@@ -548,8 +746,8 @@ public class mini_rustLexer extends Lexer {
             } while (true);
 
             match('.'); 
-            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:105:25: ( '0' .. '9' )
-            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:105:26: '0' .. '9'
+            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:114:25: ( '0' .. '9' )
+            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:114:26: '0' .. '9'
             {
             matchRange('0','9'); 
 
@@ -571,8 +769,8 @@ public class mini_rustLexer extends Lexer {
         try {
             int _type = WS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:109:2: ( ( ' ' | '\\t' | '\\r' | '\\n' | '\\f' ) )
-            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:110:2: ( ' ' | '\\t' | '\\r' | '\\n' | '\\f' )
+            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:118:2: ( ( ' ' | '\\t' | '\\r' | '\\n' | '\\f' ) )
+            // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:119:2: ( ' ' | '\\t' | '\\r' | '\\n' | '\\f' )
             {
             if ( (input.LA(1)>='\t' && input.LA(1)<='\n')||(input.LA(1)>='\f' && input.LA(1)<='\r')||input.LA(1)==' ' ) {
                 input.consume();
@@ -596,8 +794,8 @@ public class mini_rustLexer extends Lexer {
     // $ANTLR end "WS"
 
     public void mTokens() throws RecognitionException {
-        // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:1:8: ( T__8 | T__9 | T__10 | T__11 | T__12 | T__13 | T__14 | T__15 | T__16 | T__17 | T__18 | T__19 | T__20 | T__21 | T__22 | T__23 | IDENT | INTEGER | FLOAT | WS )
-        int alt6=20;
+        // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:1:8: ( T__8 | T__9 | T__10 | T__11 | T__12 | T__13 | T__14 | T__15 | T__16 | T__17 | T__18 | T__19 | T__20 | T__21 | T__22 | T__23 | T__24 | T__25 | T__26 | T__27 | T__28 | T__29 | T__30 | T__31 | T__32 | IDENT | INTEGER | FLOAT | WS )
+        int alt6=29;
         alt6 = dfa6.predict(input);
         switch (alt6) {
             case 1 :
@@ -713,28 +911,91 @@ public class mini_rustLexer extends Lexer {
                 }
                 break;
             case 17 :
-                // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:1:104: IDENT
+                // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:1:104: T__24
+                {
+                mT__24(); 
+
+                }
+                break;
+            case 18 :
+                // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:1:110: T__25
+                {
+                mT__25(); 
+
+                }
+                break;
+            case 19 :
+                // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:1:116: T__26
+                {
+                mT__26(); 
+
+                }
+                break;
+            case 20 :
+                // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:1:122: T__27
+                {
+                mT__27(); 
+
+                }
+                break;
+            case 21 :
+                // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:1:128: T__28
+                {
+                mT__28(); 
+
+                }
+                break;
+            case 22 :
+                // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:1:134: T__29
+                {
+                mT__29(); 
+
+                }
+                break;
+            case 23 :
+                // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:1:140: T__30
+                {
+                mT__30(); 
+
+                }
+                break;
+            case 24 :
+                // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:1:146: T__31
+                {
+                mT__31(); 
+
+                }
+                break;
+            case 25 :
+                // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:1:152: T__32
+                {
+                mT__32(); 
+
+                }
+                break;
+            case 26 :
+                // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:1:158: IDENT
                 {
                 mIDENT(); 
 
                 }
                 break;
-            case 18 :
-                // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:1:110: INTEGER
+            case 27 :
+                // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:1:164: INTEGER
                 {
                 mINTEGER(); 
 
                 }
                 break;
-            case 19 :
-                // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:1:118: FLOAT
+            case 28 :
+                // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:1:172: FLOAT
                 {
                 mFLOAT(); 
 
                 }
                 break;
-            case 20 :
-                // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:1:124: WS
+            case 29 :
+                // /home/najib/eclipse-workspace/aghenda1u/src/eu/telecomnancy/mini_rust/mini_rust.g:1:178: WS
                 {
                 mWS(); 
 
@@ -748,65 +1009,96 @@ public class mini_rustLexer extends Lexer {
 
     protected DFA6 dfa6 = new DFA6(this);
     static final String DFA6_eotS =
-        "\2\uffff\1\21\3\uffff\2\21\2\uffff\1\30\5\uffff\1\21\1\uffff\1\32"+
-        "\2\uffff\3\21\1\uffff\1\21\1\uffff\1\21\1\40\1\41\1\42\1\21\3\uffff"+
-        "\1\21\1\uffff";
+        "\2\uffff\1\23\3\uffff\2\23\2\uffff\1\32\5\uffff\3\23\1\uffff\1\45"+
+        "\2\uffff\3\23\1\uffff\1\51\3\23\1\55\5\23\1\uffff\1\23\1\64\1\65"+
+        "\1\uffff\1\66\1\67\1\70\1\uffff\1\71\1\72\1\73\1\74\1\75\1\23\12"+
+        "\uffff\1\23\1\uffff";
     static final String DFA6_eofS =
-        "\45\uffff";
+        "\100\uffff";
     static final String DFA6_minS =
-        "\1\11\1\uffff\1\150\3\uffff\1\145\1\165\2\uffff\1\56\5\uffff\1\63"+
-        "\1\uffff\1\56\2\uffff\1\151\2\164\1\uffff\1\62\1\uffff\1\154\3\60"+
-        "\1\145\3\uffff\1\40\1\uffff";
+        "\1\11\1\uffff\1\150\3\uffff\1\145\1\165\2\uffff\1\56\5\uffff\2\61"+
+        "\1\63\1\uffff\1\56\2\uffff\1\151\2\164\1\uffff\1\60\1\66\1\62\1"+
+        "\64\1\60\1\66\1\62\1\64\1\62\1\64\1\uffff\1\154\2\60\1\uffff\3\60"+
+        "\1\uffff\5\60\1\145\12\uffff\1\40\1\uffff";
     static final String DFA6_maxS =
-        "\1\175\1\uffff\1\150\3\uffff\1\145\1\165\2\uffff\1\71\5\uffff\1"+
-        "\63\1\uffff\1\71\2\uffff\1\151\2\164\1\uffff\1\62\1\uffff\1\154"+
-        "\3\172\1\145\3\uffff\1\40\1\uffff";
+        "\1\175\1\uffff\1\150\3\uffff\1\145\1\165\2\uffff\1\71\5\uffff\2"+
+        "\70\1\66\1\uffff\1\71\2\uffff\1\151\2\164\1\uffff\1\172\1\66\1\62"+
+        "\1\64\1\172\1\66\1\62\1\64\1\62\1\64\1\uffff\1\154\2\172\1\uffff"+
+        "\3\172\1\uffff\5\172\1\145\12\uffff\1\40\1\uffff";
     static final String DFA6_acceptS =
         "\1\uffff\1\1\1\uffff\1\3\1\4\1\5\2\uffff\1\10\1\11\1\uffff\1\13"+
-        "\1\14\1\15\1\16\1\17\1\uffff\1\21\1\uffff\1\23\1\24\3\uffff\1\12"+
-        "\1\uffff\1\22\5\uffff\1\6\1\7\1\20\1\uffff\1\2";
+        "\1\14\1\15\1\16\1\17\3\uffff\1\32\1\uffff\1\34\1\35\3\uffff\1\12"+
+        "\12\uffff\1\33\3\uffff\1\20\3\uffff\1\24\6\uffff\1\6\1\7\1\21\1"+
+        "\22\1\23\1\25\1\26\1\27\1\30\1\31\1\uffff\1\2";
     static final String DFA6_specialS =
-        "\45\uffff}>";
+        "\100\uffff}>";
     static final String[] DFA6_transitionS = {
-            "\2\24\1\uffff\2\24\22\uffff\1\24\1\13\4\uffff\1\15\1\uffff\1"+
-            "\10\1\11\1\14\1\17\1\uffff\1\12\1\23\1\16\12\22\1\uffff\1\1"+
-            "\1\uffff\1\5\3\uffff\32\21\6\uffff\13\21\1\6\1\7\7\21\1\20\1"+
-            "\21\1\2\3\21\1\3\1\uffff\1\4",
+            "\2\26\1\uffff\2\26\22\uffff\1\26\1\13\4\uffff\1\15\1\uffff\1"+
+            "\10\1\11\1\14\1\17\1\uffff\1\12\1\25\1\16\12\24\1\uffff\1\1"+
+            "\1\uffff\1\5\3\uffff\32\23\6\uffff\5\23\1\22\2\23\1\20\2\23"+
+            "\1\6\1\7\7\23\1\21\1\23\1\2\3\23\1\3\1\uffff\1\4",
             "",
-            "\1\25",
-            "",
-            "",
-            "",
-            "\1\26",
             "\1\27",
             "",
             "",
-            "\1\23\1\uffff\12\22",
             "",
-            "",
-            "",
-            "",
-            "",
+            "\1\30",
             "\1\31",
             "",
-            "\1\23\1\uffff\12\22",
             "",
-            "",
-            "\1\33",
-            "\1\34",
-            "\1\35",
-            "",
-            "\1\36",
-            "",
-            "\1\37",
-            "\12\21\7\uffff\32\21\6\uffff\32\21",
-            "\12\21\7\uffff\32\21\6\uffff\32\21",
-            "\12\21\7\uffff\32\21\6\uffff\32\21",
-            "\1\43",
+            "\1\25\1\uffff\12\24",
             "",
             "",
             "",
-            "\1\44",
+            "",
+            "",
+            "\1\34\1\uffff\1\35\2\uffff\1\36\1\uffff\1\33",
+            "\1\40\1\uffff\1\41\2\uffff\1\42\1\uffff\1\37",
+            "\1\43\2\uffff\1\44",
+            "",
+            "\1\25\1\uffff\12\24",
+            "",
+            "",
+            "\1\46",
+            "\1\47",
+            "\1\50",
+            "",
+            "\12\23\7\uffff\32\23\6\uffff\32\23",
+            "\1\52",
+            "\1\53",
+            "\1\54",
+            "\12\23\7\uffff\32\23\6\uffff\32\23",
+            "\1\56",
+            "\1\57",
+            "\1\60",
+            "\1\61",
+            "\1\62",
+            "",
+            "\1\63",
+            "\12\23\7\uffff\32\23\6\uffff\32\23",
+            "\12\23\7\uffff\32\23\6\uffff\32\23",
+            "",
+            "\12\23\7\uffff\32\23\6\uffff\32\23",
+            "\12\23\7\uffff\32\23\6\uffff\32\23",
+            "\12\23\7\uffff\32\23\6\uffff\32\23",
+            "",
+            "\12\23\7\uffff\32\23\6\uffff\32\23",
+            "\12\23\7\uffff\32\23\6\uffff\32\23",
+            "\12\23\7\uffff\32\23\6\uffff\32\23",
+            "\12\23\7\uffff\32\23\6\uffff\32\23",
+            "\12\23\7\uffff\32\23\6\uffff\32\23",
+            "\1\76",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "\1\77",
             ""
     };
 
@@ -840,7 +1132,7 @@ public class mini_rustLexer extends Lexer {
             this.transition = DFA6_transition;
         }
         public String getDescription() {
-            return "1:1: Tokens : ( T__8 | T__9 | T__10 | T__11 | T__12 | T__13 | T__14 | T__15 | T__16 | T__17 | T__18 | T__19 | T__20 | T__21 | T__22 | T__23 | IDENT | INTEGER | FLOAT | WS );";
+            return "1:1: Tokens : ( T__8 | T__9 | T__10 | T__11 | T__12 | T__13 | T__14 | T__15 | T__16 | T__17 | T__18 | T__19 | T__20 | T__21 | T__22 | T__23 | T__24 | T__25 | T__26 | T__27 | T__28 | T__29 | T__30 | T__31 | T__32 | IDENT | INTEGER | FLOAT | WS );";
         }
     }
  
