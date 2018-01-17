@@ -19,9 +19,30 @@ program
 
 statement
 	:
-	(expr | variable) ';'
+	(expr | variable | return | function_call) ';'
+	| function
 	| loop
 	;
+
+function
+  :
+  'fn' IDENT '(' arguments ')' block ('->' type)?
+  ;
+  
+function_call
+  :
+  IDENT ('!')? '(' params ')'
+  ;
+  
+params
+  :
+  (param (',' param)*)?
+  ;
+  
+param
+ :
+ atom
+ ;
 
 loop
 	:
@@ -41,6 +62,16 @@ block
 	'}'
 	;
 
+arguments
+  :
+  (argument (',' argument)*)?
+  ;
+  
+argument
+  :
+  IDENT ':' type
+  ;
+  
 assign
 	:
 	IDENT '=' expr
@@ -50,6 +81,11 @@ variable
 	:
 	'let' ('mut')? IDENT '=' expr
 	;
+	
+return
+  :
+  'return' expr
+  ;
 
 atom
 	:
