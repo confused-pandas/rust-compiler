@@ -2,6 +2,7 @@ grammar mini_rust;
 
 options {
   language = Java;
+  k = 1;
 }
 
 @header {
@@ -19,19 +20,19 @@ program
 
 statement
 	:
-	(expr | variable | return | function_call) ';'
+	(expr | variable | return) ';'
 	| function
 	| loop
 	;
 
 function
   :
-  'fn' IDENT '(' arguments ')' block ('->' type)?
+  'fn' IDENT '(' arguments ')' ('->' type)? block
   ;
   
 function_call
   :
-  IDENT ('!')? '(' params ')'
+  ('!')? '(' params ')'
   ;
   
 params
@@ -74,7 +75,7 @@ argument
   
 assign
 	:
-	IDENT '=' expr
+	'=' expr
 	;
 
 variable
@@ -91,7 +92,6 @@ atom
 	:
 	  '(' expr ')'
 	| number
-	//| IDENT
 	;
 	
 unary 
@@ -127,7 +127,11 @@ logical_or
 expr
 	:
 	  logical_or
-	| IDENT ('=' expr)?
+	| IDENT 
+	(
+		  assign
+		| function_call
+	)?
 	;
 
 type
