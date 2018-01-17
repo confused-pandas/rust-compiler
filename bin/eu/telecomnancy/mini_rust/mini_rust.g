@@ -57,7 +57,22 @@ atom
 	| number
 	| IDENT
 	;
-
+	
+unary 
+  :
+  ('-' | '!' | '*' | '&')* atom
+  ;
+  
+binary_mul
+  :
+  unary (('*' | '/') unary)*
+  ;
+  
+binary_add
+  :
+  binary_mul (('+' | '-') binary_mul)*
+  ;
+  
 expr
 	:
 	  atom
@@ -87,7 +102,7 @@ INTEGER
 
 FLOAT
 	:
-	('-')? ('0'..'9')* '.' ('0'..'9') // 0.2568, .5
+	('-')? ('0'..'9')* '.' ('0'..'9')
 	;
 
 WS
