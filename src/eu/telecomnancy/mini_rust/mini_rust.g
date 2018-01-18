@@ -20,24 +20,24 @@ program
 
 statement
 	:
-	(expr | variable | return) ';'
+	(expr | variable | return) SEMICOL
 	| function
 	| loop
 	;
 
 function
   :
-  'fn' IDENT '(' arguments ')' ('->' type)? block
+  FN IDENT LEFTPARENTH arguments RIGHTPARENTH ('->' type)? block
   ;
   
 function_call
   :
-  ('!')? '(' params ')'
+  (NOT)? LEFTPARENTH params RIGHTPARENTH
   ;
   
 params
   :
-  (param (',' param)*)?
+  (param (COMMA param)*)?
   ;
   
 param
@@ -52,45 +52,50 @@ loop
 
 loop_while
 	:
-	'while ' expr
+	WHILE expr
 	block
 	;
 
 block
 	:
-	'{'
+	LEFTBRACE
 	(statement)*
-	'}'
+	RIGHTBRACE
 	;
 
 arguments
   :
-  (argument (',' argument)*)?
+  (argument (COMMA argument)*)?
   ;
   
 argument
   :
-  IDENT ':' type
+  IDENT COLON type
   ;
   
 assign
 	:
-	'=' expr
+	EQUAL expr
 	;
 
 variable
 	:
-	'let' ('mut')? IDENT '=' expr
+	LET mutability IDENT (COLON type)? EQUAL expr
 	;
+	
+mutability
+  :
+  MUT | CONST | /* nothing */
+  ;
 	
 return
   :
-  'return' expr
+  RETURN expr
   ;
 
 atom
 	:
-	  '(' expr ')'
+	  LEFTPARENTH expr RIGHTPARENTH
 	| number
 	;
 	
@@ -101,12 +106,12 @@ unary
   
 binary_mul
   :
-  unary (('*' | '/') unary)*
+  unary ((MULT | DIV) unary)*
   ;
   
 binary_add
   :
-  binary_mul (('+' | '-') binary_mul)*
+  binary_mul ((PLUS | MINUS) binary_mul)*
   ;
   
 relational_operator
@@ -116,12 +121,12 @@ relational_operator
 
 logical_and
   :
-  relational_operator ('&&' relational_operator)*
+  relational_operator (AND relational_operator)*
   ;
 
 logical_or
   :
-  logical_and ('||' logical_and)*
+  logical_and (OR logical_and)*
   ;
   
 expr
@@ -153,6 +158,35 @@ number
 	  INTEGER
 	| FLOAT
 	;
+	
+
+CONST : 'const';
+FN : 'fn';
+LET : 'let';	
+MUT : 'mut';
+RETURN : 'return';
+WHILE : 'while';
+
+AND : '&&';
+EQUAL : '=';
+OR : '||';
+NOT : '!';
+
+
+DIV : '/';
+MINUS : '-';
+MULT : '*';
+PLUS : '+';
+
+COMMA : ',';
+COLON : ':';
+LEFTBRACE : '{';
+LEFTPARENTH : '(';
+RIGHTBRACE : '}';
+RIGHTPARENTH : ')';
+SEMICOL : ';';
+
+	
 
 IDENT
 	:
