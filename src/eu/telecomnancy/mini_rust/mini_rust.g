@@ -23,6 +23,7 @@ statement
 	(expr | variable | return) SEMICOL
 	| function
 	| loop
+	| struct
 	;
 
 function
@@ -55,6 +56,11 @@ loop_while
 	WHILE expr
 	block
 	;
+	
+struct
+  :
+  STRUCT IDENT LEFTBRACE (IDENT COLON type (COMMA IDENT COLON type)*)? RIGHTBRACE
+  ;
 
 block
 	:
@@ -80,7 +86,7 @@ assign
 
 variable
 	:
-	LET mutability IDENT (COLON type)? EQUAL expr
+	LET mutability IDENT ((COLON type)? EQUAL expr)?
 	;
 	
 mutability
@@ -101,7 +107,7 @@ atom
 	
 unary 
   :
-  ('-' | '!' | '*' | '&')* atom
+  ('-' | NOT | '*' | '&')* atom
   ;
   
 binary_mul
@@ -151,6 +157,7 @@ type
 	| 'u64'
 	| 'f32'
 	| 'f64'
+	| 'bool'
 	;
 
 number
@@ -165,6 +172,7 @@ FN : 'fn';
 LET : 'let';	
 MUT : 'mut';
 RETURN : 'return';
+STRUCT : 'struct';
 WHILE : 'while';
 
 AND : '&&';
