@@ -53,13 +53,14 @@ loop
 
 loop_while
 	:
-	WHILE expr
-	block
+	WHILE expr block
 	;
 	
 struct
   :
-  STRUCT IDENT LEFTBRACE (IDENT COLON type (COMMA IDENT COLON type)*)? RIGHTBRACE
+    STRUCT IDENT (LEFTBRACE (IDENT COLON type (COMMA IDENT COLON type)*)? RIGHTBRACE 
+  | SEMICOL 
+  | LEFTPARENTH (IDENT COLON type (COMMA IDENT COLON type)*)? RIGHTPARENTH SEMICOL)
   ;
 
 block
