@@ -24,6 +24,7 @@ statement
 	| function
 	| loop
 	| struct
+	| enum
 	;
 
 function
@@ -58,9 +59,14 @@ loop_while
 	
 struct
   :
-    STRUCT IDENT (LEFTBRACE (IDENT COLON type (COMMA IDENT COLON type)*)? RIGHTBRACE 
+    STRUCT IDENT LEFTBRACE (IDENT COLON type (COMMA IDENT COLON type)*)? RIGHTBRACE 
   | SEMICOL 
-  | LEFTPARENTH (IDENT COLON type (COMMA IDENT COLON type)*)? RIGHTPARENTH SEMICOL)
+  | LEFTPARENTH (IDENT COLON type (COMMA IDENT COLON type)*)? RIGHTPARENTH SEMICOL
+  ;
+  
+enum
+  :
+  ENUM IDENT LEFTBRACE (IDENT COLON type (COMMA IDENT COLON type)*)? RIGHTBRACE
   ;
 
 block
@@ -169,6 +175,7 @@ number
 	
 
 CONST : 'const';
+ENUM : 'enum';
 FN : 'fn';
 LET : 'let';	
 MUT : 'mut';
