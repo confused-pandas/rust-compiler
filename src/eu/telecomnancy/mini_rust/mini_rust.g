@@ -40,11 +40,12 @@ function_call
 params
   :
   (param (COMMA param)*)?
+  | (expr (COMMA expr)*)?
   ;
   
 param
  :
- atom
+   atom
  ;
 
 loop
@@ -145,11 +146,7 @@ logical_or
 expr
 	:
 	  logical_or
-	| IDENT 
-	(
-		  assign
-		| function_call
-	)?
+	| IDENT ( assign | function_call )?
 	;
 
 type
