@@ -51,11 +51,17 @@ param
 loop
 	:
 	loop_while
+	|loop_if
 	;
 
 loop_while
 	:
 	WHILE expr block
+	;
+	
+loop_if
+	:
+	IF expr block (ELSE (block | loop_if))?
 	;
 	
 struct
@@ -111,6 +117,7 @@ atom
 	:
 	  LEFTPARENTH expr RIGHTPARENTH
 	| number
+	| IDENT
 	;
 	
 unary 
@@ -147,6 +154,7 @@ expr
 	:
 	  logical_or
 	| IDENT ( assign | function_call )?
+	| PRINT LEFTPARENTH expr RIGHTPARENTH
 	;
 
 type
@@ -179,6 +187,9 @@ MUT : 'mut';
 RETURN : 'return';
 STRUCT : 'struct';
 WHILE : 'while';
+IF :'if';
+ELSE:'else';
+PRINT:'print !';
 
 AND : '&&';
 EQUAL : '=';
