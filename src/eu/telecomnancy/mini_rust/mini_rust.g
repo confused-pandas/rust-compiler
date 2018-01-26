@@ -1,4 +1,4 @@
-grammar mini_rust;
+grammar test_au_pif;
 
 options {
 	language = Java;
@@ -43,13 +43,13 @@ argument
 
 bloc
 	:
-	'{' (instruction)* (expr)? '}'
+	'{' ( instruction (';')?)*  //à ENLEVER !!! on peut écrire tout le code sans point virgule avec ça (c'est juste pour le test
+	'}'
 	;
 
 instruction
 	:
-	  ';'
-	| expr ';'
+	 expr
 	| 'let' ('mut')? IDENT '=' instruction_left_1
 	| 'while' expr bloc
 	| 'return' (expr)?
@@ -58,8 +58,8 @@ instruction
 
 instruction_left_1
 	:
-	  expr ';'
-	//| IDENT '{' (IDENT ':' expr (',' IDENT ':' expr)*)? '}'
+	  expr 
+	  ( '{' (IDENT ':' expr (',' IDENT ':' expr)*)? '}')?
 	;
 
 if_expr
