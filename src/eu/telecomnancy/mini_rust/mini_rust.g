@@ -1,222 +1,115 @@
 grammar mini_rust;
 
 options {
-  language = Java;
-  k = 1;
+	language = Java;
+	k = 1;
+	output = AST;
 }
 
-@header {
-  package eu.telecomnancy.mini_rust;
-}
-
-@lexer::header {
-  package eu.telecomnancy.mini_rust;
-}
-
-program
+fichier
 	:
-	(statement)* EOF
+	(decl)*
 	;
 
-statement
+decl
 	:
-	(expr | variable | return) SEMICOL
-	| function
-	| loop
-	| struct
-	| enum
+	  decl_fun
+	| decl_struct
 	;
 
-function
-  :
-  FN IDENT LEFTPARENTH arguments RIGHTPARENTH ('->' type)? block
-  ;
-  
-function_call
-  :
-  (NOT)? LEFTPARENTH params RIGHTPARENTH
-  ;
-  
-params
-  :
-  (param (COMMA param)*)?
-  | (expr (COMMA expr)*)?
-  ;
-  
-param
- :
-   atom
- ;
-
-loop
+decl_struct
 	:
-	loop_while
+	'struct' IDENT '{' (IDENT ':' type (',' IDENT ':' type)*)? '}'
 	;
 
-loop_while
+decl_fun
 	:
-	WHILE expr block
-	;
-	
-struct
-  :
-    STRUCT IDENT LEFTBRACE (IDENT COLON type (COMMA IDENT COLON type)*)? RIGHTBRACE 
-  | SEMICOL 
-  | LEFTPARENTH (IDENT COLON type (COMMA IDENT COLON type)*)? RIGHTPARENTH SEMICOL
-  ;
-  
-enum
-  :
-  ENUM IDENT LEFTBRACE (IDENT COLON type (COMMA IDENT COLON type)*)? RIGHTBRACE
-  ;
-
-block
-	:
-	LEFTBRACE
-	(statement)*
-	RIGHTBRACE
-	;
-
-arguments
-  :
-  (argument (COMMA argument)*)?
-  ;
-  
-argument
-  :
-  IDENT COLON type
-  ;
-  
-assign
-	:
-	EQUAL expr
-	;
-
-variable
-	:
-	LET mutability IDENT ((COLON type)? EQUAL expr)?
-	;
-	
-mutability
-  :
-  MUT | CONST | /* nothing */
-  ;
-	
-return
-  :
-  RETURN expr
-  ;
-
-atom
-	:
-	  LEFTPARENTH expr RIGHTPARENTH
-	| number
-	;
-	
-unary 
-  :
-  ('-' | NOT | '*' | '&')* atom
-  ;
-  
-binary_mul
-  :
-  unary ((MULT | DIV) unary)*
-  ;
-  
-binary_add
-  :
-  binary_mul ((PLUS | MINUS) binary_mul)*
-  ;
-  
-relational_operator
-  :
-  binary_add (('==' | '!=' | '<' | '<=' | '>' | '>=') binary_add)*
-  ;
-
-logical_and
-  :
-  relational_operator (AND relational_operator)*
-  ;
-
-logical_or
-  :
-  logical_and (OR logical_and)*
-  ;
-  
-expr
-	:
-	  logical_or
-	| IDENT ( assign | function_call )?
+	'fn' IDENT '(' (argument (',' argument)*)? ')' ('->' type)? bloc
 	;
 
 type
 	:
-	'i8'
-	| 'i16'
+	  IDENT ('<' IDENT '>')?
+	| '&' type
 	| 'i32'
-	| 'i64'
-	| 'u8'
-	| 'u16'
-	| 'u32'
-	| 'u64'
-	| 'f32'
-	| 'f64'
 	| 'bool'
+	| 'Vec'
 	;
 
-number
+argument
 	:
-	  INTEGER
-	| FLOAT
+	IDENT ':' type
 	;
-	
 
-CONST : 'const';
-ENUM : 'enum';
-FN : 'fn';
-LET : 'let';	
-MUT : 'mut';
-RETURN : 'return';
-STRUCT : 'struct';
-WHILE : 'while';
-
-AND : '&&';
-EQUAL : '=';
-OR : '||';
-NOT : '!';
-
-
-DIV : '/';
-MINUS : '-';
-MULT : '*';
-PLUS : '+';
-
-COMMA : ',';
-COLON : ':';
-LEFTBRACE : '{';
-LEFTPARENTH : '(';
-RIGHTBRACE : '}';
-RIGHTPARENTH : ')';
-SEMICOL : ';';
-
-	
-
-IDENT
+bloc
 	:
-	('a'..'z' | 'A'..'Z') ('a'..'z' | 'A'..'Z' | '0'..'9')*
+	'{' (instruction)* (expr)? '}'
 	;
 
-INTEGER
+instruction
 	:
-	('-')? ('0'..'9')+
+	  ';'
+	| expr ';'
+	| 'let' ('mut')? IDENT '=' instruction_left_1
+	| 'while' expr bloc
+	| 'return' (expr)?
+	| if_expr
 	;
 
-FLOAT
+instruction_left_1
 	:
-	('-')? ('0'..'9')* '.' ('0'..'9')
+	  expr ';'
+	//| IDENT '{' (IDENT ':' expr (',' IDENT ':' expr)*)? '}'
 	;
 
-WS
+if_expr
 	:
-	(' ' | '\t' | '\r' | '\n' | '\f') { $channel = HIDDEN; }
+	'if' expr bloc ('else' (bloc | if_expr))?
 	;
+
+expr
+	:
+	(
+		  CSTE_ENT
+		| 'true'
+		| 'false'
+		| IDENT (expr_left_1)?
+		| unaire expr
+		| 'vec' '!' '[' (expr (',' expr)*)? ']'
+		| 'print' '!' '(' expr ')'
+		| bloc
+		| '(' expr ')'
+	)
+	(
+		  binaire expr
+		| '.' expr_left_2
+		| '[' expr ']'
+	)*
+	;
+
+expr_left_1
+	:
+	'(' (expr (',' expr)*)? ')'
+	;
+
+expr_left_2
+	:
+	  IDENT
+	| 'len' '(' ')'
+	;
+
+binaire
+	:
+	'+' | '-' | '*' | '/' | '&&' | '||' | '<' | '<=' | '>' | '>=' | '==' | '!=' | '='
+	;
+
+unaire
+	:
+	'-' | '!' | '*' | '&'
+	;
+
+fragment NUMBER : ('0'..'9') ;
+
+CSTE_ENT : ('-')? NUMBER+ ;
+IDENT : ('a'..'z' | 'A'..'Z' | '_') ('a'..'z' | 'A'..'Z' | '0'..'9' | '_')* ;
+WS : (' ' | '\t' | '\f' | '\r' | '\n')+ { $channel = HIDDEN; } ;
