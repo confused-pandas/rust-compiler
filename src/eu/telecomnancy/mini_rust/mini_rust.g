@@ -19,47 +19,53 @@ decl
 
 decl_struct
 	:
-	'struct' IDENT '{' (IDENT ':' type (',' IDENT ':' type)*)? '}'
+	'struct' IDF '{' (IDF ':' type (',' IDF ':' type)?)* '}'
 	;
 
 decl_fun
 	:
-	'fn' IDENT '(' (argument (',' argument)*)? ')' ('->' type)? bloc
+	'fn' IDF '(' (argument (',' argument)*)? ')' ('->' type)? bloc
 	;
 
 type
 	:
-	  IDENT ('<' IDENT '>')?
+	  IDF
+	| 'Vec' '<' type '>'
 	| '&' type
 	| 'i32'
 	| 'bool'
-	| 'Vec'
 	;
 
 argument
 	:
-	IDENT ':' type
+	IDF ':' type
 	;
 
 bloc
 	:
 	'{' (instruction)* (expr)? '}'
-	;
+;
 
 instruction
 	:
 	  ';'
 	| expr ';'
-	| 'let' ('mut')? IDENT '=' instruction_left_1
+	| 'let' ('mut')? IDF '=' instruction_let ';'
+	| 'return' (expr)? ';'
 	| 'while' expr bloc
-	| 'return' (expr)?
 	| if_expr
 	;
 
-instruction_left_1
+instruction_let
 	:
-	  expr ';'
-	//| IDENT '{' (IDENT ':' expr (',' IDENT ':' expr)*)? '}'
+	  expr_bis
+	| IDF instruction_let_idf
+	;
+
+instruction_let_idf
+	:
+	  expr_idf expr_prim
+	| '{' (IDF ':' expr (',' IDF ':' expr)*)? '}'
 	;
 
 if_expr
@@ -67,35 +73,47 @@ if_expr
 	'if' expr bloc ('else' (bloc | if_expr))?
 	;
 
+
 expr
 	:
 	(
-		  CSTE_ENT
+		  expr_bis
+		| IDF expr_idf
+	) expr_prim
+	;
+
+expr_bis
+	:
+	(
+		  CSTE_ENT 
 		| 'true'
 		| 'false'
-		| IDENT (expr_left_1)?
 		| unaire expr
-		| 'vec' '!' '[' (expr (',' expr)*)? ']'
+		| 'vec' '!' '[' (expr (',' expr)?)* ']'
 		| 'print' '!' '(' expr ')'
 		| bloc
 		| '(' expr ')'
-	)
-	(
-		  binaire expr
-		| '.' expr_left_2
-		| '[' expr ']'
-	)*
+	) expr_prim
 	;
 
-expr_left_1
+expr_prim
 	:
-	'(' (expr (',' expr)*)? ')'
+	  binaire expr expr_prim
+	| '.' expr_prim_dot
+	| '[' expr ']' expr_prim
+	|
 	;
 
-expr_left_2
+expr_prim_dot
 	:
-	  IDENT
-	| 'len' '(' ')'
+	  IDF expr_prim
+	| 'len' '(' ')' expr_prim
+	;
+
+expr_idf
+	:
+	  '(' (expr (',' expr)*)? ')' 
+	  | 
 	;
 
 binaire
@@ -108,8 +126,10 @@ unaire
 	'-' | '!' | '*' | '&'
 	;
 
-fragment NUMBER : ('0'..'9') ;
+IDF : (LOWERCASE | UPPERCASE | '_') (LOWERCASE | UPPERCASE | DIGIT | '_')* ;
+CSTE_ENT : DIGIT+ ;
+WS : ('\n' | '\r' | '\t' | ' ')+ { $channel = HIDDEN; } ;
 
-CSTE_ENT : ('-')? NUMBER+ ;
-IDENT : ('a'..'z' | 'A'..'Z' | '_') ('a'..'z' | 'A'..'Z' | '0'..'9' | '_')* ;
-WS : (' ' | '\t' | '\f' | '\r' | '\n')+ { $channel = HIDDEN; } ;
+fragment LOWERCASE : 'a'..'z';
+fragment UPPERCASE : 'A'..'Z';
+fragment DIGIT : '0'..'9';
