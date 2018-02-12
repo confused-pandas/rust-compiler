@@ -98,7 +98,7 @@ expr_bis
 
 expr_prim
 	:
-	  binaire expr expr_prim
+	  ou_logique expr expr_prim
 	| '.' expr_prim_dot
 	| '[' expr ']' expr_prim
 	|
@@ -125,6 +125,32 @@ unaire
 	:
 	'-' | '!' | '*' | '&'
 	;
+	
+ou_logique
+	:
+	et_logique ('||' et_logique)*
+	;
+
+et_logique
+	:
+	operateur_relationnel ('&&' operateur_relationnel)*
+	;
+
+operateur_relationnel
+	:
+	addition_binaire (('==' | '!=' | '<=' | '>' | '>=' ) addition_binaire)*
+	;
+
+addition_binaire
+	:
+	multiplication_binaire (('+' | '-') multiplication_binaire)*
+	;
+
+multiplication_binaire
+	:
+	unaire (('*' | '/') unaire)*
+	;
+	 
 
 IDF : (LOWERCASE | UPPERCASE | '_') (LOWERCASE | UPPERCASE | DIGIT | '_')* ;
 CSTE_ENT : DIGIT+ ;
