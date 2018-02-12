@@ -43,79 +43,65 @@ argument
 
 bloc
 	:
-	'{' (instruction)* (expr)? '}'
-;
+	'{' instru_bloc '}'
+	;
 
-instruction
+instru_bloc
+	:
+	  instruction_sans_expr instru_bloc | (expr)? (';' (instru_bloc)?)?
+	;
+
+instruction_sans_expr
 	:
 	  ';'
-	| expr ';'
-	| 'let' ('mut')? IDF '=' instruction_let ';'
-	| 'return' (expr)? ';'
+	| 'let' ('mut')? IDF '=' instruction_let_factorisation
 	| 'while' expr bloc
+	| 'return' (expr)? ';'
 	| if_expr
 	;
 
-instruction_let
+instruction_let_factorisation
 	:
-	  expr_bis
-	| IDF instruction_let_idf
-	;
-
-instruction_let_idf
-	:
-	  expr_idf expr_prim
-	| '{' (IDF ':' expr (',' IDF ':' expr)*)? '}'
+	  expr ';'
+	| IDF '{' (IDF ':' expr (',' IDF ':' expr)*)? '}' ';'
 	;
 
 if_expr
 	:
 	'if' expr bloc ('else' (bloc | if_expr))?
 	;
-
-
 expr
 	:
-	(
-		  expr_bis
-		| IDF expr_idf
-	) expr_prim
+	  (
+		    CSTE_ENT
+		  | 'true'
+		  | 'false'
+		  | IDF expr_idf_factorisation
+		  | unaire expr
+		  | 'vec' '!' '[' (expr (',' expr)?)* ']'
+		  | 'print' '!' '(' expr ')'
+		  | bloc
+		  | '(' expr ')'
+	  )
+	  (
+		  ou_logique expr
+		  | '.' expr_dot_factorisation
+		  | '[' expr ']'
+	  )*
 	;
 
-expr_bis
+expr_idf_factorisation
 	:
-	(
-		  CSTE_ENT 
-		| 'true'
-		| 'false'
-		| unaire expr
-		| 'vec' '!' '[' (expr (',' expr)?)* ']'
-		| 'print' '!' '(' expr ')'
-		| bloc
-		| '(' expr ')'
-	) expr_prim
-	;
-
-expr_prim
-	:
-	  ou_logique expr expr_prim
-	| '.' expr_prim_dot
-	| '[' expr ']' expr_prim
+	  '(' (expr (',' expr)*)? ')'
 	|
 	;
 
-expr_prim_dot
+expr_dot_factorisation
 	:
-	  IDF expr_prim
-	| 'len' '(' ')' expr_prim
+	  IDF
+	| 'len' '(' ')'
 	;
 
-expr_idf
-	:
-	  '(' (expr (',' expr)*)? ')' 
-	  | 
-	;
-	
 ou_logique
 	:
 	et_logique ('||' et_logique)*
@@ -140,7 +126,6 @@ multiplication_binaire
 	:
 	unaire (('*' | '/') unaire)*
 	;
-	
 
 unaire
 	:
@@ -154,11 +139,8 @@ atome
 	| IDF
 	;
 
-	 
-
 IDF : (LOWERCASE | UPPERCASE | '_') (LOWERCASE | UPPERCASE | DIGIT | '_')* ;
 CSTE_ENT : DIGIT+ ;
-WS : ('\n' | '\r' | '\t' | ' ')+ { $channel = HIDDEN; } ;
 
 fragment LOWERCASE : 'a'..'z';
 fragment UPPERCASE : 'A'..'Z';
