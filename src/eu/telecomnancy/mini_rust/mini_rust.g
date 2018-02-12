@@ -115,16 +115,6 @@ expr_idf
 	  '(' (expr (',' expr)*)? ')' 
 	  | 
 	;
-
-binaire
-	:
-	'+' | '-' | '*' | '/' | '&&' | '||' | '<' | '<=' | '>' | '>=' | '==' | '!=' | '='
-	;
-
-unaire
-	:
-	'-' | '!' | '*' | '&'
-	;
 	
 ou_logique
 	:
@@ -138,7 +128,7 @@ et_logique
 
 operateur_relationnel
 	:
-	addition_binaire (('==' | '!=' | '<=' | '>' | '>=' ) addition_binaire)*
+	addition_binaire (('==' | '!=' | '<=' | '<' | '>' | '>=' ) addition_binaire)*
 	;
 
 addition_binaire
@@ -150,6 +140,20 @@ multiplication_binaire
 	:
 	unaire (('*' | '/') unaire)*
 	;
+	
+
+unaire
+	:
+	('-' | '!' | '*' | '&')* atome
+	;
+
+atome 
+	:
+	'(' expr ')'
+	| CSTE_ENT
+	| IDF
+	;
+
 	 
 
 IDF : (LOWERCASE | UPPERCASE | '_') (LOWERCASE | UPPERCASE | DIGIT | '_')* ;
