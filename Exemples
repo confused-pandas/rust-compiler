@@ -1,0 +1,185 @@
+/* Exemples de programmes Mini-Rush */
+
+
+/* 
+	Tests :
+   
+   Function w/o Args
+   Variable - Mut
+   While
+   Print
+*/
+fn main () {
+
+  let mut total = 0;
+  let mut i = 0;
+  let n = 10;
+ 
+  let mut test = i <= n;
+
+  while test
+  {
+  		total = total + i * i;
+   		i = i + 1;
+  
+   		if i == 5
+   		{
+   			print!(5)
+   		}
+  
+   		test = i <= n;
+   }
+  
+   print!( total );
+}
+
+
+
+/* 
+	Tests :
+   
+   Function w/ Args & Return
+   Variable - Affectation
+   If
+*/
+fn puissance(a : i32, b : i32) -> i32
+{
+	if b == 0
+	{
+		return 1;
+	}
+
+	let mut i = 1;
+	let mut result = a;
+	while i < b
+	{
+		result = result * a;
+		i = i + 1
+	}
+	return result;
+}
+
+
+/* 
+	Tests :
+   
+   Pointer
+   If - Else
+*/
+fn factorielle(n : i32, result : & i32)
+{
+	let mut i = 1;
+
+	if n == 0
+	{
+		*result = 1;
+	}
+	else
+	{
+		*result = 1;
+		while i <= n
+		{
+			*result = *result * i;
+			i = i + 1;
+		}
+	}
+}
+
+
+/* 
+	Tests :
+   
+    Function call
+*/
+fn main() {
+	print!(puissance(3,3));
+
+	let mut v : i32 = 0;
+	factorielle(5, &v);
+	print!(v);
+}
+
+
+fn fibonacci_computation(generations : i32, previous : i32, pprevious : i32) -> i32
+{
+	if generations < 0
+	{
+		return previous;
+	}
+
+	return fibonacci_computation(generations - 1, previous + pprevious, previous);
+}
+
+
+
+fn fibonacci(generations : i32) -> i32
+{
+	let result;
+
+	if generations == 0 || generations == 1
+	{
+		result = generations;
+	}
+
+	else
+	{
+		result = {
+				let result : i32 = fibonacci_computation(generations - 2, 1, 0);
+				result
+				};
+	}
+
+	return result;
+}
+
+
+
+fn main () {
+	print!(fibonacci(12));
+}
+
+
+/*
+	Tests :
+
+	Structure
+*/
+struct vecteur
+{
+	x: i32,
+	y: i32
+}
+
+
+struct data
+{
+	v: vecteur,
+	to_add: bool
+}
+
+fn addition_vecteurs(l : Vec<data>) -> vecteur
+{
+	let mut i = 0;
+	let mut result = vecteur {x: 0, y: 0};
+
+	while i < l.len()
+	{
+		if l[i].to_add
+		{
+			result.x = result.x + l[i].v.x;
+			result.y = result.y + l[i].v.y;
+		}
+		i = i + 1;
+	}
+
+	return result;
+}
+
+
+fn main()
+{
+	let d1 = data {v: vecteur{x: 0, y: 0}, to_add: true};
+	let d2 = data {v: vecteur{x: 1, y: 1}, to_add: true};
+	let d3 = data {v: vecteur{x: 2, y: 2}, to_add: true};
+	let d4 = data {v: vecteur{x: 3, y: 3}, to_add: true};
+}

@@ -70,14 +70,15 @@ if_expr
 	:
 	'if' expr bloc ('else' (bloc | if_expr))?
 	;
+	
 expr
 	:
 	  (
-		   //CSTE_ENT
+		   CSTE_ENT
 		  | 'true'
 		  | 'false'
-		  //| IDF expr_idf_factorisation
-		  //| unaire expr
+		  | IDF expr_idf_factorisation
+		  | unaire expr
 		  | 'vec' '!' '[' (expr (',' expr)?)* ']'
 		  | 'print!' '(' expr ')'
 		  | bloc
@@ -118,7 +119,7 @@ operateur_relationnel
 	addition_binaire (('==' | '!=' | '<=' | '<' | '>' | '>=' ) addition_binaire)*
 	;
 
-addition_binaire
+addition_binaire''
 	:
 	multiplication_binaire (('+' | '-') multiplication_binaire)*
 	;
