@@ -73,15 +73,16 @@ if_expr
 expr
 	:
 	  (
-		    CSTE_ENT
+		   //CSTE_ENT
 		  | 'true'
 		  | 'false'
-		  | IDF expr_idf_factorisation
-		  | unaire expr
+		  //| IDF expr_idf_factorisation
+		  //| unaire expr
 		  | 'vec' '!' '[' (expr (',' expr)?)* ']'
-		  | 'print' '!' '(' expr ')'
+		  | 'print!' '(' expr ')'
 		  | bloc
 		  | '(' expr ')'
+		  | ou_logique expr
 	  )
 	  (
 		  ou_logique expr
