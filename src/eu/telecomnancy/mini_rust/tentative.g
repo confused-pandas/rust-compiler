@@ -54,16 +54,16 @@ instruction
 	: ';'
 	| expr ';'
 	| 'let' ('mut')? expr '=' expr ';'
-	| 'while' while_expr bloc
+	| 'while' simplified_expr bloc
 	| 'return' (expr)? ';'
 	| if_expr
 	;
 
-while_expr
+simplified_expr
 	:
 	((CSTE_ENT| 'true' | 'false')
 	| IDF
-	| unaire expr
+	| (unaire|atom) expr
 	| '(' expr ')')
 	|logical_or
 	(logical_or expr 
@@ -74,16 +74,16 @@ while_expr
 
 if_expr 
 	:
-	'if' expr bloc ('else' (bloc|if_expr)) ?
+	'if' simplified_expr bloc ('else' (bloc|if_expr))?
 	;
 	
 expr 
 	:
 	((CSTE_ENT | 'true' | 'false' ) 
 	| IDF (idf_expr)?
-	| unaire expr 
+	| (unaire|atom) expr 
 	| 'Vec!' '['(expr (',' expr)*)? ']' 
-	| 'print!' (expr)? 
+	| 'print!' '('(expr)?')' 
 	| bloc 
 	| '(' expr ')') 
 	|logical_or
