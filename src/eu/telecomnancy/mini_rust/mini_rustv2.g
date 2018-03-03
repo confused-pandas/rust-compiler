@@ -123,7 +123,7 @@ atom
 		| 'false'
 		| IDF ('(' (expr (',' expr)*)?')')?
 		| '(' expr ')'
-		| 'Vec' '!' '[' (expr (',' expr)*)? ']'
+		| ('Vec'|'vec') '!' '[' (expr (',' expr)*)? ']'
 		| 'print' '!' '(' expr ')'
 	)
 	(
