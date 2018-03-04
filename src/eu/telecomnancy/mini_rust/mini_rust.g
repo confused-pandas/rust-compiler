@@ -1,4 +1,4 @@
-grammar mini_rust;
+grammar mini_rustv2;
 
 options {
 	language = Java;
@@ -13,18 +13,18 @@ fichier
 
 decl
 	:
-	  decl_fun
+	  decl_func
 	| decl_struct
+	;
+
+decl_func
+	:
+	'fn' IDF '(' (argument (',' argument)*)? ')' ('->' type)? bloc
 	;
 
 decl_struct
 	:
-	'struct' IDF '{' (IDF ':' type (',' IDF ':' type)?)* '}'
-	;
-
-decl_fun
-	:
-	'fn' IDF '(' (argument (',' argument)*)? ')' ('->' type)? bloc
+	'struct' IDF '{' (IDF ':' type (',' IDF ':' type)*)? '}'
 	;
 
 type
@@ -43,103 +43,97 @@ argument
 
 bloc
 	:
-	'{' instru_bloc '}'
+	'{' instruction_bloc '}'
 	;
 
-instru_bloc
+instruction_bloc
 	:
-	  instruction_sans_expr instru_bloc | (expr)? (';' (instru_bloc)?)?
+	  instruction instruction_bloc
+	| (expr)? (';' (instruction_bloc)?)?
 	;
 
-instruction_sans_expr
+instruction
 	:
 	  ';'
-	| 'let' ('mut')? IDF '=' instruction_let_factorisation
+	| 'let' ('mut')? expr ('=' expr (obj_def)?)? ';'
 	| 'while' expr bloc
 	| 'return' (expr)? ';'
 	| if_expr
 	;
 
-instruction_let_factorisation
+obj_def
 	:
-	  expr ';'
-	| IDF '{' (IDF ':' expr (',' IDF ':' expr)*)? '}' ';'
+	'{' (IDF ':' expr (obj_def)? (',' IDF ':' expr (obj_def)?)*)? '}'
 	;
 
 if_expr
 	:
 	'if' expr bloc ('else' (bloc | if_expr))?
 	;
-	
+
 expr
 	:
-	  (
-		   CSTE_ENT
-		  | 'true'
-		  | 'false'
-		  | IDF expr_idf_factorisation
-		  | unaire expr
-		  | 'vec' '!' '[' (expr (',' expr)?)* ']'
-		  | 'print!' '(' expr ')'
-		  | bloc
-		  | '(' expr ')'
-		  | ou_logique expr
-	  )
-	  (
-		  ou_logique expr
-		  | '.' expr_dot_factorisation
-		  | '[' expr ']'
-	  )*
+	(
+		  bloc
+		| expr_ou
+	)
 	;
 
-expr_idf_factorisation
-	:
-	  '(' (expr (',' expr)*)? ')'
-	|
-	;
-
-expr_dot_factorisation
+dot_factorisation
 	:
 	  IDF
 	| 'len' '(' ')'
 	;
 
-ou_logique
+expr_ou
 	:
-	et_logique ('||' et_logique)*
+	expr_et ('||' expr_ou)*
 	;
 
-et_logique
+expr_et
 	:
-	operateur_relationnel ('&&' operateur_relationnel)*
+	expr_comp ('&&' expr_comp)*
 	;
 
-operateur_relationnel
+expr_comp
 	:
-	addition_binaire (('==' | '!=' | '<=' | '<' | '>' | '>=' ) addition_binaire)*
+	expr_plus (('<' | '<=' | '>' | '>=' | '==' | '!=') expr_plus)*
 	;
 
-addition_binaire''
+expr_plus
 	:
-	multiplication_binaire (('+' | '-') multiplication_binaire)*
+	expr_mult (('+' | '-') expr_mult)*
 	;
 
-multiplication_binaire
+expr_mult
 	:
-	unaire (('*' | '/') unaire)*
+	expr_unaire (('*' | '/') expr_unaire)*
 	;
 
-unaire
+expr_unaire
 	:
-	('-' | '!' | '*' | '&')* atome
+	('-' | '!' | '*' | '&')* atom
 	;
 
-atome 
+atom
 	:
-	'(' expr ')'
-	| CSTE_ENT
-	| IDF
+	(
+		  CSTE_ENT
+		| 'true'
+		| 'false'
+		| IDF ('(' (expr (',' expr)*)?')')?
+		| '(' expr ')'
+		| ('Vec'|'vec') '!' '[' (expr (',' expr)*)? ']'
+		| 'print' '!' '(' expr ')'
+	)
+	(
+		 '[' expr ']'
+	)*
+	(
+		'.' dot_factorisation
+	)*
 	;
+
 
 IDF : (LOWERCASE | UPPERCASE | '_') (LOWERCASE | UPPERCASE | DIGIT | '_')* ;
 CSTE_ENT : DIGIT+ ;
