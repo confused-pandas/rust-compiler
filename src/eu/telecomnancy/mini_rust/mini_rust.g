@@ -1,4 +1,4 @@
-grammar mini_rustv2;
+grammar mini_rust;
 
 options {
 	language = Java;
@@ -49,7 +49,7 @@ bloc
 instruction_bloc
 	:
 	  instruction instruction_bloc
-	| (expr)? (';' (instruction_bloc)?)?
+	| (expr)? (';' instruction_bloc)?
 	;
 
 instruction
@@ -119,6 +119,7 @@ atom
 	:
 	(
 		  CSTE_ENT
+		| CSTE_STR
 		| 'true'
 		| 'false'
 		| IDF ('(' (expr (',' expr)*)?')')?
@@ -137,6 +138,9 @@ atom
 
 IDF : (LOWERCASE | UPPERCASE | '_') (LOWERCASE | UPPERCASE | DIGIT | '_')* ;
 CSTE_ENT : DIGIT+ ;
+CSTE_STR : '"' .* '"' ;
+COMMENTS : '/*' .* '*/' { $channel = HIDDEN ; } ;
+WS : (' ' | '\r' | '\n') { $channel = HIDDEN ; } ;
 
 fragment LOWERCASE : 'a'..'z';
 fragment UPPERCASE : 'A'..'Z';
