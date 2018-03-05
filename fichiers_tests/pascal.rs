@@ -1,4 +1,4 @@
-fn pascal(i : i32, j : i32){
+fn pascal(i : i32, j : i32) -> i32 {
 	if j == 0{
 		return 1;
 	}

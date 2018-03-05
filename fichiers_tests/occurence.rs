@@ -1,4 +1,4 @@
-fn first_occ(chaine : Vec<idf>, car : idf){
+fn first_occ(chaine : Vec<idf>, car : idf) -> i32 {
 	let i = 0;
 	while chaine[i]!='\0' {
 		if chaine[i] == car{
@@ -10,7 +10,7 @@ fn first_occ(chaine : Vec<idf>, car : idf){
 	return 0;
 }
 
-fn last_occ(chaine : Vec<idf>, car : idf){
+fn last_occ(chaine : Vec<idf>, car : idf) -> i32 {
 	let i = 0;
 	let retenu = 0;
 	while (chaine[i]!='\0'){

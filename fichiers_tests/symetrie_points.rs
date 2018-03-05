@@ -15,7 +15,7 @@ fn affiche_x(p : Point){
 fn affiche_y(p: Point){
 	print!(p.y);
 }
-fn symetrique(p : Point, choix: i32){
+fn symetrique(p : Point, choix: i32) -> i32 {
 	if choix == 0 {
 		let x_2 = p.x;
 		let y_2 = -p.y;

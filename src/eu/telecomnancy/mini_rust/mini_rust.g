@@ -22,6 +22,7 @@ tokens{
 	COND;
 	OR;
 	AND;
+	CSTE_ENT;
 	
 }
 
@@ -150,7 +151,7 @@ expr_unaire
 atom
 	:
 	(
-		  CSTE_ENT
+		 CSTE_ENT  
 		| CSTE_STR
 		| 'true'
 		| 'false'
