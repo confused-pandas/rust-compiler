@@ -20,6 +20,9 @@ tokens{
 	VEC;
 	FUNC_CALL;
 	COND;
+	OR;
+	AND;
+	
 }
 
 fichier
@@ -47,7 +50,7 @@ type
 	:
 	  IDF
 	| 'Vec' '<' type '>' -> ^(VEC type)
-	| '&' type
+	| '&' type 
 	| 'i32'
 	| 'bool'
 	;
@@ -71,7 +74,7 @@ instruction_bloc
 instruction
 	:
 	  ';' ->
-	| 'let' ('mut')? expr ('=' expr (obj_def)?)? ';'
+	| 'let' ('mut')? expr ((op='=' -> $op) expr (obj_def)?)? ';' -> ^($op expr (expr obj_def?)?)?
 	| 'while' expr bloc -> ^(WHILE expr bloc)
 	| 'return' (expr)? ';' -> ^(RETURN expr?)
 	| if_expr
@@ -103,27 +106,40 @@ dot_factorisation
 
 expr_ou
 	:
-	expr_et ('||' expr_ou)*
+	(e1=expr_et -> $e1) ('||' e2=expr_ou -> ^(OR $e1 $e2 ))*
 	;
 
 expr_et
 	:
-	expr_comp ('&&' expr_comp)*
+	(e1=expr_comp -> $e1) ('&&' e2=expr_comp -> ^(AND $e1 $e2))*
 	;
 
-expr_comp
+expr_comp 
 	:
-	(e1=expr_plus -> $e1)(op=('<' | '<=' | '>' | '>=' | '==' | '!=') e2=expr_plus -> ^($op $expr_comp $e2))*
+	 (e1 = expr_plus -> $e1)
+	(op='<' e2 = expr_plus -> ^($op $expr_comp $e2)
+	|op='<=' e2 = expr_plus -> ^($op $expr_comp $e2)
+	|op= '>' e2 = expr_plus -> ^($op $expr_comp $e2)
+	|op='>=' e2 = expr_plus -> ^($op $expr_comp $e2)
+	|op='==' e2 = expr_plus  -> ^($op $expr_comp $e2)
+	|op='!=' e2 = expr_plus  -> ^($op $expr_comp $e2)
+	)*
 	;
-
-expr_plus
+	
+expr_plus 
 	:
-	(e1=expr_mult -> $e1)(op=('+' | '-') e2=expr_mult -> ^($op $expr_plus $e2))*
+	(e1=expr_mult -> $e1)
+	('+' e2=expr_mult -> ^('+' $expr_plus $e2)
+	| '-' e2=expr_mult -> ^('-' $expr_plus $e2)
+	)*
 	;
-
+	
 expr_mult
 	:
-	(e1=expr_unaire -> $e1)(op=('*' | '/') e2=expr_unaire -> ^($op $expr_mult $e2))*
+	(e1=expr_unaire -> $e1)
+	(op='*' e2=expr_unaire -> ^($op $expr_mult $e2) 
+	| op = '/' e2=expr_unaire -> ^($op $expr_mult $e2)
+	)*
 	;
 
 expr_unaire
