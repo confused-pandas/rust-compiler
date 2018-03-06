@@ -3,4 +3,5 @@ antlr-generated/
 .settings/
 .project
 .classpath
+src/eu/telecomnancy/mini_rust/output/
 src/eu/telecomnancy/mini_rust/mini_rust.tokens

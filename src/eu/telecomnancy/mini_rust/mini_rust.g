@@ -171,17 +171,18 @@ atom
 	| 'true'
 	| 'false'
 	|
-	  { 
-	 	boolean isFunctionCall = false;
-	 	boolean hasParams = false;
-	  }
-	  IDF ('(' (expr (',' expr)* { hasParams = true; })?')' { isFunctionCall = true; })?
-	  -> {isFunctionCall && hasParams}? -> ^(FUNCTION_CALL IDF ^(PARAMS expr*))
-	  -> {isFunctionCall}? ^(FUNCTION_CALL IDF)
+	  { boolean isFunctionCall = false; }
+	  IDF ('(' (params)? ')' { isFunctionCall = true; })?
+	  -> {isFunctionCall}? ^(FUNCTION_CALL IDF params?)
 	  -> IDF
 	| '(' expr ')' -> expr
 	| ('Vec'|'vec') '!' '[' (expr (',' expr)*)? ']'
 	| 'print' '!' '(' expr ')' -> ^(PRINT expr)
+	;
+
+params
+	:
+	(expr (',' expr)*) -> ^(PARAMS expr+)
 	;
 
 IDF : (LOWERCASE | UPPERCASE | '_') (LOWERCASE | UPPERCASE | DIGIT | '_')* ;
