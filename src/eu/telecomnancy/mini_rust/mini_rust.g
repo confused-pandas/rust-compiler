@@ -14,6 +14,7 @@ tokens{
 	ARGUMENT;
 	BLOC;
 	IF;
+	ELSE;
 	WHILE;
 	PRINT;
 	RETURN;
@@ -27,6 +28,7 @@ tokens{
 	INDEX;
 	FUNCTION_CALL;
 	PARAMS;
+	MOINS_UNITAIRE;
 }
 
 fichier
@@ -91,7 +93,8 @@ obj_def
 
 if_expr
 	:
-	'if'^ expr bloc ('else'^ (bloc | if_expr))?
+	('if' expr bloc -> ^(IF expr bloc)) 
+	('else' (bloc | if_expr))? 
 	;
 
 expr
@@ -148,7 +151,8 @@ expr_mult
 
 expr_unaire
 	:
-	  (op='-' | op='!' | op='*' | op='&') expr_unaire -> ^($op ^(expr_unaire))
+	  (op='-') expr_unaire -> ^(MOINS_UNITAIRE ^(expr_unaire))
+	| (op='!' | op='*' | op='&') expr_unaire -> ^($op ^(expr_unaire))
 	| expr_atom
 	;
 
