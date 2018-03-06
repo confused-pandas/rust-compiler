@@ -23,7 +23,10 @@ tokens{
 	OR;
 	AND;
 	CSTE_ENT;
-	
+	DOT;
+	INDEX;
+	FUNCTION_CALL;
+	PARAMS;
 }
 
 fichier
@@ -69,7 +72,7 @@ bloc
 instruction_bloc
 	:
 	  instruction instruction_bloc
-	| (expr)? (';' instruction_bloc)?
+	| (expr)? (';' instruction_bloc)? -> expr? instruction_bloc?
 	;
 
 instruction
@@ -101,73 +104,85 @@ expr
 
 dot_factorisation
 	:
-	  IDF
-	| 'len' '(' ')'
+	  IDF -> IDF
+	| 'len' '(' ')' -> 'len'
 	;
 
 expr_ou
 	:
-	(e1=expr_et -> $e1) ('||' e2=expr_ou -> ^(OR $e1 $e2 ))*
+	(e1=expr_et -> $e1) ('||' e2=expr_et -> ^(OR $e2 $expr_ou))*
 	;
 
 expr_et
 	:
-	(e1=expr_comp -> $e1) ('&&' e2=expr_comp -> ^(AND $e1 $e2))*
+	(e1=expr_comp -> $e1) ('&&' e2=expr_comp -> ^(AND $e2 $expr_et))*
 	;
 
 expr_comp 
 	:
 	 (e1 = expr_plus -> $e1)
-	(op='<' e2 = expr_plus -> ^($op $expr_comp $e2)
-	|op='<=' e2 = expr_plus -> ^($op $expr_comp $e2)
-	|op= '>' e2 = expr_plus -> ^($op $expr_comp $e2)
-	|op='>=' e2 = expr_plus -> ^($op $expr_comp $e2)
-	|op='==' e2 = expr_plus  -> ^($op $expr_comp $e2)
-	|op='!=' e2 = expr_plus  -> ^($op $expr_comp $e2)
+	(op='<' e2 = expr_plus -> ^($op $e2 $expr_comp)
+	|op='<=' e2 = expr_plus -> ^($op $e2 $expr_comp)
+	|op= '>' e2 = expr_plus -> ^($op $e2 $expr_comp)
+	|op='>=' e2 = expr_plus -> ^($op $e2 $expr_comp)
+	|op='==' e2 = expr_plus  -> ^($op $e2 $expr_comp)
+	|op='!=' e2 = expr_plus  -> ^($op $e2 $expr_comp)
 	)*
 	;
 	
 expr_plus 
 	:
 	(e1=expr_mult -> $e1)
-	('+' e2=expr_mult -> ^('+' $expr_plus $e2)
-	| '-' e2=expr_mult -> ^('-' $expr_plus $e2)
+	('+' e2=expr_mult -> ^('+' $e2 $expr_plus)
+	| '-' e2=expr_mult -> ^('-' $e2 $expr_plus)
 	)*
 	;
 	
 expr_mult
 	:
 	(e1=expr_unaire -> $e1)
-	(op='*' e2=expr_unaire -> ^($op $expr_mult $e2) 
-	| op = '/' e2=expr_unaire -> ^($op $expr_mult $e2)
+	(op='*' e2=expr_unaire -> ^($op $e2 $expr_mult) 
+	| op = '/' e2=expr_unaire -> ^($op $e2 $expr_mult)
 	)*
 	;
 
 expr_unaire
 	:
-	('-' | '!' | '*' | '&')* atom
+	  (op='-' | op='!' | op='*' | op='&') expr_unaire -> ^($op ^(expr_unaire))
+	| expr_atom
 	;
 
-atom
+
+expr_atom
 	:
+	atom
 	(
-		 CSTE_ENT  
-		| CSTE_STR
-		| 'true'
-		| 'false'
-		| IDF ('(' (expr (',' expr)*)?')')?
-		| '(' expr ')'
-		| ('Vec'|'vec') '!' '[' (expr (',' expr)*)? ']'
-		| 'print' '!' '(' expr ')'
-	)
-	(
-		 '[' expr ']'
+		 '[' expr ']'// -> ^(INDEX ^(expr))
 	)*
 	(
 		'.' dot_factorisation
 	)*
 	;
 
+atom
+	:
+	  CSTE_ENT
+	| CSTE_STR
+	| 'true'
+	| 'false'
+	|
+	  { 
+	 	boolean isFunctionCall = false;
+	 	boolean hasParams = false;
+	  }
+	  IDF ('(' (expr (',' expr)* { hasParams = true; })?')' { isFunctionCall = true; })?
+	  -> {isFunctionCall && hasParams}? -> ^(FUNCTION_CALL IDF ^(PARAMS expr*))
+	  -> {isFunctionCall}? ^(FUNCTION_CALL IDF)
+	  -> IDF
+	| '(' expr ')' -> expr
+	| ('Vec'|'vec') '!' '[' (expr (',' expr)*)? ']'
+	| 'print' '!' '(' expr ')' -> ^(PRINT expr)
+	;
 
 IDF : (LOWERCASE | UPPERCASE | '_') (LOWERCASE | UPPERCASE | DIGIT | '_')* ;
 CSTE_ENT : DIGIT+ ;
