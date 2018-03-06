@@ -176,7 +176,7 @@ atom
 	  -> {isFunctionCall}? ^(FUNCTION_CALL IDF params?)
 	  -> IDF
 	| '(' expr ')' -> expr
-	| ('Vec'|'vec') '!' '[' (expr (',' expr)*)? ']'
+	| 'Vec' '!' '[' (expr (',' expr)*)? ']'
 	| 'print' '!' '(' expr ')' -> ^(PRINT expr)
 	;
 
