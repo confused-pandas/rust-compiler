@@ -110,39 +110,39 @@ dot_factorisation
 
 expr_ou
 	:
-	(e1=expr_et -> $e1) ('||' e2=expr_et -> ^(OR $e2 $expr_ou))*
+	(e1=expr_et -> $e1) ('||' e2=expr_et -> ^(OR $expr_ou $e2))*
 	;
 
 expr_et
 	:
-	(e1=expr_comp -> $e1) ('&&' e2=expr_comp -> ^(AND $e2 $expr_et))*
+	(e1=expr_comp -> $e1) ('&&' e2=expr_comp -> ^(AND $expr_et $e2))*
 	;
 
 expr_comp 
 	:
 	 (e1 = expr_plus -> $e1)
-	(op='<' e2 = expr_plus -> ^($op $e2 $expr_comp)
-	|op='<=' e2 = expr_plus -> ^($op $e2 $expr_comp)
-	|op= '>' e2 = expr_plus -> ^($op $e2 $expr_comp)
-	|op='>=' e2 = expr_plus -> ^($op $e2 $expr_comp)
-	|op='==' e2 = expr_plus  -> ^($op $e2 $expr_comp)
-	|op='!=' e2 = expr_plus  -> ^($op $e2 $expr_comp)
+	(op='<' e2 = expr_plus -> ^($op $expr_comp $e2)
+	|op='<=' e2 = expr_plus -> ^($op $expr_comp $e2)
+	|op= '>' e2 = expr_plus -> ^($op $expr_comp $e2)
+	|op='>=' e2 = expr_plus -> ^($op $expr_comp $e2)
+	|op='==' e2 = expr_plus  -> ^($op $expr_comp $e2)
+	|op='!=' e2 = expr_plus  -> ^($op $expr_comp $e2)
 	)*
 	;
 	
 expr_plus 
 	:
 	(e1=expr_mult -> $e1)
-	('+' e2=expr_mult -> ^('+' $e2 $expr_plus)
-	| '-' e2=expr_mult -> ^('-' $e2 $expr_plus)
+	('+' e2=expr_mult -> ^('+' $expr_plus $e2)
+	| '-' e2=expr_mult -> ^('-' $expr_plus $e2)
 	)*
 	;
 	
 expr_mult
 	:
 	(e1=expr_unaire -> $e1)
-	(op='*' e2=expr_unaire -> ^($op $e2 $expr_mult) 
-	| op = '/' e2=expr_unaire -> ^($op $e2 $expr_mult)
+	(op='*' e2=expr_unaire -> ^($op $expr_mult $e2) 
+	| op = '/' e2=expr_unaire -> ^($op $expr_mult $e2)
 	)*
 	;
 
@@ -176,7 +176,7 @@ atom
 	  -> {isFunctionCall}? ^(FUNCTION_CALL IDF params?)
 	  -> IDF
 	| '(' expr ')' -> expr
-	| 'Vec' '!' '[' (expr (',' expr)*)? ']'
+	| ('Vec'|'vec') '!' '[' (expr (',' expr)*)? ']'
 	| 'print' '!' '(' expr ')' -> ^(PRINT expr)
 	;
 
