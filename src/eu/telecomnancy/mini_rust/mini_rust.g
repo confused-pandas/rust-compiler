@@ -31,6 +31,7 @@ tokens{
 	MOINS_UNITAIRE;
 	OBJ;
 	M;
+	VEC_MACRO;
 }
 
 fichier
@@ -163,19 +164,7 @@ expr_unaire
 	:
 	  (op='-') expr_unaire -> ^(MOINS_UNITAIRE ^(expr_unaire))
 	| (op='!' | op='*' | op='&') expr_unaire -> ^($op ^(expr_unaire))
-	| expr_atom
-	;
-
-
-expr_atom
-	:
-	atom
-	(
-		 '[' expr ']'// -> ^(INDEX ^(expr))
-	)*
-	(
-		'.' dot_factorisation
-	)*
+	| (a=atom -> $a) ('[' expr ']' -> ^(INDEX $expr_unaire expr))* ('.' dot_factorisation -> ^('.' $expr_unaire dot_factorisation))*
 	;
 
 atom
@@ -190,7 +179,7 @@ atom
 	  -> {isFunctionCall}? ^(FUNCTION_CALL IDF params?)
 	  -> IDF
 	| '(' expr ')' -> expr
-	| ('Vec'|'vec') '!' '[' (expr (',' expr)*)? ']'
+	| 'vec' '!' '[' (e+=expr (',' e+=expr)*)? ']' -> ^(VEC_MACRO ($e)*)
 	| 'print' '!' '(' expr ')' -> ^(PRINT expr)
 	;
 
