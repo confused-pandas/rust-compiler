@@ -79,8 +79,7 @@ instruction_bloc
 
 instruction
 	:
-	  ';' ->
-	| 'let' ('mut')? expr ((op='=' -> $op) expr (obj_def)?)? ';' -> ^($op expr (expr obj_def?)?)?
+	  ('let' mut=('mut')? e1=expr -> ($mut)? $e1) (('=' e2=expr (obj_def)?)? ';' -> ^('=' $instruction $e2 (obj_def)?))
 	| 'while' expr bloc -> ^(WHILE expr bloc)
 	| 'return' (expr)? ';' -> ^(RETURN expr?)
 	| if_expr
@@ -93,8 +92,12 @@ obj_def
 
 if_expr
 	:
-	('if' expr bloc -> ^(IF expr bloc)) 
-	('else' (bloc | if_expr))? 
+	'if' expr bloc (else_expr)? -> ^(IF expr bloc (else_expr)?)
+	;
+
+else_expr
+	:
+	'else' (bloc -> ^(ELSE bloc) | if_expr -> ^(ELSE if_expr))
 	;
 
 expr
