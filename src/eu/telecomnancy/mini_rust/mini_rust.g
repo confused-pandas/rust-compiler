@@ -29,6 +29,8 @@ tokens{
 	FUNCTION_CALL;
 	PARAMS;
 	MOINS_UNITAIRE;
+	OBJ;
+	M;
 }
 
 fichier
@@ -49,7 +51,7 @@ decl_func
 
 decl_struct
 	:
-	'struct' idf=IDF '{' (i+=IDF ':' t+=type (',' i+=IDF ':' t+=type)*)? '}' -> ^(DECL_STRUCT $idf ($i $t)*)
+	'struct' idf=IDF '{' (i+=IDF ':' t+=type (',' i+=IDF ':' t+=type)*)? '}' -> ^(DECL_STRUCT $idf ^(M $i $t)*)
 	;
 
 type
@@ -87,9 +89,14 @@ instruction
 
 obj_def
 	:
-	'{' (IDF ':' expr (obj_def)? (',' IDF ':' expr (obj_def)?)*)? '}'
+	'{' (i+=IDF ':' o+=obj_expr (',' i+=IDF ':' o+=obj_expr)*)? '}' -> ^(OBJ ^(M $i $o)*)
 	;
 
+obj_expr
+	:
+	expr (obj_def)?
+	;
+	
 if_expr
 	:
 	'if' expr bloc (else_expr)? -> ^(IF expr bloc (else_expr)?)
