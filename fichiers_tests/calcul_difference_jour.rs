@@ -21,7 +21,7 @@ fn nb_jour_total (jour : i32, mois : i32, annee : i32) -> i32 {
 	/* on calcul il y a de jours entre le debut de l'annee et le jour choisi*/
 	 let i = 0;
 	 let delta = 0;
-	 let Mois = Vec<i32>[31,28,31,30,31,30,31,31,30,31,30,31];
+	 let Mois = Vec[31,28,31,30,31,30,31,31,30,31,30,31];
 
 	 if jour > Mois[mois] || jour < 1 {
 	 	print!("erreur le numero du jour est incorrect")

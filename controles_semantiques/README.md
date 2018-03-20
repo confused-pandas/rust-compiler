@@ -48,7 +48,7 @@ Damien :
 - Vérifier que la variable existe avant de l'asigner
 - unicité nom variable
 - unicité élément structure
-- assigner les typages
+- assigner les typages (+ faut vérifier si le typage existe bien dans la table des symboles)
 - retour typage fonction
 - nombre de paramètres fonction
 - initiation typage structure
@@ -66,4 +66,6 @@ Damien :
 - portée des variables
 - après comparaison booléen
 - Vec! expression du même type
+- pas d'argument pour main (?)
+
 
