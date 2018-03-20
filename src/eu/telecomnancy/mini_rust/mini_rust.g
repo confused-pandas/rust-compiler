@@ -11,6 +11,7 @@ tokens{
 	DECL_FUNC;
 	DECL_STRUCT;
 	TYPE;
+	ARGUMENTS;
 	ARGUMENT;
 	BLOC;
 	FUNC_CALL;
@@ -74,6 +75,14 @@ tokens{
 	ARROW = '->';
 }
 
+@header {
+	package eu.telecomnancy.mini_rust;
+}
+
+@lexer::header {
+	package eu.telecomnancy.mini_rust;
+}
+
 fichier
 	:
 	(decl)* -> ^(FICHIER decl*)
@@ -87,12 +96,17 @@ decl
 
 decl_func
 	:
-	FN IDF LPAREN (argument (COMMA argument)*)? RPAREN (ARROW type)? bloc -> ^(DECL_FUNC IDF (argument)* (type)? bloc)
+	FN IDF LPAREN (arguments)? RPAREN (ARROW type)? bloc -> ^(DECL_FUNC IDF (arguments)? (type)? bloc)
 	;
 
 decl_struct
 	:
 	STRUCT idf=IDF LBRACKET (i+=IDF COLON t+=type (COMMA i+=IDF COLON t+=type)*)? RBRACKET -> ^(DECL_STRUCT $idf ^(MEMBER $i $t)*)
+	;
+
+arguments
+	:
+	argument (COMMA argument)* -> ^(ARGUMENTS argument*)
 	;
 
 type
@@ -111,7 +125,7 @@ argument
 
 bloc
 	:
-	LBRACKET instruction_bloc RBRACKET -> ^(BLOC instruction_bloc)
+	LBRACKET instruction_bloc RBRACKET -> ^(BLOC instruction_bloc?)
 	;
 
 instruction_bloc
@@ -129,6 +143,7 @@ instruction
 	| WHILE expr bloc -> ^(WHILE expr bloc)
 	| RETURN (expr)? SEMICOLON -> ^(RETURN expr?)
 	| if_expr
+	| bloc
 	;
 
 obj_def
@@ -153,10 +168,7 @@ else_expr
 
 expr
 	:
-	(
-		  bloc
-		| expr_ou
-	)
+	expr_ou
 	;
 
 dot_factorisation
