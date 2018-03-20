@@ -13,25 +13,65 @@ tokens{
 	TYPE;
 	ARGUMENT;
 	BLOC;
-	IF;
-	ELSE;
-	WHILE;
-	PRINT;
-	RETURN;
-	VEC;
 	FUNC_CALL;
-	COND;
-	OR;
-	AND;
 	CSTE_ENT;
-	DOT;
 	INDEX;
 	FUNCTION_CALL;
 	PARAMS;
 	MOINS_UNITAIRE;
 	OBJ;
-	M;
-	VEC_MACRO;
+	MEMBER;
+	LETMUT;
+	
+	LPAREN = '(';
+	RPAREN = ')';
+	LBRACKET = '{';
+	RBRACKET = '}';
+	LSQBRACKET = '[';
+	RSQBRACKET = ']';
+	
+	GT = '>';
+	GE = '>=';
+	LT = '<';
+	LE = '<=';
+	EQ = '==';
+	NE = '!=';
+	
+	AND = '&&';
+	OR = '||';
+	
+	PLUS = '+';
+	MINUS = '-';
+	DIV = '/';
+	STAR = '*';
+	EXCL = '!';
+	
+	ASSIGN = '=';
+	DOT = '.';
+	AMPS = '&';
+	LEN = 'len';
+	
+	LET = 'let';
+	MUT = 'mut';
+	FN = 'fn';
+	STRUCT = 'struct';
+	WHILE = 'while';
+	IF = 'if';
+	ELSE = 'else';
+	RETURN = 'return';
+	VEC_MACRO = 'vec';
+	PRINT_MACRO = 'print';
+	
+	VEC_TYPE = 'Vec';
+	INT32_TYPE = 'int32';
+	BOOL_TYPE = 'bool';
+	TRUE = 'true';
+	FALSE = 'false';
+	
+	COMMA = ',';
+	SEMICOLON = ';';
+	COLON = ':';
+	ARROW = '->';
 }
 
 fichier
@@ -47,50 +87,53 @@ decl
 
 decl_func
 	:
-	'fn' IDF '(' (argument (',' argument)*)? ')' ('->' type)? bloc -> ^(DECL_FUNC IDF (argument)* (type)? bloc)
+	FN IDF LPAREN (argument (COMMA argument)*)? RPAREN (ARROW type)? bloc -> ^(DECL_FUNC IDF (argument)* (type)? bloc)
 	;
 
 decl_struct
 	:
-	'struct' idf=IDF '{' (i+=IDF ':' t+=type (',' i+=IDF ':' t+=type)*)? '}' -> ^(DECL_STRUCT $idf ^(M $i $t)*)
+	STRUCT idf=IDF LBRACKET (i+=IDF COLON t+=type (COMMA i+=IDF COLON t+=type)*)? RBRACKET -> ^(DECL_STRUCT $idf ^(MEMBER $i $t)*)
 	;
 
 type
 	:
 	  IDF
-	| 'Vec' '<' type '>' -> ^(VEC type)
-	| '&' type 
-	| 'i32'
-	| 'bool'
+	| VEC_TYPE LT type GT -> ^(VEC_TYPE type)
+	| AMPS type 
+	| INT32_TYPE
+	| BOOL_TYPE
 	;
 
 argument
 	:
-	IDF ':' type -> ^(ARGUMENT IDF type)
+	IDF COLON type -> ^(ARGUMENT IDF type)
 	;
 
 bloc
 	:
-	'{' instruction_bloc '}' -> ^(BLOC instruction_bloc)
+	LBRACKET instruction_bloc RBRACKET -> ^(BLOC instruction_bloc)
 	;
 
 instruction_bloc
 	:
 	  instruction instruction_bloc
-	| (expr)? (';' instruction_bloc)? -> expr? instruction_bloc?
+	| (expr)? (SEMICOLON instruction_bloc)? -> expr? instruction_bloc?
 	;
 
 instruction
 	:
-	  ('let' mut=('mut')? e1=expr -> ($mut)? $e1) (('=' e2=expr (obj_def)?)? ';' -> ^('=' $instruction $e2 (obj_def)?))
-	| 'while' expr bloc -> ^(WHILE expr bloc)
-	| 'return' (expr)? ';' -> ^(RETURN expr?)
+	  { boolean isMut = false; }
+	  (LET (MUT { isMut = true; })? e1=expr) (ASSIGN e2=expr (obj_def)?)? SEMICOLON
+	  -> {isMut}? ^(LETMUT $e1 $e2? (obj_def)?)
+	  -> ^(LET $e1 $e2? (obj_def)?)
+	| WHILE expr bloc -> ^(WHILE expr bloc)
+	| RETURN (expr)? SEMICOLON -> ^(RETURN expr?)
 	| if_expr
 	;
 
 obj_def
 	:
-	'{' (i+=IDF ':' o+=obj_expr (',' i+=IDF ':' o+=obj_expr)*)? '}' -> ^(OBJ ^(M $i $o)*)
+	LBRACKET (i+=IDF COLON o+=obj_expr (COMMA i+=IDF COLON o+=obj_expr)*)? RBRACKET -> ^(OBJ ^(MEMBER $i $o)*)
 	;
 
 obj_expr
@@ -100,12 +143,12 @@ obj_expr
 	
 if_expr
 	:
-	'if' expr bloc (else_expr)? -> ^(IF expr bloc (else_expr)?)
+	IF expr bloc (else_expr)? -> ^(IF expr bloc (else_expr)?)
 	;
 
 else_expr
 	:
-	'else' (bloc -> ^(ELSE bloc) | if_expr -> ^(ELSE if_expr))
+	ELSE (bloc -> ^(ELSE bloc) | if_expr -> ^(ELSE if_expr))
 	;
 
 expr
@@ -119,73 +162,73 @@ expr
 dot_factorisation
 	:
 	  IDF -> IDF
-	| 'len' '(' ')' -> 'len'
+	| LEN LPAREN RPAREN -> LEN
 	;
 
 expr_ou
 	:
-	(e1=expr_et -> $e1) ('||' e2=expr_et -> ^(OR $expr_ou $e2))*
+	(e1=expr_et -> $e1) (OR e2=expr_et -> ^(OR $expr_ou $e2))*
 	;
 
 expr_et
 	:
-	(e1=expr_comp -> $e1) ('&&' e2=expr_comp -> ^(AND $expr_et $e2))*
+	(e1=expr_comp -> $e1) (AND e2=expr_comp -> ^(AND $expr_et $e2))*
 	;
 
 expr_comp 
 	:
 	 (e1 = expr_plus -> $e1)
-	(op='<' e2 = expr_plus -> ^($op $expr_comp $e2)
-	|op='<=' e2 = expr_plus -> ^($op $expr_comp $e2)
-	|op= '>' e2 = expr_plus -> ^($op $expr_comp $e2)
-	|op='>=' e2 = expr_plus -> ^($op $expr_comp $e2)
-	|op='==' e2 = expr_plus  -> ^($op $expr_comp $e2)
-	|op='!=' e2 = expr_plus  -> ^($op $expr_comp $e2)
+	(op=LT e2 = expr_plus -> ^($op $expr_comp $e2)
+	|op=LE e2 = expr_plus -> ^($op $expr_comp $e2)
+	|op= GT e2 = expr_plus -> ^($op $expr_comp $e2)
+	|op=GE e2 = expr_plus -> ^($op $expr_comp $e2)
+	|op=EQ e2 = expr_plus  -> ^($op $expr_comp $e2)
+	|op=NE e2 = expr_plus  -> ^($op $expr_comp $e2)
 	)*
 	;
 	
 expr_plus 
 	:
 	(e1=expr_mult -> $e1)
-	('+' e2=expr_mult -> ^('+' $expr_plus $e2)
-	| '-' e2=expr_mult -> ^('-' $expr_plus $e2)
+	(PLUS e2=expr_mult -> ^(PLUS $expr_plus $e2)
+	| MINUS e2=expr_mult -> ^(MINUS $expr_plus $e2)
 	)*
 	;
 	
 expr_mult
 	:
 	(e1=expr_unaire -> $e1)
-	(op='*' e2=expr_unaire -> ^($op $expr_mult $e2) 
-	| op = '/' e2=expr_unaire -> ^($op $expr_mult $e2)
+	(op=STAR e2=expr_unaire -> ^($op $expr_mult $e2) 
+	| op = DIV e2=expr_unaire -> ^($op $expr_mult $e2)
 	)*
 	;
 
 expr_unaire
 	:
-	  (op='-') expr_unaire -> ^(MOINS_UNITAIRE ^(expr_unaire))
-	| (op='!' | op='*' | op='&') expr_unaire -> ^($op ^(expr_unaire))
-	| (a=atom -> $a) ('[' expr ']' -> ^(INDEX $expr_unaire expr))* ('.' dot_factorisation -> ^('.' $expr_unaire dot_factorisation))*
+	  (op=MINUS) expr_unaire -> ^(MOINS_UNITAIRE ^(expr_unaire))
+	| (op=EXCL | op=STAR | op=AMPS) expr_unaire -> ^($op ^(expr_unaire))
+	| (a=atom -> $a) (LSQBRACKET expr RSQBRACKET -> ^(INDEX $expr_unaire expr))* (DOT dot_factorisation -> ^(DOT $expr_unaire dot_factorisation))*
 	;
 
 atom
 	:
 	  CSTE_ENT
 	| CSTE_STR
-	| 'true'
-	| 'false'
+	| TRUE
+	| FALSE
 	|
 	  { boolean isFunctionCall = false; }
-	  IDF ('(' (params)? ')' { isFunctionCall = true; })?
+	  IDF (LPAREN (params)? RPAREN { isFunctionCall = true; })?
 	  -> {isFunctionCall}? ^(FUNCTION_CALL IDF params?)
 	  -> IDF
-	| '(' expr ')' -> expr
-	| 'vec' '!' '[' (e+=expr (',' e+=expr)*)? ']' -> ^(VEC_MACRO ($e)*)
-	| 'print' '!' '(' expr ')' -> ^(PRINT expr)
+	| LPAREN expr RPAREN -> expr
+	| VEC_MACRO EXCL LSQBRACKET (e+=expr (COMMA e+=expr)*)? RSQBRACKET -> ^(VEC_MACRO ($e)*)
+	| PRINT_MACRO EXCL LPAREN expr RPAREN -> ^(PRINT_MACRO expr)
 	;
 
 params
 	:
-	(expr (',' expr)*) -> ^(PARAMS expr+)
+	(expr (COMMA expr)*) -> ^(PARAMS expr+)
 	;
 
 IDF : (LOWERCASE | UPPERCASE | '_') (LOWERCASE | UPPERCASE | DIGIT | '_')* ;
