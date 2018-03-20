@@ -15,6 +15,11 @@ public class TreeTraversal {
 
     private void traverse(CommonTree node) {
         if(node != null) {
+            if(node.getParent() == null) {
+                // TODO : TDS ROOT
+                System.out.println("Root");
+            }
+
             for(int i = 0; i < node.getChildCount(); i++) {
                 CommonTree child = (CommonTree)node.getChild(i);
 
@@ -43,8 +48,8 @@ public class TreeTraversal {
             CommonTree child = (CommonTree)function.getChild(i);
 
             switch (child.getType()) {
-                case mini_rustLexer.ARGUMENTS:
-                    exploreArguments(child);
+                case mini_rustLexer.ARGUMENT:
+                    exploreArgument(child);
                     break;
                 case mini_rustLexer.BLOC:
                     exploreBloc(child);
@@ -78,12 +83,6 @@ public class TreeTraversal {
         String type = structureMember.getChild(1).toString();
 
         System.out.println("Member : " + type + ":" + name);
-    }
-
-    private void exploreArguments(CommonTree arguments) {
-        for(int i = 0; i < arguments.getChildCount(); i++) {
-            exploreArgument((CommonTree)arguments.getChild(i));
-        }
     }
 
     private void exploreArgument(CommonTree argument) {

@@ -37,7 +37,6 @@ tokens{
 	LE = '<=';
 	EQ = '==';
 	NE = '!=';
-	
 	AND = '&&';
 	OR = '||';
 	
@@ -96,17 +95,12 @@ decl
 
 decl_func
 	:
-	FN IDF LPAREN (arguments)? RPAREN (ARROW type)? bloc -> ^(DECL_FUNC IDF (arguments)? (type)? bloc)
+	FN IDF LPAREN (argument (COMMA argument)*)? RPAREN (ARROW type)? bloc -> ^(DECL_FUNC IDF (argument)* (type)? bloc)
 	;
 
 decl_struct
 	:
 	STRUCT idf=IDF LBRACKET (i+=IDF COLON t+=type (COMMA i+=IDF COLON t+=type)*)? RBRACKET -> ^(DECL_STRUCT $idf ^(MEMBER $i $t)*)
-	;
-
-arguments
-	:
-	argument (COMMA argument)* -> ^(ARGUMENTS argument*)
 	;
 
 type
@@ -192,7 +186,7 @@ expr_comp
 	 (e1 = expr_plus -> $e1)
 	(op=LT e2 = expr_plus -> ^($op $expr_comp $e2)
 	|op=LE e2 = expr_plus -> ^($op $expr_comp $e2)
-	|op= GT e2 = expr_plus -> ^($op $expr_comp $e2)
+	|op=GT e2 = expr_plus -> ^($op $expr_comp $e2)
 	|op=GE e2 = expr_plus -> ^($op $expr_comp $e2)
 	|op=EQ e2 = expr_plus  -> ^($op $expr_comp $e2)
 	|op=NE e2 = expr_plus  -> ^($op $expr_comp $e2)
