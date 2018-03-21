@@ -241,7 +241,7 @@ IDF : (LOWERCASE | UPPERCASE | '_') (LOWERCASE | UPPERCASE | DIGIT | '_')* ;
 CSTE_ENT : DIGIT+ ;
 CSTE_STR : '"' .* '"' ;
 COMMENTS : '/*' .* '*/' { $channel = HIDDEN ; } ;
-WS : (' ' | '\r' | '\n') { $channel = HIDDEN ; } ;
+WS : (' ' | '\r' | '\n' | '\t') { $channel = HIDDEN ; } ;
 
 fragment LOWERCASE : 'a'..'z';
 fragment UPPERCASE : 'A'..'Z';
