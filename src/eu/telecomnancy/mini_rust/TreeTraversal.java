@@ -16,7 +16,6 @@ public class TreeTraversal {
     private void traverse(CommonTree node) {
         if(node != null) {
             if(node.getParent() == null) {
-                // TODO : TDS ROOT
                 System.out.println("Root");
             }
 
@@ -40,6 +39,7 @@ public class TreeTraversal {
     }
 
     private void exploreFunction(CommonTree function) {
+        System.out.println("---------");
         System.out.println("Function");
 
         this.exploreIDF((CommonTree)function.getChild(0));
@@ -62,6 +62,7 @@ public class TreeTraversal {
     }
 
     private void exploreStructure(CommonTree structure) {
+        System.out.println("---------");
         System.out.println("Structure");
 
         this.exploreIDF((CommonTree)structure.getChild(0));
@@ -80,6 +81,7 @@ public class TreeTraversal {
     }
 
     private void exploreStuctureMember(CommonTree structureMember) {
+        System.out.println("---------");
         System.out.println("Member");
 
         this.exploreIDF((CommonTree)structureMember.getChild(0));
@@ -91,6 +93,7 @@ public class TreeTraversal {
     }
 
     private void exploreArgument(CommonTree argument) {
+        System.out.println("---------");
         System.out.println("Argument");
 
         this.exploreIDF((CommonTree)argument.getChild(0));
@@ -98,6 +101,9 @@ public class TreeTraversal {
     }
 
     private void exploreBloc(CommonTree bloc) {
+        System.out.println("---------");
+        System.out.println("Bloc");
+
         for(int i = 0; i < bloc.getChildCount(); i++) {
             CommonTree child = (CommonTree)bloc.getChild(i);
 
@@ -114,21 +120,19 @@ public class TreeTraversal {
                 case mini_rustParser.RETURN:
                     this.exploreReturn(child);
                     break;
-                case mini_rustParser.PRINT_MACRO:
-                    this.explorePrintMacro(child);
-                    break;
                 case mini_rustParser.BLOC:
                     System.out.println("Anonymous block");
                     this.exploreBloc(child);
                     break;
                 default:
-                    System.out.println("Node not recognized : " + child.toString());
+                    this.exploreExpr(child);
                     break;
             }
         }
     }
 
     private void exploreLet(CommonTree let) {
+        System.out.println("---------");
         System.out.println("Let");
 
         this.exploreIDF((CommonTree)let.getChild(0));
@@ -144,13 +148,9 @@ public class TreeTraversal {
                     this.exploreFunctionCall(child);
                     break;
                 default:
-                    this.exploreValue(child);
+                    this.exploreExpr(child);
             }
         }
-    }
-
-    private void exploreValue(CommonTree value) {
-        System.out.println(value.toString());
     }
 
     private void exploreFunctionCall(CommonTree functionCall) {
@@ -166,19 +166,39 @@ public class TreeTraversal {
     }
 
     private void exploreWhile(CommonTree whileNode) {
+        System.out.println("---------");
+        System.out.println("While");
 
+        this.exploreExpr((CommonTree)whileNode.getChild(0));
+        this.exploreBloc((CommonTree)whileNode.getChild(1));
     }
 
     private void exploreReturn(CommonTree returnNode) {
+        System.out.println("---------");
+        System.out.println("Return");
 
+        if(returnNode.getChildCount() > 0) {
+            this.exploreExpr((CommonTree)returnNode.getChild(0));
+        }
     }
 
     private void explorePrintMacro(CommonTree printMacro) {
-
+        System.out.println("---------");
+        System.out.println("Print");
+        this.exploreExpr((CommonTree)printMacro.getChild(0));
     }
 
     private void exploreExpr(CommonTree expr) {
-        System.out.println("Expr : " + expr.toString());
+        System.out.println("---------");
+        System.out.println("Expr");
+
+        switch (expr.getType()) {
+            case mini_rustParser.PRINT_MACRO:
+                this.explorePrintMacro(expr);
+                break;
+            default:
+                System.out.println(expr.toString());
+        }
     }
 
     private void exploreType(CommonTree type) {
