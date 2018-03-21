@@ -82,7 +82,7 @@ public class TreeTraversal {
 
     private void exploreStuctureMember(CommonTree structureMember) {
         System.out.println("---------");
-        System.out.println("Member");
+        System.out.println("Member_Structure");
 
         this.exploreIDF((CommonTree)structureMember.getChild(0));
         this.exploreType((CommonTree)structureMember.getChild(1));
@@ -152,17 +152,43 @@ public class TreeTraversal {
             }
         }
     }
-
+    
+    
     private void exploreFunctionCall(CommonTree functionCall) {
-
+    	System.out.println("----------");
+    	System.out.println("Function_Call");
+    	
+    	this.exploreIDF((CommonTree)functionCall.getChild(0));
+    	for(int i = 1; i < functionCall.getChildCount(); i++) {	
+    		this.exploreParam((CommonTree)functionCall.getChild(i));
+    	}
+    	
+    }
+    
+    private void exploreParam(CommonTree param) {
+    	System.out.println("---------");
+    	System.out.println("Param");
+    	
+    	this.exploreExpr((CommonTree)param.getChild(0));
     }
 
     private void exploreObj(CommonTree obj) {
+    	System.out.println("---------");
+    	System.out.println("Obj");
 
+    	this.exploreMember((CommonTree)obj.getChild(0));
+    }
+    
+    private void exploreMember(CommonTree member) {
+    	System.out.println("---------");
+    	System.out.println("Member");
+    	
+    	this.exploreExpr((CommonTree)member.getChild(1));
     }
 
     private void exploreLetMut(CommonTree letmut) {
-
+    	System.out.println("---------");
+    	System.out.println("Letmut");
     }
 
     private void exploreWhile(CommonTree whileNode) {
