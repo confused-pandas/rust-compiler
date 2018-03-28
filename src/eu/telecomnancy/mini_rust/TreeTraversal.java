@@ -124,6 +124,8 @@ public class TreeTraversal {
                     System.out.println("Anonymous block");
                     this.exploreBloc(child);
                     break;
+                case mini_rustParser.IF:
+                	this.exploreIf(child);
                 default:
                     this.exploreExpr(child);
                     break;
@@ -208,6 +210,35 @@ public class TreeTraversal {
         }
     }
 
+    private void exploreIf(CommonTree ifNode) {
+    	System.out.println("---------");
+    	System.out.println("If");
+
+    	this.exploreExpr((CommonTree)ifNode.getChild(0));
+    	this.exploreBloc((CommonTree)ifNode.getChild(1));
+
+    	if(ifNode.getChildCount() > 1){
+    		this.exploreElse((CommonTree)ifNode.getChild(2));
+    	}
+    	
+    }
+
+    private void exploreElse(CommonTree elseNode){
+    	System.out.println("---------");
+    	System.out.println("Else");
+
+    	switch (elseNode.getChild(0).getType()){
+    		case mini_rustParser.IF:
+    			this.exploreIf((CommonTree)elseNode.getChild(0));
+    			break;
+    		case mini_rustParser.BLOC:
+    			this.exploreBloc((CommonTree)elseNode.getChild(0));
+    			break;
+    		default:
+    			System.out.println(elseNode.getChild(0).toString());
+    	}
+    }
+
     private void explorePrintMacro(CommonTree printMacro) {
         System.out.println("---------");
         System.out.println("Print");
@@ -222,6 +253,9 @@ public class TreeTraversal {
             case mini_rustParser.PRINT_MACRO:
                 this.explorePrintMacro(expr);
                 break;
+            case mini_rustParser.VEC_MACRO:
+            	//this.explorerVecMacro(expr);
+            	break;
             default:
                 System.out.println(expr.toString());
         }
