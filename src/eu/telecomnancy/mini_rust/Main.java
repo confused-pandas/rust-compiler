@@ -14,7 +14,7 @@ public class Main {
             CommonTree root = (CommonTree)ret.getTree();
 
             TreeTraversal traversal = new TreeTraversal(root);
-            traversal.traverse();
+            traversal.explore();
         } catch (RecognitionException e) {
             e.printStackTrace();
         }

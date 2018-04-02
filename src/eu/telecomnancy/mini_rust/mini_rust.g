@@ -96,7 +96,7 @@ decl
 
 decl_func
 	:
-	FN IDF LPAREN (argument (COMMA argument)*)? RPAREN (ARROW type)? bloc -> ^(DECL_FUNC IDF (argument)* (type)? bloc)
+	FN IDF LPAREN (argument (COMMA argument)*)? RPAREN (ARROW type)? bloc -> ^(DECL_FUNC IDF bloc (type)? (argument)*)
 	;
 
 decl_struct

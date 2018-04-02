@@ -1,4 +1,4 @@
-// $ANTLR 3.2 Sep 23, 2009 12:02:23 D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\mini_rust.g 2018-04-02 11:47:36
+// $ANTLR 3.2 Sep 23, 2009 12:02:23 D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\mini_rust.g 2018-04-02 13:26:46
 
 	package eu.telecomnancy.mini_rust;
 
@@ -303,7 +303,7 @@ public class mini_rustParser extends Parser {
     };
 
     // $ANTLR start "decl_func"
-    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\mini_rust.g:97:1: decl_func : FN IDF LPAREN ( argument ( COMMA argument )* )? RPAREN ( ARROW type )? bloc -> ^( DECL_FUNC IDF ( argument )* ( type )? bloc ) ;
+    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\mini_rust.g:97:1: decl_func : FN IDF LPAREN ( argument ( COMMA argument )* )? RPAREN ( ARROW type )? bloc -> ^( DECL_FUNC IDF bloc ( type )? ( argument )* ) ;
     public final mini_rustParser.decl_func_return decl_func() throws RecognitionException {
         mini_rustParser.decl_func_return retval = new mini_rustParser.decl_func_return();
         retval.start = input.LT(1);
@@ -341,7 +341,7 @@ public class mini_rustParser extends Parser {
         RewriteRuleSubtreeStream stream_bloc=new RewriteRuleSubtreeStream(adaptor,"rule bloc");
         RewriteRuleSubtreeStream stream_type=new RewriteRuleSubtreeStream(adaptor,"rule type");
         try {
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\mini_rust.g:98:2: ( FN IDF LPAREN ( argument ( COMMA argument )* )? RPAREN ( ARROW type )? bloc -> ^( DECL_FUNC IDF ( argument )* ( type )? bloc ) )
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\mini_rust.g:98:2: ( FN IDF LPAREN ( argument ( COMMA argument )* )? RPAREN ( ARROW type )? bloc -> ^( DECL_FUNC IDF bloc ( type )? ( argument )* ) )
             // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\mini_rust.g:99:2: FN IDF LPAREN ( argument ( COMMA argument )* )? RPAREN ( ARROW type )? bloc
             {
             FN4=(Token)match(input,FN,FOLLOW_FN_in_decl_func521);  
@@ -447,7 +447,7 @@ public class mini_rustParser extends Parser {
 
 
             // AST REWRITE
-            // elements: bloc, type, argument, IDF
+            // elements: argument, type, bloc, IDF
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -457,27 +457,27 @@ public class mini_rustParser extends Parser {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
             root_0 = (Object)adaptor.nil();
-            // 99:72: -> ^( DECL_FUNC IDF ( argument )* ( type )? bloc )
+            // 99:72: -> ^( DECL_FUNC IDF bloc ( type )? ( argument )* )
             {
-                // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\mini_rust.g:99:75: ^( DECL_FUNC IDF ( argument )* ( type )? bloc )
+                // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\mini_rust.g:99:75: ^( DECL_FUNC IDF bloc ( type )? ( argument )* )
                 {
                 Object root_1 = (Object)adaptor.nil();
                 root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(DECL_FUNC, "DECL_FUNC"), root_1);
 
                 adaptor.addChild(root_1, stream_IDF.nextNode());
-                // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\mini_rust.g:99:91: ( argument )*
-                while ( stream_argument.hasNext() ) {
-                    adaptor.addChild(root_1, stream_argument.nextTree());
-
-                }
-                stream_argument.reset();
-                // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\mini_rust.g:99:103: ( type )?
+                adaptor.addChild(root_1, stream_bloc.nextTree());
+                // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\mini_rust.g:99:96: ( type )?
                 if ( stream_type.hasNext() ) {
                     adaptor.addChild(root_1, stream_type.nextTree());
 
                 }
                 stream_type.reset();
-                adaptor.addChild(root_1, stream_bloc.nextTree());
+                // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\mini_rust.g:99:104: ( argument )*
+                while ( stream_argument.hasNext() ) {
+                    adaptor.addChild(root_1, stream_argument.nextTree());
+
+                }
+                stream_argument.reset();
 
                 adaptor.addChild(root_0, root_1);
                 }
@@ -643,7 +643,7 @@ public class mini_rustParser extends Parser {
 
 
             // AST REWRITE
-            // elements: i, idf, t
+            // elements: t, i, idf
             // token labels: idf
             // rule labels: retval
             // token list labels: i
@@ -664,7 +664,7 @@ public class mini_rustParser extends Parser {
 
                 adaptor.addChild(root_1, stream_idf.nextNode());
                 // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\mini_rust.g:104:111: ( ^( MEMBER $i $t) )*
-                while ( stream_i.hasNext()||stream_t.hasNext() ) {
+                while ( stream_t.hasNext()||stream_i.hasNext() ) {
                     // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\mini_rust.g:104:111: ^( MEMBER $i $t)
                     {
                     Object root_2 = (Object)adaptor.nil();
@@ -677,8 +677,8 @@ public class mini_rustParser extends Parser {
                     }
 
                 }
-                stream_i.reset();
                 stream_t.reset();
+                stream_i.reset();
 
                 adaptor.addChild(root_0, root_1);
                 }
@@ -1389,7 +1389,7 @@ public class mini_rustParser extends Parser {
 
 
                     // AST REWRITE
-                    // elements: WHILE, bloc, expr
+                    // elements: expr, WHILE, bloc
                     // token labels: 
                     // rule labels: retval
                     // token list labels: 
@@ -1615,7 +1615,7 @@ public class mini_rustParser extends Parser {
 
 
                     // AST REWRITE
-                    // elements: expr, let_assign
+                    // elements: let_assign, expr
                     // token labels: 
                     // rule labels: retval
                     // token list labels: 
@@ -2250,7 +2250,7 @@ public class mini_rustParser extends Parser {
 
 
             // AST REWRITE
-            // elements: IF, else_expr, expr, bloc
+            // elements: bloc, IF, else_expr, expr
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -2713,7 +2713,7 @@ public class mini_rustParser extends Parser {
 
 
             	    // AST REWRITE
-            	    // elements: expr_ou, OR, e2
+            	    // elements: OR, e2, expr_ou
             	    // token labels: 
             	    // rule labels: retval, e2
             	    // token list labels: 
@@ -2854,7 +2854,7 @@ public class mini_rustParser extends Parser {
 
 
             	    // AST REWRITE
-            	    // elements: expr_et, AND, e2
+            	    // elements: e2, AND, expr_et
             	    // token labels: 
             	    // rule labels: retval, e2
             	    // token list labels: 
@@ -3072,7 +3072,7 @@ public class mini_rustParser extends Parser {
 
 
             	    // AST REWRITE
-            	    // elements: e2, op, expr_comp
+            	    // elements: e2, expr_comp, op
             	    // token labels: op
             	    // rule labels: retval, e2
             	    // token list labels: 
@@ -3117,7 +3117,7 @@ public class mini_rustParser extends Parser {
 
 
             	    // AST REWRITE
-            	    // elements: expr_comp, op, e2
+            	    // elements: op, expr_comp, e2
             	    // token labels: op
             	    // rule labels: retval, e2
             	    // token list labels: 
@@ -3162,7 +3162,7 @@ public class mini_rustParser extends Parser {
 
 
             	    // AST REWRITE
-            	    // elements: e2, op, expr_comp
+            	    // elements: expr_comp, e2, op
             	    // token labels: op
             	    // rule labels: retval, e2
             	    // token list labels: 
@@ -3207,7 +3207,7 @@ public class mini_rustParser extends Parser {
 
 
             	    // AST REWRITE
-            	    // elements: expr_comp, op, e2
+            	    // elements: e2, op, expr_comp
             	    // token labels: op
             	    // rule labels: retval, e2
             	    // token list labels: 
@@ -3400,7 +3400,7 @@ public class mini_rustParser extends Parser {
 
 
             	    // AST REWRITE
-            	    // elements: expr_plus, PLUS, e2
+            	    // elements: expr_plus, e2, PLUS
             	    // token labels: 
             	    // rule labels: retval, e2
             	    // token list labels: 
@@ -3444,7 +3444,7 @@ public class mini_rustParser extends Parser {
 
 
             	    // AST REWRITE
-            	    // elements: MINUS, e2, expr_plus
+            	    // elements: e2, expr_plus, MINUS
             	    // token labels: 
             	    // rule labels: retval, e2
             	    // token list labels: 
@@ -4052,7 +4052,7 @@ public class mini_rustParser extends Parser {
 
 
                     	    // AST REWRITE
-                    	    // elements: DOT, expr_unaire, dot_factorisation
+                    	    // elements: expr_unaire, dot_factorisation, DOT
                     	    // token labels: 
                     	    // rule labels: retval
                     	    // token list labels: 
@@ -4334,7 +4334,7 @@ public class mini_rustParser extends Parser {
 
 
                     // AST REWRITE
-                    // elements: IDF, IDF, params
+                    // elements: params, IDF, IDF
                     // token labels: 
                     // rule labels: retval
                     // token list labels: 
@@ -4489,7 +4489,7 @@ public class mini_rustParser extends Parser {
 
 
                     // AST REWRITE
-                    // elements: VEC_MACRO, e
+                    // elements: e, VEC_MACRO
                     // token labels: 
                     // rule labels: retval
                     // token list labels: 
