@@ -174,18 +174,20 @@ public class TreeTraversal {
     	this.exploreExpr((CommonTree)param.getChild(0));
     }
 
+    // TODO explore obj
     private void exploreObj(CommonTree obj) {
     	System.out.println("---------");
     	System.out.println("Obj");
 
-    	this.exploreMember((CommonTree)obj.getChild(0));
+    	//this.exploreMember((CommonTree)obj.getChild(0));
     }
-    
+
+    // TODO explore objMember
     private void exploreMember(CommonTree member) {
     	System.out.println("---------");
     	System.out.println("Member");
-    	
-    	this.exploreExpr((CommonTree)member.getChild(1));
+
+    	//this.exploreExpr((CommonTree)member.getChild(1));
     }
 
     private void exploreLetMut(CommonTree letmut) {
@@ -217,7 +219,7 @@ public class TreeTraversal {
     	this.exploreExpr((CommonTree)ifNode.getChild(0));
     	this.exploreBloc((CommonTree)ifNode.getChild(1));
 
-    	if(ifNode.getChildCount() > 1){
+    	if(ifNode.getChildCount() > 2){
     		this.exploreElse((CommonTree)ifNode.getChild(2));
     	}
     	

@@ -23,7 +23,8 @@ tokens{
 	OBJ;
 	MEMBER;
 	LETMUT;
-	
+	MUL;
+
 	LPAREN = '(';
 	RPAREN = ')';
 	LBRACKET = '{';
@@ -130,24 +131,37 @@ instruction_bloc
 
 instruction
 	:
-	  { boolean isMut = false; }
-	  (LET (MUT { isMut = true; })? e1=expr) (ASSIGN e2=expr (obj_def)?)? SEMICOLON
-	  -> {isMut}? ^(LETMUT $e1 $e2? (obj_def)?)
-	  -> ^(LET $e1 $e2? (obj_def)?)
+	  LET instruction_let SEMICOLON -> instruction_let
 	| WHILE expr bloc -> ^(WHILE expr bloc)
 	| RETURN (expr)? SEMICOLON -> ^(RETURN expr?)
 	| if_expr
 	| bloc
 	;
 
+instruction_let
+	:
+	    MUT expr (let_assign)? -> ^(LETMUT expr (let_assign)?)
+	  | expr (let_assign)? -> ^(LET expr (let_assign)?)
+	;
+
+let_assign
+	:
+	ASSIGN expr 
+	(
+		-> expr
+		| obj_def -> ^(OBJ expr obj_def)
+	)
+	;
+	
 obj_def
 	:
-	LBRACKET (i+=IDF COLON o+=obj_expr (COMMA i+=IDF COLON o+=obj_expr)*)? RBRACKET -> ^(OBJ ^(MEMBER $i $o)*)
+	LBRACKET (i+=IDF COLON o+=obj_expr (COMMA i+=IDF COLON o+=obj_expr)*)? RBRACKET -> ^(MEMBER $i $o)*
 	;
 
 obj_expr
 	:
-	expr (obj_def)?
+	  IDF obj_def -> ^(OBJ IDF obj_def)
+	| expr -> expr
 	;
 	
 if_expr
@@ -183,13 +197,14 @@ expr_et
 
 expr_comp 
 	:
-	 (e1 = expr_plus -> $e1)
-	(op=LT e2 = expr_plus -> ^($op $expr_comp $e2)
-	|op=LE e2 = expr_plus -> ^($op $expr_comp $e2)
-	|op=GT e2 = expr_plus -> ^($op $expr_comp $e2)
-	|op=GE e2 = expr_plus -> ^($op $expr_comp $e2)
-	|op=EQ e2 = expr_plus  -> ^($op $expr_comp $e2)
-	|op=NE e2 = expr_plus  -> ^($op $expr_comp $e2)
+	(e1 = expr_plus -> $e1)
+	(
+		  op=LT e2=expr_plus -> ^($op $expr_comp $e2)
+		| op=LE e2=expr_plus -> ^($op $expr_comp $e2)
+		| op=GT e2=expr_plus -> ^($op $expr_comp $e2)
+		| op=GE e2=expr_plus -> ^($op $expr_comp $e2)
+		| op=EQ e2=expr_plus  -> ^($op $expr_comp $e2)
+		| op=NE e2=expr_plus  -> ^($op $expr_comp $e2)
 	)*
 	;
 	
@@ -204,8 +219,9 @@ expr_plus
 expr_mult
 	:
 	(e1=expr_unaire -> $e1)
-	(op=STAR e2=expr_unaire -> ^($op $expr_mult $e2) 
-	| op = DIV e2=expr_unaire -> ^($op $expr_mult $e2)
+	(
+		  op=MUL e2=expr_unaire -> ^($op $expr_mult $e2)
+		| op=DIV e2=expr_unaire -> ^($op $expr_mult $e2)
 	)*
 	;
 
