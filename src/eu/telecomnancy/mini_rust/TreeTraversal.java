@@ -1,12 +1,49 @@
 package eu.telecomnancy.mini_rust;
 
+import eu.telecomnancy.mini_rust.TDS.*;
 import org.antlr.runtime.tree.CommonTree;
 
 public class TreeTraversal {
     private final CommonTree root;
+    private TDSBuilder tdsBuilder;
+    private TDS TDSGlobal;
 
     public TreeTraversal(final CommonTree root) {
         this.root = root;
+    }
+
+    private boolean isUnaryOp(CommonTree expr) {
+        switch (expr.getType()) {
+            case mini_rustParser.UNARY_MINUS:
+            case mini_rustParser.NEG:
+            case mini_rustParser.POINTER:
+            case mini_rustParser.REF:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private boolean isBinaryOp(CommonTree expr) {
+        switch (expr.getType()) {
+            case mini_rustParser.OR:
+            case mini_rustParser.AND:
+            case mini_rustParser.LT:
+            case mini_rustParser.LE:
+            case mini_rustParser.GT:
+            case mini_rustParser.GE:
+            case mini_rustParser.EQ:
+            case mini_rustParser.NE:
+            case mini_rustParser.PLUS:
+            case mini_rustParser.MINUS:
+            case mini_rustParser.MUL:
+            case mini_rustParser.DIV:
+            case mini_rustParser.DOT:
+            case mini_rustParser.INDEX:
+                return true;
+            default:
+                return false;
+        }
     }
 
     public void traverse() {
@@ -26,10 +63,11 @@ public class TreeTraversal {
     }
 
     public void explore() {
-        this.exploreRoot(this.root);
+        this.tdsBuilder = new TDSBuilder();
+        this.explore(this.root);
     }
 
-    private void exploreRoot(CommonTree node) {
+    private void explore(CommonTree node) {
         if(node != null) {
             if(node.getParent() == null && node.getType() == mini_rustParser.FICHIER) {
                 this.exploreFichier(node);
@@ -57,6 +95,14 @@ public class TreeTraversal {
          * 	        - DECL_STRUCT
          */
 
+        /*
+         * Création de la TDS Globale
+         * Un pushTDS est toujours suivi d'un popTDS (à appeler quand
+         * il n'y a plus d'opération à faire sur la TDS, généralement
+         * à la fin d'une fonction explore)
+         */
+        this.TDSGlobal = this.tdsBuilder.pushTDS();
+
         for(int i = 0; i < fichier.getChildCount(); i++) {
             CommonTree child = (CommonTree)fichier.getChild(i);
 
@@ -72,6 +118,8 @@ public class TreeTraversal {
                     break;
             }
         }
+
+        this.TDSGlobal = this.tdsBuilder.popTDS();
     }
 
     private void exploreFunction(CommonTree function) {
@@ -87,8 +135,23 @@ public class TreeTraversal {
         System.out.println("---------");
         System.out.println("Function");
 
-        this.exploreIDF((CommonTree)function.getChild(0));
-        this.exploreBloc((CommonTree)function.getChild(1));
+        // Récupération de l'identifiant de la fonction
+        String idf = this.exploreIDF((CommonTree)function.getChild(0));
+        // Création d'un symbole fonction
+        FunctionSymbol functionSymbol = new FunctionSymbol(function);
+
+        // Ajout du symbole à la TDS courante (ici en miniruste,
+        // le symbole est ajouté à la TDS globale car une fonction
+        // ne peut être déclarée que dans le scope global
+        this.tdsBuilder.getCurrentTDS().addSymbol(functionSymbol);
+
+        // Création d'une TDS pour la fonction pour stocker ses
+        // paramètres et les symboles de son bloc
+        TDS tds = this.tdsBuilder.pushTDS();
+
+        // Création du lien entre le symbole fonction et sa TDS
+        functionSymbol.setTDS(tds);
+        functionSymbol.setName(idf);
 
         if(function.getChildCount() > 2) {
             CommonTree thirdChild = (CommonTree)function.getChild(2);
@@ -96,8 +159,10 @@ public class TreeTraversal {
 
             // Si c'est le type retour, on incrémente l'index du début des arguments
             if(thirdChild.getType() != mini_rustParser.ARGUMENT) {
-                this.exploreType(thirdChild);
+                Type returnType = this.exploreType(thirdChild);
                 argumentsStartIndex += 1;
+
+                functionSymbol.setReturnType(returnType);
             }
 
             // S'il y'a des arguments
@@ -114,6 +179,17 @@ public class TreeTraversal {
                 }
             }
         }
+
+        // exploreBloc est appelé après l'ajout du symbole fonction
+        // à la TDS globale et de ses arguments, en effet dans le
+        // bloc on peut utiliser les arguments de la fonction (il faut
+        // donc qu'ils soient défini dans la TDS pour pouvoir les utiliser
+        // dans le bloc). Il faut aussi que le symbole fonction soit
+        // ajouté à la TDS globale avant l'appel d'exploreBloc, le bloc
+        // peut faire un appel récursif.
+        this.exploreBloc((CommonTree)function.getChild(1), false);
+
+        this.tdsBuilder.popTDS();
     }
 
     private void exploreStructure(CommonTree structure) {
@@ -158,8 +234,27 @@ public class TreeTraversal {
         this.exploreType((CommonTree)structureMember.getChild(1));
     }
 
-    private void exploreIDF(CommonTree idf) {
-        System.out.println("IDF : " + idf.toString());
+    private Type exploreType(CommonTree typeNode) {
+        /*
+         * type
+         * 	:
+         * 	  IDF
+         * 	| VEC_TYPE LT type GT -> ^(VEC_TYPE type)
+         * 	| AMPS type
+         * 	| INT32_TYPE
+         * 	| BOOL_TYPE
+         * 	;
+         */
+
+        switch (typeNode.getType()) {
+            case mini_rustParser.VEC_TYPE:
+                return new Type(this.exploreType((CommonTree)typeNode.getChild(0)));
+            default:
+                String type = typeNode.getText();
+                System.out.println("Type : " + type);
+
+                return new Type(typeNode.getText());
+        }
     }
 
     private void exploreArgument(CommonTree argument) {
@@ -172,11 +267,28 @@ public class TreeTraversal {
         System.out.println("---------");
         System.out.println("Argument");
 
-        this.exploreIDF((CommonTree)argument.getChild(0));
-        this.exploreType((CommonTree)argument.getChild(1));
+        String idf = this.exploreIDF((CommonTree)argument.getChild(0));
+        Type type = this.exploreType((CommonTree)argument.getChild(1));
+
+        // Création d'un symbole variable
+        VarSymbol varSymbol = new VarSymbol(argument);
+        varSymbol.setName(idf);
+        varSymbol.setType(type);
+        // Le scope de cette variable est un argument
+        // de fonction
+        varSymbol.setScope(Scope.ARGUMENT);
+
+        // Ajout du symbole à la TDS courante (ici en Minirust,
+        // la TDS courante quand on est dans la fonction
+        // exploreArgument est la TDS de la fonction)
+        this.tdsBuilder.getCurrentTDS().addSymbol(varSymbol);
     }
 
     private void exploreBloc(CommonTree bloc) {
+        this.exploreBloc(bloc, true);
+    }
+
+    private void exploreBloc(CommonTree bloc, boolean createTDS) {
         /*
          * ^(BLOC instruction_bloc?)
          *
@@ -224,6 +336,10 @@ public class TreeTraversal {
         System.out.println("---------");
         System.out.println("Bloc");
 
+        if(createTDS) {
+            this.tdsBuilder.pushTDS();
+        }
+
         for(int i = 0; i < bloc.getChildCount(); i++) {
             CommonTree child = (CommonTree)bloc.getChild(i);
 
@@ -249,13 +365,16 @@ public class TreeTraversal {
                     this.exploreIf(child);
                     break;
                 case mini_rustParser.BLOC:
-                    System.out.println("Anonymous block");
-                    this.exploreBloc(child);
+                    this.exploreBloc(child, true);
                     break;
                 default:
                     this.exploreExpr(child);
                     break;
             }
+        }
+
+        if(createTDS) {
+            this.tdsBuilder.popTDS();
         }
     }
 
@@ -330,11 +449,11 @@ public class TreeTraversal {
     	System.out.println("---------");
     	System.out.println("Obj");
 
-    	//this.exploreMember((CommonTree)obj.getChild(0));
+    	//this.exploreObjMember((CommonTree)obj.getChild(0));
     }
 
     // TODO explore objMember
-    private void exploreMember(CommonTree member) {
+    private void exploreObjMember(CommonTree member) {
     	System.out.println("---------");
     	System.out.println("Member");
 
@@ -427,7 +546,10 @@ public class TreeTraversal {
         }
     }
 
-    private void exploreType(CommonTree type) {
-        System.out.println("Type : " + type.toString());
+    private String exploreIDF(CommonTree idfNode) {
+        String idf = idfNode.getText();
+        System.out.println("IDF : " + idf);
+
+        return idf;
     }
 }
