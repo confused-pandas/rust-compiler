@@ -322,7 +322,7 @@ public class TreeTraversal {
     	System.out.println("---------");
     	System.out.println("Param");
     	
-    	this.exploreExpr((CommonTree)param.getChild(0));
+    	this.exploreExpr(param);
     }
 
     // TODO explore obj

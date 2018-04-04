@@ -19,11 +19,14 @@ tokens{
 	INDEX;
 	FUNCTION_CALL;
 	PARAMS;
-	MOINS_UNITAIRE;
+	UNARY_MINUS;
 	OBJ;
 	MEMBER;
 	LETMUT;
 	MUL;
+	NEG;
+	POINTER;
+	REF;
 
 	LPAREN = '(';
 	RPAREN = ')';
@@ -31,7 +34,7 @@ tokens{
 	RBRACKET = '}';
 	LSQBRACKET = '[';
 	RSQBRACKET = ']';
-	
+
 	GT = '>';
 	GE = '>=';
 	LT = '<';
@@ -40,18 +43,18 @@ tokens{
 	NE = '!=';
 	AND = '&&';
 	OR = '||';
-	
+
 	PLUS = '+';
 	MINUS = '-';
 	DIV = '/';
 	STAR = '*';
 	EXCL = '!';
-	
+
 	ASSIGN = '=';
 	DOT = '.';
 	AMPS = '&';
 	LEN = 'len';
-	
+
 	LET = 'let';
 	MUT = 'mut';
 	FN = 'fn';
@@ -62,13 +65,13 @@ tokens{
 	RETURN = 'return';
 	VEC_MACRO = 'vec';
 	PRINT_MACRO = 'print';
-	
+
 	VEC_TYPE = 'Vec';
 	INT32_TYPE = 'int32';
 	BOOL_TYPE = 'bool';
 	TRUE = 'true';
 	FALSE = 'false';
-	
+
 	COMMA = ',';
 	SEMICOLON = ';';
 	COLON = ':';
@@ -108,7 +111,7 @@ type
 	:
 	  IDF
 	| VEC_TYPE LT type GT -> ^(VEC_TYPE type)
-	| AMPS type 
+	| AMPS type
 	| INT32_TYPE
 	| BOOL_TYPE
 	;
@@ -140,19 +143,10 @@ instruction
 
 instruction_let
 	:
-	    MUT expr (let_assign)? -> ^(LETMUT expr (let_assign)?)
-	  | expr (let_assign)? -> ^(LET expr (let_assign)?)
+	  MUT expr (ASSIGN obj_expr)? -> ^(LETMUT expr (obj_expr)?)
+	| expr (ASSIGN obj_expr)? -> ^(LET expr (obj_expr)?)
 	;
 
-let_assign
-	:
-	ASSIGN expr 
-	(
-		-> expr
-		| obj_def -> ^(OBJ expr obj_def)
-	)
-	;
-	
 obj_def
 	:
 	LBRACKET (i+=IDF COLON o+=obj_expr (COMMA i+=IDF COLON o+=obj_expr)*)? RBRACKET -> ^(MEMBER $i $o)*
@@ -160,10 +154,13 @@ obj_def
 
 obj_expr
 	:
-	  IDF obj_def -> ^(OBJ IDF obj_def)
-	| expr -> expr
+	  expr
+	  (
+	  	  -> expr
+	  	| obj_def -> ^(OBJ expr obj_def)
+	  )
 	;
-	
+
 if_expr
 	:
 	IF expr bloc (else_expr)? -> ^(IF expr bloc (else_expr)?)
@@ -195,41 +192,48 @@ expr_et
 	(e1=expr_comp -> $e1) (AND e2=expr_comp -> ^(AND $expr_et $e2))*
 	;
 
-expr_comp 
+expr_comp
 	:
 	(e1 = expr_plus -> $e1)
 	(
-		  op=LT e2=expr_plus -> ^($op $expr_comp $e2)
-		| op=LE e2=expr_plus -> ^($op $expr_comp $e2)
-		| op=GT e2=expr_plus -> ^($op $expr_comp $e2)
-		| op=GE e2=expr_plus -> ^($op $expr_comp $e2)
-		| op=EQ e2=expr_plus  -> ^($op $expr_comp $e2)
-		| op=NE e2=expr_plus  -> ^($op $expr_comp $e2)
+		  LT e2=expr_plus -> ^(LT $expr_comp $e2)
+		| LE e2=expr_plus -> ^(LE $expr_comp $e2)
+		| GT e2=expr_plus -> ^(GT $expr_comp $e2)
+		| GE e2=expr_plus -> ^(GE $expr_comp $e2)
+		| EQ e2=expr_plus  -> ^(EQ $expr_comp $e2)
+		| NE e2=expr_plus  -> ^(NE $expr_comp $e2)
 	)*
 	;
-	
-expr_plus 
+
+expr_plus
 	:
 	(e1=expr_mult -> $e1)
-	(PLUS e2=expr_mult -> ^(PLUS $expr_plus $e2)
-	| MINUS e2=expr_mult -> ^(MINUS $expr_plus $e2)
+	(
+	      PLUS e2=expr_mult -> ^(PLUS $expr_plus $e2)
+	    | MINUS e2=expr_mult -> ^(MINUS $expr_plus $e2)
 	)*
 	;
-	
+
 expr_mult
 	:
 	(e1=expr_unaire -> $e1)
 	(
-		  op=MUL e2=expr_unaire -> ^($op $expr_mult $e2)
-		| op=DIV e2=expr_unaire -> ^($op $expr_mult $e2)
+		  STAR e2=expr_unaire -> ^(MUL $expr_mult $e2)
+		| DIV e2=expr_unaire -> ^(DIV $expr_mult $e2)
 	)*
 	;
 
 expr_unaire
 	:
-	  (op=MINUS) expr_unaire -> ^(MOINS_UNITAIRE ^(expr_unaire))
-	| (op=EXCL | op=STAR | op=AMPS) expr_unaire -> ^($op ^(expr_unaire))
-	| (a=atom -> $a) (LSQBRACKET expr RSQBRACKET -> ^(INDEX $expr_unaire expr))* (DOT dot_factorisation -> ^(DOT $expr_unaire dot_factorisation))*
+	  MINUS expr_unaire -> ^(UNARY_MINUS expr_unaire)
+	| (
+	      EXCL expr_unaire -> ^(NEG expr_unaire)
+	    | STAR expr_unaire -> ^(POINTER expr_unaire)
+	    | AMPS expr_unaire -> ^(REF expr_unaire)
+	  )
+	| (a=atom -> $a)
+	  (LSQBRACKET expr RSQBRACKET -> ^(INDEX $expr_unaire expr))*
+	  (DOT dot_factorisation -> ^(DOT $expr_unaire dot_factorisation))*
 	;
 
 atom
@@ -238,19 +242,14 @@ atom
 	| CSTE_STR
 	| TRUE
 	| FALSE
-	|
-	  { boolean isFunctionCall = false; }
-	  IDF (LPAREN (params)? RPAREN { isFunctionCall = true; })?
-	  -> {isFunctionCall}? ^(FUNCTION_CALL IDF params?)
-	  -> IDF
+	| IDF
+	    (
+	          -> IDF
+	        | LPAREN (expr (COMMA expr)*)? RPAREN -> ^(FUNCTION_CALL IDF expr*)
+	    )
 	| LPAREN expr RPAREN -> expr
 	| VEC_MACRO EXCL LSQBRACKET (e+=expr (COMMA e+=expr)*)? RSQBRACKET -> ^(VEC_MACRO ($e)*)
 	| PRINT_MACRO EXCL LPAREN expr RPAREN -> ^(PRINT_MACRO expr)
-	;
-
-params
-	:
-	(expr (COMMA expr)*) -> ^(PARAMS expr+)
 	;
 
 IDF : (LOWERCASE | UPPERCASE | '_') (LOWERCASE | UPPERCASE | DIGIT | '_')* ;
