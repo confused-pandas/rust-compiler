@@ -119,7 +119,7 @@ public class TreeTraversal {
             }
         }
 
-        this.TDSGlobal = this.tdsBuilder.popTDS();
+        this.tdsBuilder.popTDS();
     }
 
     private void exploreFunction(CommonTree function) {
@@ -401,6 +401,8 @@ public class TreeTraversal {
          *
          */
 
+
+
         System.out.println("---------");
 
         if(isMutable) {
@@ -410,7 +412,13 @@ public class TreeTraversal {
             System.out.println("Let");
         }
 
-        this.exploreExpr((CommonTree)let.getChild(0));
+        ExprEnum res_enum= this.exploreExpr((CommonTree)let.getChild(0));
+        if(res_enum == ExprEnum.IDF) {
+            VarSymbol varSymbol = new VarSymbol(let);
+            varSymbol.setName(let.getChild(0).getText());
+            varSymbol.setScope(Scope.LOCAL);
+            this.tdsBuilder.getCurrentTDS().addSymbol(varSymbol);
+        }
 
         if(let.getChildCount() > 1) {
             CommonTree child = (CommonTree)let.getChild(1);
@@ -527,23 +535,36 @@ public class TreeTraversal {
         this.exploreExpr((CommonTree)printMacro.getChild(0));
     }
 
-    private void exploreExpr(CommonTree expr) {
+    private ExprEnum exploreExpr(CommonTree expr) {
         System.out.println("---------");
         System.out.println("Expr");
 
-        switch (expr.getType()) {
-            case mini_rustParser.PRINT_MACRO:
-                this.explorePrintMacro(expr);
-                break;
-            case mini_rustParser.VEC_MACRO:
-            	//this.explorerVecMacro(expr);
-            	break;
-            case mini_rustParser.FUNCTION_CALL:
-                this.exploreFunctionCall(expr);
-                break;
-            default:
-                System.out.println(expr.toString());
+        ExprEnum res_enum;
+
+        if(this.isUnaryOp(expr)){
+            res_enum = ExprEnum.UNARY_OP;
+        } else if(this.isBinaryOp(expr)) {
+            res_enum = ExprEnum.BINARY_OP;
+        } else {
+            switch (expr.getType()) {
+                case mini_rustParser.PRINT_MACRO:
+                    this.explorePrintMacro(expr);
+                    res_enum = ExprEnum.PRINT_MACRO;
+                    break;
+                case mini_rustParser.VEC_MACRO:
+            	   //this.explorerVecMacro(expr);
+                    res_enum = ExprEnum.VEC_MACRO;
+                	break;
+                case mini_rustParser.FUNCTION_CALL:
+                    res_enum = ExprEnum.FUNCTION_CALL;
+                    this.exploreFunctionCall(expr);
+                    break;
+                default:
+                    System.out.println(expr.toString());
+                    res_enum = ExprEnum.IDF;
+            }
         }
+    return res_enum;
     }
 
     private String exploreIDF(CommonTree idfNode) {
