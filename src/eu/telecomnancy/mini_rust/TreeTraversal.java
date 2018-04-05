@@ -1,6 +1,8 @@
 package eu.telecomnancy.mini_rust;
 
 import eu.telecomnancy.mini_rust.TDS.*;
+import eu.telecomnancy.mini_rust.TDS.symbols.FunctionSymbol;
+import eu.telecomnancy.mini_rust.TDS.symbols.VarSymbol;
 import org.antlr.runtime.tree.CommonTree;
 
 public class TreeTraversal {
@@ -70,7 +72,7 @@ public class TreeTraversal {
     private void explore(CommonTree node) {
         if(node != null) {
             if(node.getParent() == null && node.getType() == mini_rustParser.FICHIER) {
-                this.exploreFichier(node);
+                this.exploreFile(node);
             }
             else {
                 System.err.println("[" + node.toString() + "] Unknown node : " + node.toString());
@@ -78,7 +80,7 @@ public class TreeTraversal {
         }
     }
 
-    private void exploreFichier(CommonTree fichier) {
+    private void exploreFile(CommonTree file) {
         /*
          * ^(FICHIER decl*)
          *
@@ -103,26 +105,31 @@ public class TreeTraversal {
          */
         this.TDSGlobal = this.tdsBuilder.pushTDS();
 
-        for(int i = 0; i < fichier.getChildCount(); i++) {
-            CommonTree child = (CommonTree)fichier.getChild(i);
-
-            switch (child.getType()) {
-                case mini_rustLexer.DECL_FUNC:
-                    exploreFunction(child);
-                    break;
-                case mini_rustLexer.DECL_STRUCT:
-                    exploreStructure(child);
-                    break;
-                default:
-                    System.err.println("[" + fichier.toString() + "] Unknown node : " + child.toString());
-                    break;
-            }
-        }
+        this.exploreFile(file, true);
+        this.exploreFile(file, false);
 
         this.tdsBuilder.popTDS();
     }
 
-    private void exploreFunction(CommonTree function) {
+    private void exploreFile(CommonTree file, boolean firstPass) {
+        for(int i = 0; i < file.getChildCount(); i++) {
+            CommonTree child = (CommonTree)file.getChild(i);
+
+            switch (child.getType()) {
+                case mini_rustLexer.DECL_FUNC:
+                    this.exploreFunction(child, firstPass);
+                    break;
+                case mini_rustLexer.DECL_STRUCT:
+                    this.exploreStructure(child);
+                    break;
+                default:
+                    System.err.println("[" + file.toString() + "] Unknown node : " + child.toString());
+                    break;
+            }
+        }
+    }
+
+    private void exploreFunction(CommonTree function, boolean firstPass) {
         /*
          * ^(DECL_FUNC IDF bloc (type)? (argument)*)
          * Une fonction aura toujours au moins deux fils :
@@ -132,64 +139,79 @@ public class TreeTraversal {
          * Le troisième fils d'un noeud fonction est soit son type retour,
          * soit un argument
          */
-        System.out.println("---------");
-        System.out.println("Function");
 
         // Récupération de l'identifiant de la fonction
         String idf = this.exploreIDF((CommonTree)function.getChild(0));
-        // Création d'un symbole fonction
-        FunctionSymbol functionSymbol = new FunctionSymbol(function);
 
-        // Ajout du symbole à la TDS courante (ici en miniruste,
-        // le symbole est ajouté à la TDS globale car une fonction
-        // ne peut être déclarée que dans le scope global
-        this.tdsBuilder.getCurrentTDS().addSymbol(functionSymbol);
+        if(firstPass) {
+            System.out.println("---------");
+            System.out.println("Function");
 
-        // Création d'une TDS pour la fonction pour stocker ses
-        // paramètres et les symboles de son bloc
-        TDS tds = this.tdsBuilder.pushTDS();
+            // On garde la TDS courante de coté pour pouvoir
+            // faire l'ajout de la fonction à la TDS
+            // après avoir ajouté ses arguments à sa TDS
+            // (surcharge)
+            TDS parentTDS = this.tdsBuilder.getCurrentTDS();
 
-        // Création du lien entre le symbole fonction et sa TDS
-        functionSymbol.setTDS(tds);
-        functionSymbol.setName(idf);
+            // Création d'une TDS pour la fonction pour stocker ses
+            // paramètres et les symboles de son bloc
+            TDS tds = this.tdsBuilder.pushTDS();
 
-        if(function.getChildCount() > 2) {
-            CommonTree thirdChild = (CommonTree)function.getChild(2);
-            int argumentsStartIndex = 2;
+            // Création d'un symbole fonction
+            FunctionSymbol functionSymbol = new FunctionSymbol(function);
+            functionSymbol.setName(idf);
+            // Création du lien entre le symbole fonction et sa TDS
+            functionSymbol.setTDS(tds);
+            functionSymbol.setScope(Scope.GLOBAL);
 
-            // Si c'est le type retour, on incrémente l'index du début des arguments
-            if(thirdChild.getType() != mini_rustParser.ARGUMENT) {
-                Type returnType = this.exploreType(thirdChild);
-                argumentsStartIndex += 1;
+            if(function.getChildCount() > 2) {
+                CommonTree thirdChild = (CommonTree)function.getChild(2);
+                int argumentsStartIndex = 2;
 
-                functionSymbol.setReturnType(returnType);
-            }
+                // Si c'est le type retour, on incrémente l'index du début des arguments
+                if(thirdChild.getType() != mini_rustParser.ARGUMENT) {
+                    Type returnType = this.exploreType(thirdChild);
+                    argumentsStartIndex += 1;
 
-            // S'il y'a des arguments
-            for(int i = argumentsStartIndex; i < function.getChildCount(); i++) {
-                CommonTree child = (CommonTree)function.getChild(i);
+                    functionSymbol.setReturnType(returnType);
+                }
 
-                switch (child.getType()) {
-                    case mini_rustLexer.ARGUMENT:
-                        this.exploreArgument(child);
-                        break;
-                    default:
-                        System.err.println("[" + function.toString() + "] Unknown node : " + child.toString());
-                        break;
+                // S'il y'a des arguments
+                for(int i = argumentsStartIndex; i < function.getChildCount(); i++) {
+                    CommonTree child = (CommonTree)function.getChild(i);
+
+                    switch (child.getType()) {
+                        case mini_rustLexer.ARGUMENT:
+                            this.exploreArgument(child, functionSymbol);
+                            break;
+                        default:
+                            System.err.println("[" + function.toString() + "] Unknown node : " + child.toString());
+                            break;
+                    }
                 }
             }
+
+            // Ajout du symbole à la TDS courante (ici en miniruste,
+            // le symbole est ajouté à la TDS globale car une fonction
+            // ne peut être déclarée que dans le scope global
+            parentTDS.addSymbol(functionSymbol);
+
+            this.tdsBuilder.popTDS();
         }
+        else {
+            FunctionSymbol functionSymbol = this.TDSGlobal.getFunctionSymbol(idf);
+            this.tdsBuilder.pushTDS(functionSymbol.getTDS());
 
-        // exploreBloc est appelé après l'ajout du symbole fonction
-        // à la TDS globale et de ses arguments, en effet dans le
-        // bloc on peut utiliser les arguments de la fonction (il faut
-        // donc qu'ils soient défini dans la TDS pour pouvoir les utiliser
-        // dans le bloc). Il faut aussi que le symbole fonction soit
-        // ajouté à la TDS globale avant l'appel d'exploreBloc, le bloc
-        // peut faire un appel récursif.
-        this.exploreBloc((CommonTree)function.getChild(1), false);
-
-        this.tdsBuilder.popTDS();
+            // exploreBloc est appelé après l'ajout du symbole fonction
+            // à la TDS globale et de ses arguments, en effet dans le
+            // bloc on peut utiliser les arguments de la fonction (il faut
+            // donc qu'ils soient défini dans la TDS pour pouvoir les utiliser
+            // dans le bloc). Il faut aussi que le symbole fonction soit
+            // ajouté à la TDS globale avant l'appel d'exploreBloc, le bloc
+            // peut faire un appel récursif.
+            this.exploreBloc((CommonTree)function.getChild(1), false);
+            this.tdsBuilder.popTDS();
+        }
     }
 
     private void exploreStructure(CommonTree structure) {
@@ -253,11 +275,11 @@ public class TreeTraversal {
                 String type = typeNode.getText();
                 System.out.println("Type : " + type);
 
-                return new Type(typeNode.getText());
+                return new Type(type);
         }
     }
 
-    private void exploreArgument(CommonTree argument) {
+    private void exploreArgument(CommonTree argument, FunctionSymbol functionSymbol) {
         /*
          * ^(ARGUMENT IDF type)
          * Un argument à toujours deux fils :
@@ -276,12 +298,13 @@ public class TreeTraversal {
         varSymbol.setType(type);
         // Le scope de cette variable est un argument
         // de fonction
-        varSymbol.setScope(Scope.ARGUMENT);
+        varSymbol.setScope(Scope.FUNCTION);
 
         // Ajout du symbole à la TDS courante (ici en Minirust,
         // la TDS courante quand on est dans la fonction
         // exploreArgument est la TDS de la fonction)
         this.tdsBuilder.getCurrentTDS().addSymbol(varSymbol);
+        functionSymbol.addArgument(varSymbol);
     }
 
     private void exploreBloc(CommonTree bloc) {
@@ -400,9 +423,6 @@ public class TreeTraversal {
          * 	    - OBJ
          *
          */
-
-
-
         System.out.println("---------");
 
         if(isMutable) {
@@ -412,11 +432,14 @@ public class TreeTraversal {
             System.out.println("Let");
         }
 
-        ExprEnum res_enum= this.exploreExpr((CommonTree)let.getChild(0));
-        if(res_enum == ExprEnum.IDF) {
+        ExprEnum exprEnum = this.exploreExpr((CommonTree)let.getChild(0));
+
+        if(exprEnum == ExprEnum.IDF) {
             VarSymbol varSymbol = new VarSymbol(let);
             varSymbol.setName(let.getChild(0).getText());
             varSymbol.setScope(Scope.LOCAL);
+            varSymbol.setMutable(isMutable);
+
             this.tdsBuilder.getCurrentTDS().addSymbol(varSymbol);
         }
 
@@ -432,24 +455,6 @@ public class TreeTraversal {
                     break;
             }
         }
-    }
-    
-    private void exploreFunctionCall(CommonTree functionCall) {
-    	System.out.println("----------");
-    	System.out.println("Function_Call");
-    	
-    	this.exploreIDF((CommonTree)functionCall.getChild(0));
-    	for(int i = 1; i < functionCall.getChildCount(); i++) {	
-    		this.exploreParam((CommonTree)functionCall.getChild(i));
-    	}
-    	
-    }
-    
-    private void exploreParam(CommonTree param) {
-    	System.out.println("---------");
-    	System.out.println("Param");
-    	
-    	this.exploreExpr(param);
     }
 
     // TODO explore obj
@@ -467,7 +472,6 @@ public class TreeTraversal {
 
     	//this.exploreExpr((CommonTree)member.getChild(1));
     }
-
 
     private void exploreWhile(CommonTree whileNode) {
         /*
@@ -529,12 +533,6 @@ public class TreeTraversal {
     	}
     }
 
-    private void explorePrintMacro(CommonTree printMacro) {
-        System.out.println("---------");
-        System.out.println("Print");
-        this.exploreExpr((CommonTree)printMacro.getChild(0));
-    }
-
     private ExprEnum exploreExpr(CommonTree expr) {
         System.out.println("---------");
         System.out.println("Expr");
@@ -552,7 +550,7 @@ public class TreeTraversal {
                     res_enum = ExprEnum.PRINT_MACRO;
                     break;
                 case mini_rustParser.VEC_MACRO:
-            	   //this.explorerVecMacro(expr);
+            	   this.exploreVecMacro(expr);
                     res_enum = ExprEnum.VEC_MACRO;
                 	break;
                 case mini_rustParser.FUNCTION_CALL:
@@ -564,7 +562,36 @@ public class TreeTraversal {
                     res_enum = ExprEnum.IDF;
             }
         }
-    return res_enum;
+
+        return res_enum;
+    }
+
+    private void explorePrintMacro(CommonTree printMacro) {
+        System.out.println("---------");
+        System.out.println("Print");
+        this.exploreExpr((CommonTree)printMacro.getChild(0));
+    }
+
+    private void exploreVecMacro(CommonTree vecMacro) {
+
+    }
+
+    private void exploreFunctionCall(CommonTree functionCall) {
+        System.out.println("----------");
+        System.out.println("Function_Call");
+
+        this.exploreIDF((CommonTree)functionCall.getChild(0));
+        for(int i = 1; i < functionCall.getChildCount(); i++) {
+            this.exploreParam((CommonTree)functionCall.getChild(i));
+        }
+
+    }
+
+    private void exploreParam(CommonTree param) {
+        System.out.println("---------");
+        System.out.println("Param");
+
+        this.exploreExpr(param);
     }
 
     private String exploreIDF(CommonTree idfNode) {

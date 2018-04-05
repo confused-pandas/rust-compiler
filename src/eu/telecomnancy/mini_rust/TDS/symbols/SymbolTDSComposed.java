@@ -1,5 +1,6 @@
-package eu.telecomnancy.mini_rust.TDS;
+package eu.telecomnancy.mini_rust.TDS.symbols;
 
+import eu.telecomnancy.mini_rust.TDS.TDS;
 import org.antlr.runtime.tree.CommonTree;
 
 public abstract class SymbolTDSComposed extends Symbol {
@@ -15,9 +16,5 @@ public abstract class SymbolTDSComposed extends Symbol {
 
     public TDS getTDS() {
         return this.TDS;
-    }
-
-    public void addSymbol(Symbol symbol) {
-        this.TDS.addSymbol(symbol);
     }
 }

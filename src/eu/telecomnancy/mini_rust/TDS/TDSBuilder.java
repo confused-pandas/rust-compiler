@@ -33,6 +33,10 @@ public class TDSBuilder extends TDS {
         return tds;
     }
 
+    public void pushTDS(TDS tds) {
+        this.flow.push(tds);
+    }
+
     public TDS popTDS() {
         return this.flow.pop();
     }

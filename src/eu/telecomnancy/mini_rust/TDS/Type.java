@@ -29,4 +29,15 @@ public class Type {
             return this.type;
         }
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if(!(o instanceof Type)) {
+            return false;
+        }
+
+        Type type = (Type)o;
+
+        return this.toString().equals(type.toString());
+    }
 }

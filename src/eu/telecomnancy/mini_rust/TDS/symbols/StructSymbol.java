@@ -1,4 +1,4 @@
-package eu.telecomnancy.mini_rust.TDS;
+package eu.telecomnancy.mini_rust.TDS.symbols;
 
 import org.antlr.runtime.tree.CommonTree;
 
@@ -9,6 +9,10 @@ public class StructSymbol extends SymbolTDSComposed {
 
     @Override
     public String getHashName() {
-        return this.node.getChild(0).getText() + "_S";
+        return StructSymbol.genHashName(this.node.getChild(0).getText());
+    }
+
+    public static String genHashName(String name) {
+        return name + "_S";
     }
 }
