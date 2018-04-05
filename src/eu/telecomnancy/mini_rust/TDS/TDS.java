@@ -1,12 +1,17 @@
 package eu.telecomnancy.mini_rust.TDS;
 
+
+import eu.telecomnancy.mini_rust.TDS.semanticErrors.SemanticException;
 import eu.telecomnancy.mini_rust.TDS.symbols.FunctionSymbol;
 import eu.telecomnancy.mini_rust.TDS.symbols.StructSymbol;
 import eu.telecomnancy.mini_rust.TDS.symbols.Symbol;
 import eu.telecomnancy.mini_rust.TDS.symbols.VarSymbol;
+import eu.telecomnancy.mini_rust.TDS.semanticErrors.SemanticError;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+
+import static eu.telecomnancy.mini_rust.TDS.semanticErrors.SemanticError.AlreadyDefinedException;
 
 public class TDS {
     /**
@@ -123,9 +128,55 @@ public class TDS {
         return (StructSymbol)this.getSymbol(StructSymbol.genHashName(name));
     }
 
-    public void addSymbol(Symbol symbol) {
-        this.symbols.put(symbol.getHashName(), symbol);
-    }
+    public void addSymbol(Symbol symbol) throws SemanticException {
+
+            //on teste si c'est une fonction
+            if(symbol instanceof FunctionSymbol) {
+                FunctionSymbol functionSymbol = (FunctionSymbol) symbol;
+
+                FunctionSymbol dejaVu = this.getFunctionSymbol(symbol.getName());
+
+                //on verifie qu'elle ne figure pas deja dans la TDS
+                if (dejaVu != null) {
+                    //si elle existe deja on verifie si elle n'a pas les memes arguements
+                    //si oui il y a une erreur semantique sinon on l'ajoute a la TDS
+
+
+                    if (functionSymbol.equals(dejaVu)) {
+                        throw AlreadyDefinedException("Semantic Error : the function " + symbol.getName() + "() has already been defined");
+                    }
+                }
+            }
+
+
+            //Le cas des structures
+            else if (symbol instanceof StructSymbol) {
+                StructSymbol structsymbol = (StructSymbol) symbol;
+                StructSymbol dejaVu = this.getStructureSymbol(symbol.getName());
+
+                //on verifie qu'elle ne figure pas deja dans la TDS
+                if (dejaVu != null) {
+                   throw  AlreadyDefinedException("Semantic Error : the structure " + symbol.getName() + " has already been defined");
+                }
+            }
+
+            //Le cas des variables
+            else {
+                VarSymbol varsymbol = (VarSymbol) symbol;
+
+                VarSymbol dejaVu = this.getVarSymbol(symbol.getName());
+
+                //on verifie qu'elle ne figure pas deja dans la TDS
+                if (dejaVu != null) {
+                    if(dejaVu.isMutable() != true){
+                        throw  AlreadyDefinedException("Semantic Error : the variable " + symbol.getName() + " has already been defined and it is not mutable");
+                    }
+                }
+
+            }
+
+            this.symbols.put(symbol.getHashName(), symbol);
+        }
 
     /**
      * Ajoute une TDS fille à la TDS courante

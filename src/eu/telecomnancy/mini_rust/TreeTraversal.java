@@ -1,6 +1,7 @@
 package eu.telecomnancy.mini_rust;
 
 import eu.telecomnancy.mini_rust.TDS.*;
+import eu.telecomnancy.mini_rust.TDS.semanticErrors.SemanticException;
 import eu.telecomnancy.mini_rust.TDS.symbols.FunctionSymbol;
 import eu.telecomnancy.mini_rust.TDS.symbols.VarSymbol;
 import org.antlr.runtime.tree.CommonTree;
@@ -64,12 +65,12 @@ public class TreeTraversal {
         }
     }
 
-    public void explore() {
+    public void explore() throws SemanticException {
         this.tdsBuilder = new TDSBuilder();
         this.explore(this.root);
     }
 
-    private void explore(CommonTree node) {
+    private void explore(CommonTree node) throws SemanticException {
         if(node != null) {
             if(node.getParent() == null && node.getType() == mini_rustParser.FICHIER) {
                 this.exploreFile(node);
@@ -80,7 +81,7 @@ public class TreeTraversal {
         }
     }
 
-    private void exploreFile(CommonTree file) {
+    private void exploreFile(CommonTree file) throws SemanticException {
         /*
          * ^(FICHIER decl*)
          *
@@ -111,7 +112,7 @@ public class TreeTraversal {
         this.tdsBuilder.popTDS();
     }
 
-    private void exploreFile(CommonTree file, boolean firstPass) {
+    private void exploreFile(CommonTree file, boolean firstPass) throws SemanticException {
         for(int i = 0; i < file.getChildCount(); i++) {
             CommonTree child = (CommonTree)file.getChild(i);
 
@@ -129,7 +130,7 @@ public class TreeTraversal {
         }
     }
 
-    private void exploreFunction(CommonTree function, boolean firstPass) {
+    private void exploreFunction(CommonTree function, boolean firstPass) throws SemanticException {
         /*
          * ^(DECL_FUNC IDF bloc (type)? (argument)*)
          * Une fonction aura toujours au moins deux fils :
@@ -279,7 +280,7 @@ public class TreeTraversal {
         }
     }
 
-    private void exploreArgument(CommonTree argument, FunctionSymbol functionSymbol) {
+    private void exploreArgument(CommonTree argument, FunctionSymbol functionSymbol) throws SemanticException {
         /*
          * ^(ARGUMENT IDF type)
          * Un argument à toujours deux fils :
@@ -307,11 +308,11 @@ public class TreeTraversal {
         functionSymbol.addArgument(varSymbol);
     }
 
-    private void exploreBloc(CommonTree bloc) {
+    private void exploreBloc(CommonTree bloc) throws SemanticException {
         this.exploreBloc(bloc, true);
     }
 
-    private void exploreBloc(CommonTree bloc, boolean createTDS) {
+    private void exploreBloc(CommonTree bloc, boolean createTDS) throws SemanticException {
         /*
          * ^(BLOC instruction_bloc?)
          *
@@ -401,7 +402,7 @@ public class TreeTraversal {
         }
     }
 
-    private void exploreLet(CommonTree let, boolean isMutable) {
+    private void exploreLet(CommonTree let, boolean isMutable) throws SemanticException {
         /*
          * ^(LETMUT expr (let_assign)?)
          * ^(LET expr (let_assign)?)
@@ -473,7 +474,7 @@ public class TreeTraversal {
     	//this.exploreExpr((CommonTree)member.getChild(1));
     }
 
-    private void exploreWhile(CommonTree whileNode) {
+    private void exploreWhile(CommonTree whileNode) throws SemanticException {
         /*
          * ^(WHILE expr bloc)
          *
@@ -504,7 +505,7 @@ public class TreeTraversal {
         }
     }
 
-    private void exploreIf(CommonTree ifNode) {
+    private void exploreIf(CommonTree ifNode) throws SemanticException {
     	System.out.println("---------");
     	System.out.println("If");
 
@@ -517,7 +518,7 @@ public class TreeTraversal {
     	
     }
 
-    private void exploreElse(CommonTree elseNode){
+    private void exploreElse(CommonTree elseNode) throws SemanticException {
     	System.out.println("---------");
     	System.out.println("Else");
 
