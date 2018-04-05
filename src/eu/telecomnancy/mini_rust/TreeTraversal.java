@@ -1,7 +1,9 @@
 package eu.telecomnancy.mini_rust;
 
 import eu.telecomnancy.mini_rust.TDS.*;
-import eu.telecomnancy.mini_rust.TDS.semanticErrors.SemanticException;
+import eu.telecomnancy.mini_rust.grammar.mini_rustLexer;
+import eu.telecomnancy.mini_rust.grammar.mini_rustParser;
+import eu.telecomnancy.mini_rust.semantic.SemanticException;
 import eu.telecomnancy.mini_rust.TDS.symbols.FunctionSymbol;
 import eu.telecomnancy.mini_rust.TDS.symbols.VarSymbol;
 import org.antlr.runtime.tree.CommonTree;
@@ -65,9 +67,13 @@ public class TreeTraversal {
         }
     }
 
-    public void explore() throws SemanticException {
+    public void explore() {
         this.tdsBuilder = new TDSBuilder();
-        this.explore(this.root);
+        try {
+            this.explore(this.root);
+        } catch (SemanticException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     private void explore(CommonTree node) throws SemanticException {

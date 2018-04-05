@@ -1,17 +1,15 @@
 package eu.telecomnancy.mini_rust.TDS;
 
 
-import eu.telecomnancy.mini_rust.TDS.semanticErrors.SemanticException;
+import eu.telecomnancy.mini_rust.semantic.SemanticException;
 import eu.telecomnancy.mini_rust.TDS.symbols.FunctionSymbol;
 import eu.telecomnancy.mini_rust.TDS.symbols.StructSymbol;
 import eu.telecomnancy.mini_rust.TDS.symbols.Symbol;
 import eu.telecomnancy.mini_rust.TDS.symbols.VarSymbol;
-import eu.telecomnancy.mini_rust.TDS.semanticErrors.SemanticError;
+import eu.telecomnancy.mini_rust.semantic.SemanticErrorMessage;
 
 import java.util.HashMap;
 import java.util.LinkedList;
-
-import static eu.telecomnancy.mini_rust.TDS.semanticErrors.SemanticError.AlreadyDefinedException;
 
 public class TDS {
     /**
@@ -143,7 +141,7 @@ public class TDS {
 
 
                     if (functionSymbol.equals(dejaVu)) {
-                        throw AlreadyDefinedException("Semantic Error : the function " + symbol.getName() + "() has already been defined");
+                        throw new SemanticException(SemanticErrorMessage.nameFunc(functionSymbol.getName(), functionSymbol.getNode().getLine()));
                     }
                 }
             }
@@ -156,7 +154,7 @@ public class TDS {
 
                 //on verifie qu'elle ne figure pas deja dans la TDS
                 if (dejaVu != null) {
-                   throw  AlreadyDefinedException("Semantic Error : the structure " + symbol.getName() + " has already been defined");
+                   throw new SemanticException(SemanticErrorMessage.nameStruct(structsymbol.getName(), structsymbol.getNode().getLine()));
                 }
             }
 
@@ -169,7 +167,7 @@ public class TDS {
                 //on verifie qu'elle ne figure pas deja dans la TDS
                 if (dejaVu != null) {
                     if(dejaVu.isMutable() != true){
-                        throw  AlreadyDefinedException("Semantic Error : the variable " + symbol.getName() + " has already been defined and it is not mutable");
+                        throw new SemanticException(SemanticErrorMessage.modifyingConstant(dejaVu.getName(), dejaVu.getNode().getLine()));
                     }
                 }
 

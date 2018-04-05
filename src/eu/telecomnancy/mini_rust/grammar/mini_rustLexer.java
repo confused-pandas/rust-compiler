@@ -1,6 +1,6 @@
 // $ANTLR 3.2 Sep 23, 2009 12:02:23 D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\mini_rust.g 2018-04-04 07:10:54
 
-	package eu.telecomnancy.mini_rust;
+	package eu.telecomnancy.mini_rust.grammar;
 
 
 import org.antlr.runtime.*;

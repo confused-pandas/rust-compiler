@@ -1,6 +1,6 @@
-package eu.telecomnancy.mini_rust;
+package eu.telecomnancy.mini_rust.semantic;
 
-public class semanticErrorMessage {
+public class SemanticErrorMessage {
 
     //messages sent when there are semantic errors
 
@@ -141,5 +141,7 @@ public class semanticErrorMessage {
         return ("Semantic Error line" + line + ": the operation with " + vect + "is done with the wrong type");
     }
 
-
+    public static String modifyingConstant(String name, int line) {
+        return ("Semantic Error [" + line + "] : trying to modify a constant.");
+    }
 }
