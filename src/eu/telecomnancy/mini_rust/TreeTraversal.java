@@ -466,18 +466,46 @@ public class TreeTraversal {
 
     // TODO explore obj
     private void exploreObj(CommonTree obj) {
+    	/*
+    	 * ^(OBJ expr obj_def)
+    	 */
+    	
     	System.out.println("---------");
     	System.out.println("Obj");
 
-    	//this.exploreObjMember((CommonTree)obj.getChild(0));
+    	this.exploreIDF((CommonTree)obj.getChild(0));
+    	this.exploreObjMember((CommonTree)obj.getChild(1));
+    	
+    	for(int i = 1; i < obj.getChildCount(); i++) {
+            CommonTree child = (CommonTree)obj.getChild(i);
+
+            switch (child.getType()) {
+                case mini_rustParser.MEMBER:
+                    exploreObjMember(child);
+                    break;
+                default:
+                    System.err.println("[" + obj.toString() + "] Unknown node : " + child.toString());
+                    break;
+            }
+        }
     }
 
     // TODO explore objMember
     private void exploreObjMember(CommonTree member) {
+    	/*
+    	 * 
+         * ^(MEMBER $i $o)*
+         *
+         * Un membre d'un obj a toujours deux fils :
+         *  - Le premier est son identifiant
+         *  - Le second est son obj_def
+         */
+    	 
     	System.out.println("---------");
     	System.out.println("Member");
 
-    	//this.exploreExpr((CommonTree)member.getChild(1));
+    	this.exploreIDF((CommonTree)member.getChild(0));
+        this.exploreObj((CommonTree)member.getChild(1));
     }
 
     private void exploreWhile(CommonTree whileNode) throws SemanticException {
