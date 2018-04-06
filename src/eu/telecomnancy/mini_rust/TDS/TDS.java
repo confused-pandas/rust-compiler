@@ -1,12 +1,12 @@
 package eu.telecomnancy.mini_rust.TDS;
 
-
-import eu.telecomnancy.mini_rust.semantic.SemanticException;
 import eu.telecomnancy.mini_rust.TDS.symbols.FunctionSymbol;
 import eu.telecomnancy.mini_rust.TDS.symbols.StructSymbol;
 import eu.telecomnancy.mini_rust.TDS.symbols.Symbol;
 import eu.telecomnancy.mini_rust.TDS.symbols.VarSymbol;
-import eu.telecomnancy.mini_rust.semantic.SemanticErrorMessage;
+import eu.telecomnancy.mini_rust.semantic.SemanticExceptionCode;
+import eu.telecomnancy.mini_rust.semantic.exceptions.DefinedSymbolException;
+import eu.telecomnancy.mini_rust.semantic.exceptions.SemanticException;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -141,7 +141,7 @@ public class TDS {
 
 
                     if (functionSymbol.equals(dejaVu)) {
-                        throw new SemanticException(SemanticErrorMessage.nameFunc(functionSymbol.getName(), functionSymbol.getNode().getLine()));
+                        throw new DefinedSymbolException(SemanticExceptionCode.REDEFINING_FUNCTION, symbol);
                     }
                 }
             }
@@ -154,7 +154,7 @@ public class TDS {
 
                 //on verifie qu'elle ne figure pas deja dans la TDS
                 if (dejaVu != null) {
-                   throw new SemanticException(SemanticErrorMessage.nameStruct(structsymbol.getName(), structsymbol.getNode().getLine()));
+                    throw new DefinedSymbolException(SemanticExceptionCode.REDEFINING_STRUCTURE, symbol);
                 }
             }
 
@@ -167,7 +167,7 @@ public class TDS {
                 //on verifie qu'elle ne figure pas deja dans la TDS
                 if (dejaVu != null) {
                     if(dejaVu.isMutable() != true){
-                        throw new SemanticException(SemanticErrorMessage.modifyingConstant(dejaVu.getName(), dejaVu.getNode().getLine()));
+                        throw new DefinedSymbolException(SemanticExceptionCode.MODIFYING_NOT_MUTABLE_SYMBOL, symbol);
                     }
                 }
 

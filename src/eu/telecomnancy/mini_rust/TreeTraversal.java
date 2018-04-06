@@ -1,11 +1,11 @@
 package eu.telecomnancy.mini_rust;
 
 import eu.telecomnancy.mini_rust.TDS.*;
-import eu.telecomnancy.mini_rust.grammar.mini_rustLexer;
-import eu.telecomnancy.mini_rust.grammar.mini_rustParser;
-import eu.telecomnancy.mini_rust.semantic.SemanticException;
 import eu.telecomnancy.mini_rust.TDS.symbols.FunctionSymbol;
 import eu.telecomnancy.mini_rust.TDS.symbols.VarSymbol;
+import eu.telecomnancy.mini_rust.grammar.mini_rustLexer;
+import eu.telecomnancy.mini_rust.grammar.mini_rustParser;
+import eu.telecomnancy.mini_rust.semantic.exceptions.SemanticException;
 import org.antlr.runtime.tree.CommonTree;
 
 public class TreeTraversal {

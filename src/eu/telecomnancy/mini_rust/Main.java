@@ -2,7 +2,9 @@ package eu.telecomnancy.mini_rust;
 
 import eu.telecomnancy.mini_rust.grammar.mini_rustLexer;
 import eu.telecomnancy.mini_rust.grammar.mini_rustParser;
-import org.antlr.runtime.*;
+import org.antlr.runtime.ANTLRFileStream;
+import org.antlr.runtime.CommonTokenStream;
+import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.tree.CommonTree;
 
 import java.io.IOException;
