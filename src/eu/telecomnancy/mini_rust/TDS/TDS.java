@@ -134,18 +134,18 @@ public class TDS {
 
             //on verifie qu'elle ne figure pas deja dans la TDS
             if (dejaVu != null) {
-                //si elle existe deja on verifie si elle n'a pas les memes arguements
+                //si elle existe deja on verifie si elle n'a pas les memes arguments
                 //si oui il y a une erreur semantique sinon on l'ajoute a la TDS
 
                 if (functionSymbol.equals(dejaVu)) {
                     throw new DefinedSymbolException(SemanticExceptionCode.REDEFINING_FUNCTION, symbol);
                 }
                 else {
-                    this.symbols.put(symbol.getHashName(), symbol);
+                    updateShift(symbol);
                 }
             }
             else {
-                this.symbols.put(symbol.getHashName(), symbol);
+                updateShift(symbol);
             }
         }
         //Le cas des structures
@@ -158,7 +158,7 @@ public class TDS {
                 throw new DefinedSymbolException(SemanticExceptionCode.REDEFINING_STRUCTURE, symbol);
             }
             else {
-                this.symbols.put(symbol.getHashName(), symbol);
+                updateShift(symbol);
             }
         }
         //Le cas des variables
@@ -173,9 +173,24 @@ public class TDS {
                 }
             }
             else {
-                this.symbols.put(symbol.getHashName(), symbol);
+                updateShift(symbol);
             }
         }
+    }
+    
+    /**
+     * Calcul le déplacement ( shiftcount )
+     */
+    public void updateShift(Symbol symbol) {
+    	this.symbols.put(symbol.getHashName(), symbol);
+    	switch (symbol.getScope()) {
+    		case FUNCTION:
+    			this.shiftCount = this.shiftCount - 1;
+    			break;
+    		default:
+    			this.shiftCount = this.shiftCount + 1;
+    			break;    			
+    	}
     }
 
     /**
