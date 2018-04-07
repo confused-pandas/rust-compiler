@@ -695,7 +695,7 @@ public class TreeTraversal {
             if (expr.getType() == mini_rustParser.CSTE_ENT) {
                 return TypeEnum.I32;
             }
-            if (expr.getType() == mini_rustParser.CSTE_ENT) {
+            if (expr.getType() == mini_rustParser.CSTE_STR) {
                 return TypeEnum.STRING;
             }
             if (expr.getType() == mini_rustParser.BOOL_TYPE) {
