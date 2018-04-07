@@ -471,7 +471,6 @@ public class TreeTraversal {
         else {
             System.out.println("Let");
         }
-
         this.exploreExpr((CommonTree)let.getChild(0));
 
         if(let.getChild(0).getType() == mini_rustParser.IDF) {
@@ -485,15 +484,8 @@ public class TreeTraversal {
 
         if(let.getChildCount() > 1) {
             CommonTree child = (CommonTree)let.getChild(1);
+            this.evalExpr((CommonTree)let.getChild(1));
 
-            switch (child.getType()) {
-                case mini_rustParser.OBJ:
-                    this.exploreObj(child);
-                    break;
-                default:
-                    this.exploreExpr(child);
-                    break;
-            }
         }
     }
 
@@ -686,4 +678,32 @@ public class TreeTraversal {
 
         return idf;
     }
+
+    private TypeEnum evalExpr(CommonTree expr) {
+
+        if (isBinaryOp(expr)) {
+            TypeEnum evalExprLeft = evalExpr((CommonTree) expr.getChild(0));
+            TypeEnum evalExprRight = evalExpr((CommonTree) expr.getChild(1));
+            if (evalExprLeft.equals(evalExprRight)) {
+                return evalExprLeft;
+            } else {
+                return TypeEnum.ERROR;
+            }
+        } else if (isUnaryOp(expr)) {
+            return evalExpr((CommonTree) expr.getChild(0));
+        } else {
+            if (expr.getType() == mini_rustParser.CSTE_ENT) {
+                return TypeEnum.I32;
+            }
+            if (expr.getType() == mini_rustParser.CSTE_ENT) {
+                return TypeEnum.STRING;
+            }
+            if (expr.getType() == mini_rustParser.BOOL_TYPE) {
+                return TypeEnum.BOOL;
+            } else {
+                return TypeEnum.ERROR;
+            }
+        }
+    }
+
 }
