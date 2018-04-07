@@ -619,7 +619,9 @@ public class TreeTraversal {
     }
 
     private void exploreVecMacro(CommonTree vecMacro) {
-
+    	System.out.println("---------");
+    	System.out.println("Vec");
+    	this.exploreExpr((CommonTree)vecMacro.getChild(0));
     }
 
     private void exploreFunctionCall(CommonTree functionCall) {
