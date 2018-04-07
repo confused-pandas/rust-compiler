@@ -58,7 +58,7 @@ public class TreeTraversal {
 
     private void traverse(CommonTree node, int indent) {
         if(node != null) {
-            String strIndent = new String(new char[indent]).replace("\0", " ");
+            String strIndent = Utils.repeatString(" ", indent);
 
             for(int i = 0; i < node.getChildCount(); i++) {
                 CommonTree child = (CommonTree)node.getChild(i);
@@ -265,7 +265,7 @@ public class TreeTraversal {
         }
     }
 
-    private void exploreStuctureMember(CommonTree structureMember) {
+    private void exploreStuctureMember(CommonTree structureMember) throws SemanticException {
         /*
          * ^(MEMBER $i $t)
          *
@@ -276,8 +276,14 @@ public class TreeTraversal {
         System.out.println("---------");
         System.out.println("Member_Structure");
 
-        this.exploreIDF((CommonTree)structureMember.getChild(0));
-        this.exploreType((CommonTree)structureMember.getChild(1));
+        String idf = this.exploreIDF((CommonTree)structureMember.getChild(0));
+        Type type = this.exploreType((CommonTree)structureMember.getChild(1));
+
+        VarSymbol varSymbol = new VarSymbol(structureMember);
+        varSymbol.setName(idf);
+        varSymbol.setType(type);
+
+        this.tdsBuilder.getCurrentTDS().addSymbol(varSymbol);
     }
 
     private Type exploreType(CommonTree typeNode) {
@@ -706,4 +712,7 @@ public class TreeTraversal {
         }
     }
 
+    public TDS getGlobalSymbolTable() {
+        return this.TDSGlobal;
+    }
 }

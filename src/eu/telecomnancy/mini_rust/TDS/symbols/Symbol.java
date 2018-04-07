@@ -1,6 +1,7 @@
 package eu.telecomnancy.mini_rust.TDS.symbols;
 
 import eu.telecomnancy.mini_rust.TDS.Scope;
+import eu.telecomnancy.mini_rust.Utils;
 import org.antlr.runtime.tree.CommonTree;
 
 /**
@@ -120,5 +121,13 @@ public abstract class Symbol {
      */
     public Scope getScope() {
         return this.scope;
+    }
+
+    public String getAsRow() {
+        StringBuilder str = new StringBuilder();
+
+        str.append("| ").append(Utils.padRight(this.getName(), 15));
+
+        return str.toString();
     }
 }

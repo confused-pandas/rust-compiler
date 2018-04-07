@@ -1,6 +1,8 @@
 package eu.telecomnancy.mini_rust.TDS.symbols;
 
 import eu.telecomnancy.mini_rust.TDS.Type;
+import eu.telecomnancy.mini_rust.TDS.TypeEnum;
+import eu.telecomnancy.mini_rust.Utils;
 import org.antlr.runtime.tree.CommonTree;
 
 import java.util.LinkedList;
@@ -28,6 +30,7 @@ public class FunctionSymbol extends SymbolTDSComposed {
     public FunctionSymbol(CommonTree node) {
         super(node);
         this.arguments = new LinkedList<>();
+        this.returnType = new Type(TypeEnum.VOID);
     }
 
     /**
@@ -140,5 +143,18 @@ public class FunctionSymbol extends SymbolTDSComposed {
                 return true;
             }
         }
+    }
+
+    @Override
+    public String getAsRow() {
+        StringBuilder str = new StringBuilder();
+
+        str.append(super.getAsRow())
+                .append("| ").append(Utils.padRight("FUNC(" + this.getTDS().getRegion() + ")", 10))
+                .append("| ").append(Utils.padRight(String.valueOf(this.getShift()), 5))
+                .append("| ").append(Utils.padRight("RT : " + this.getReturnType(), 10))
+                .append("| ");
+
+        return str.toString();
     }
 }

@@ -1,6 +1,8 @@
 package eu.telecomnancy.mini_rust.TDS.symbols;
 
 import eu.telecomnancy.mini_rust.TDS.Type;
+import eu.telecomnancy.mini_rust.TDS.TypeEnum;
+import eu.telecomnancy.mini_rust.Utils;
 import org.antlr.runtime.tree.CommonTree;
 
 /**
@@ -32,6 +34,7 @@ public class VarSymbol extends Symbol {
     public VarSymbol(CommonTree node) {
         super(node);
         this.mutable = false;
+        this.type = new Type(TypeEnum.UNKNOWN);
     }
 
     /**
@@ -75,5 +78,23 @@ public class VarSymbol extends Symbol {
     @Override
     public String getHashName() {
         return VarSymbol.genHashName(this.node.getChild(0).getText());
+    }
+
+    @Override
+    public String getAsRow() {
+        StringBuilder str = new StringBuilder();
+        String type = "VAR";
+
+        if(this.getShift() < 0) {
+            type = "ARG";
+        }
+
+        str.append(super.getAsRow())
+                .append("| ").append(Utils.padRight(type, 10))
+                .append("| ").append(Utils.padRight(String.valueOf(this.getShift()), 5))
+                .append("| ").append(Utils.padRight(this.getType().toString(), 10))
+                .append("| ");
+
+        return str.toString();
     }
 }

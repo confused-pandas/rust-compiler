@@ -21,6 +21,7 @@ public class Main {
 
             TreeTraversal traversal = new TreeTraversal(root);
             traversal.explore();
+            System.out.println(traversal.getGlobalSymbolTable().getAsTable());
         } catch (RecognitionException e) {
             e.printStackTrace();
         }

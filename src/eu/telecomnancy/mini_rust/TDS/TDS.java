@@ -1,15 +1,15 @@
 package eu.telecomnancy.mini_rust.TDS;
 
-import eu.telecomnancy.mini_rust.TDS.symbols.FunctionSymbol;
-import eu.telecomnancy.mini_rust.TDS.symbols.StructSymbol;
-import eu.telecomnancy.mini_rust.TDS.symbols.Symbol;
-import eu.telecomnancy.mini_rust.TDS.symbols.VarSymbol;
+import eu.telecomnancy.mini_rust.TDS.symbols.*;
+import eu.telecomnancy.mini_rust.Utils;
 import eu.telecomnancy.mini_rust.semantic.SemanticExceptionCode;
 import eu.telecomnancy.mini_rust.semantic.exceptions.DefinedSymbolException;
 import eu.telecomnancy.mini_rust.semantic.exceptions.SemanticException;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.PriorityQueue;
+import java.util.Queue;
 
 public class TDS {
     /**
@@ -189,5 +189,45 @@ public class TDS {
     public void addTDS(TDS tds) {
         tds.parent = this;
         this.children.add(tds);
+    }
+
+    public int getRegion() {
+        return this.region;
+    }
+
+    public String getAsTable() {
+        StringBuilder str = new StringBuilder();
+        Queue<TDS> toVisit = new LinkedList<>();
+
+        str.append("| ").append(Utils.padRight(String.valueOf(this.region), 4))
+                .append("| ").append(Utils.padRight(String.valueOf(this.nestedLevel), 4))
+                .append("|\n");
+
+        str.append("| ").append(Utils.padRight("NAME", 15))
+                .append("| ").append(Utils.padRight("EL TYPE", 10))
+                .append("| ").append(Utils.padRight("DEP", 5))
+                .append("|")
+                .append("\n");
+
+        for(Symbol symbol: this.symbols.values()) {
+            str.append(symbol.getAsRow())
+                    .append("\n");
+
+            if(symbol instanceof SymbolTDSComposed) {
+                toVisit.offer(((SymbolTDSComposed)symbol).getTDS());
+            }
+        }
+
+        TDS currentTdsToVisit = toVisit.poll();
+
+        while(currentTdsToVisit != null) {
+            str.append("\n")
+                    .append("\n")
+                    .append(currentTdsToVisit.getAsTable());
+
+            currentTdsToVisit = toVisit.poll();
+        }
+
+        return str.toString();
     }
 }
