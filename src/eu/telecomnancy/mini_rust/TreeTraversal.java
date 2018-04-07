@@ -2,6 +2,7 @@ package eu.telecomnancy.mini_rust;
 
 import eu.telecomnancy.mini_rust.TDS.*;
 import eu.telecomnancy.mini_rust.TDS.symbols.FunctionSymbol;
+import eu.telecomnancy.mini_rust.TDS.symbols.StructSymbol;
 import eu.telecomnancy.mini_rust.TDS.symbols.VarSymbol;
 import eu.telecomnancy.mini_rust.grammar.mini_rustLexer;
 import eu.telecomnancy.mini_rust.grammar.mini_rustParser;
@@ -82,7 +83,7 @@ public class TreeTraversal {
                 this.exploreFile(node);
             }
             else {
-                System.err.println("[" + node.toString() + "] Unknown node : " + node.toString());
+                System.err.println("[" + node.toString() + "] Unknown node : " + node.getText());
             }
         }
     }
@@ -127,10 +128,10 @@ public class TreeTraversal {
                     this.exploreFunction(child, firstPass);
                     break;
                 case mini_rustLexer.DECL_STRUCT:
-                    this.exploreStructure(child);
+                    this.exploreStructure(child, firstPass);
                     break;
                 default:
-                    System.err.println("[" + file.toString() + "] Unknown node : " + child.toString());
+                    System.err.println("[" + file.toString() + "] Unknown node : " + child.getText());
                     break;
             }
         }
@@ -192,7 +193,7 @@ public class TreeTraversal {
                             this.exploreArgument(child, functionSymbol);
                             break;
                         default:
-                            System.err.println("[" + function.toString() + "] Unknown node : " + child.toString());
+                            System.err.println("[" + function.toString() + "] Unknown node : " + child.getText());
                             break;
                     }
                 }
@@ -221,30 +222,46 @@ public class TreeTraversal {
         }
     }
 
-    private void exploreStructure(CommonTree structure) {
+    private void exploreStructure(CommonTree structure, boolean firstPass) throws SemanticException {
         /*
          * ^(DECL_STRUCT $idf ^(MEMBER $i $t)*)
          *
          * Le premier fils d'une structure est son identifiant
          * Les autres sont les membres de la structure
          */
+        String idf = this.exploreIDF((CommonTree)structure.getChild(0));
 
-        System.out.println("---------");
-        System.out.println("Structure");
+        if(firstPass) {
+            System.out.println("---------");
+            System.out.println("Structure");
 
-        this.exploreIDF((CommonTree)structure.getChild(0));
+            StructSymbol structSymbol = new StructSymbol(structure);
+            structSymbol.setName(idf);
 
-        for(int i = 1; i < structure.getChildCount(); i++) {
-            CommonTree child = (CommonTree)structure.getChild(i);
+            this.tdsBuilder.getCurrentTDS().addSymbol(structSymbol);
+            TDS tds = this.tdsBuilder.pushTDS();
+            structSymbol.setTDS(tds);
+            this.tdsBuilder.popTDS();
+        }
+        else {
+            StructSymbol structSymbol = this.tdsBuilder.getCurrentTDS().getStructureSymbol(idf);
 
-            switch (child.getType()) {
-                case mini_rustParser.MEMBER:
-                    exploreStuctureMember(child);
-                    break;
-                default:
-                    System.err.println("[" + structure.toString() + "] Unknown node : " + child.toString());
-                    break;
+            this.tdsBuilder.pushTDS(structSymbol.getTDS());
+
+            for(int i = 1; i < structure.getChildCount(); i++) {
+                CommonTree child = (CommonTree)structure.getChild(i);
+
+                switch (child.getType()) {
+                    case mini_rustParser.MEMBER:
+                        exploreStuctureMember(child);
+                        break;
+                    default:
+                        System.err.println("[" + structure.toString() + "] Unknown node : " + child.toString());
+                        break;
+                }
             }
+
+            this.tdsBuilder.popTDS();
         }
     }
 
@@ -275,15 +292,31 @@ public class TreeTraversal {
          * 	;
          */
 
-        switch (typeNode.getType()) {
-            case mini_rustParser.VEC_TYPE:
-                return new Type(this.exploreType((CommonTree)typeNode.getChild(0)));
-            default:
-                String type = typeNode.getText();
-                System.out.println("Type : " + type);
+        CommonTree currentNode = typeNode;
+        int vecDimension = 0;
 
-                return new Type(type);
+        while(currentNode.getType() == mini_rustParser.VEC_TYPE) {
+            currentNode = (CommonTree)currentNode.getChild(0);
+            vecDimension += 1;
         }
+
+        TypeEnum typeEnum = Type.stringToExprType(currentNode.getText());
+        Type type = new Type(typeEnum, vecDimension);
+
+        if(typeEnum == TypeEnum.UNKNOWN) {
+            StructSymbol structSymbol = this.tdsBuilder.getCurrentTDS().getStructureSymbol(currentNode.getText());
+
+            if(structSymbol == null) {
+                // TODO : throw new undefined type
+            }
+            else {
+                type.setStructType(structSymbol.getName());
+            }
+        }
+
+        System.out.println("Type : " + type.toString());
+
+        return type;
     }
 
     private void exploreArgument(CommonTree argument, FunctionSymbol functionSymbol) throws SemanticException {
@@ -439,9 +472,9 @@ public class TreeTraversal {
             System.out.println("Let");
         }
 
-        ExprEnum exprEnum = this.exploreExpr((CommonTree)let.getChild(0));
+        this.exploreExpr((CommonTree)let.getChild(0));
 
-        if(exprEnum == ExprEnum.IDF) {
+        if(let.getChild(0).getType() == mini_rustParser.IDF) {
             VarSymbol varSymbol = new VarSymbol(let);
             varSymbol.setName(let.getChild(0).getText());
             varSymbol.setScope(Scope.LOCAL);
@@ -464,7 +497,6 @@ public class TreeTraversal {
         }
     }
 
-    // TODO explore obj
     private void exploreObj(CommonTree obj) {
     	/*
     	 * ^(OBJ expr obj_def)
@@ -483,7 +515,7 @@ public class TreeTraversal {
                     exploreObjMember(child);
                     break;
                 default:
-                    System.err.println("[" + obj.toString() + "] Unknown node : " + child.toString());
+                    System.err.println("[" + obj.toString() + "] Unknown node : " + child.getText());
                     break;
             }
         }
@@ -507,14 +539,11 @@ public class TreeTraversal {
         
         CommonTree child = (CommonTree)member.getChild(1);
         switch (child.getType()) {
-        	case mini_rustParser.IDF:
-        		exploreIDF(child);
-        		break;
         	case mini_rustParser.OBJ:
         		exploreObj(child);
         		break;
         	default:
-        		System.err.println("[" + member.toString() + "] Unknown node : " + child.toString());
+        		this.exploreExpr(child);
         		break;
             }
     }
@@ -579,37 +608,43 @@ public class TreeTraversal {
     	}
     }
 
-    private ExprEnum exploreExpr(CommonTree expr) {
+    private void exploreExpr(CommonTree expr) {
         System.out.println("---------");
         System.out.println("Expr");
 
-        ExprEnum res_enum;
-
         if(this.isUnaryOp(expr)){
-            res_enum = ExprEnum.UNARY_OP;
+            this.exploreUnaryOp(expr);
         } else if(this.isBinaryOp(expr)) {
-            res_enum = ExprEnum.BINARY_OP;
+            this.exploreBinaryOp(expr);
         } else {
             switch (expr.getType()) {
                 case mini_rustParser.PRINT_MACRO:
                     this.explorePrintMacro(expr);
-                    res_enum = ExprEnum.PRINT_MACRO;
                     break;
                 case mini_rustParser.VEC_MACRO:
             	   this.exploreVecMacro(expr);
-                    res_enum = ExprEnum.VEC_MACRO;
                 	break;
                 case mini_rustParser.FUNCTION_CALL:
-                    res_enum = ExprEnum.FUNCTION_CALL;
                     this.exploreFunctionCall(expr);
                     break;
+                case mini_rustParser.IDF:
+                    this.exploreIDF(expr);
+                    break;
+                case mini_rustParser.CSTE_ENT:
+                case mini_rustParser.CSTE_STR:
+                case mini_rustParser.TRUE:
+                case mini_rustParser.FALSE:
+                    break;
                 default:
-                    System.out.println(expr.toString());
-                    res_enum = ExprEnum.IDF;
+                    System.err.println("[expr] Unknown node : " + expr.getText());
             }
         }
+    }
 
-        return res_enum;
+    private void exploreUnaryOp(CommonTree expr) {
+    }
+
+    private void exploreBinaryOp(CommonTree expr) {
     }
 
     private void explorePrintMacro(CommonTree printMacro) {

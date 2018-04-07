@@ -127,54 +127,56 @@ public class TDS {
     }
 
     public void addSymbol(Symbol symbol) throws SemanticException {
+        //on teste si c'est une fonction
+        if(symbol instanceof FunctionSymbol) {
+            FunctionSymbol functionSymbol = (FunctionSymbol) symbol;
+            FunctionSymbol dejaVu = this.getFunctionSymbol(symbol.getName());
 
-            //on teste si c'est une fonction
-            if(symbol instanceof FunctionSymbol) {
-                FunctionSymbol functionSymbol = (FunctionSymbol) symbol;
+            //on verifie qu'elle ne figure pas deja dans la TDS
+            if (dejaVu != null) {
+                //si elle existe deja on verifie si elle n'a pas les memes arguements
+                //si oui il y a une erreur semantique sinon on l'ajoute a la TDS
 
-                FunctionSymbol dejaVu = this.getFunctionSymbol(symbol.getName());
-
-                //on verifie qu'elle ne figure pas deja dans la TDS
-                if (dejaVu != null) {
-                    //si elle existe deja on verifie si elle n'a pas les memes arguements
-                    //si oui il y a une erreur semantique sinon on l'ajoute a la TDS
-
-
-                    if (functionSymbol.equals(dejaVu)) {
-                        throw new DefinedSymbolException(SemanticExceptionCode.REDEFINING_FUNCTION, symbol);
-                    }
+                if (functionSymbol.equals(dejaVu)) {
+                    throw new DefinedSymbolException(SemanticExceptionCode.REDEFINING_FUNCTION, symbol);
+                }
+                else {
+                    this.symbols.put(symbol.getHashName(), symbol);
                 }
             }
-
-
-            //Le cas des structures
-            else if (symbol instanceof StructSymbol) {
-                StructSymbol structsymbol = (StructSymbol) symbol;
-                StructSymbol dejaVu = this.getStructureSymbol(symbol.getName());
-
-                //on verifie qu'elle ne figure pas deja dans la TDS
-                if (dejaVu != null) {
-                    throw new DefinedSymbolException(SemanticExceptionCode.REDEFINING_STRUCTURE, symbol);
-                }
-            }
-
-            //Le cas des variables
             else {
-                VarSymbol varsymbol = (VarSymbol) symbol;
-
-                VarSymbol dejaVu = this.getVarSymbol(symbol.getName());
-
-                //on verifie qu'elle ne figure pas deja dans la TDS
-                if (dejaVu != null) {
-                    if(dejaVu.isMutable() != true){
-                        throw new DefinedSymbolException(SemanticExceptionCode.MODIFYING_NOT_MUTABLE_SYMBOL, symbol);
-                    }
-                }
-
+                this.symbols.put(symbol.getHashName(), symbol);
             }
-
-            this.symbols.put(symbol.getHashName(), symbol);
         }
+        //Le cas des structures
+        else if (symbol instanceof StructSymbol) {
+            StructSymbol structsymbol = (StructSymbol) symbol;
+            StructSymbol dejaVu = this.getStructureSymbol(symbol.getName());
+
+            //on verifie qu'elle ne figure pas deja dans la TDS
+            if (dejaVu != null) {
+                throw new DefinedSymbolException(SemanticExceptionCode.REDEFINING_STRUCTURE, symbol);
+            }
+            else {
+                this.symbols.put(symbol.getHashName(), symbol);
+            }
+        }
+        //Le cas des variables
+        else {
+            VarSymbol varsymbol = (VarSymbol) symbol;
+            VarSymbol dejaVu = this.getVarSymbol(symbol.getName());
+
+            //on verifie qu'elle ne figure pas deja dans la TDS
+            if (dejaVu != null) {
+                if(dejaVu.isMutable() != true){
+                    throw new DefinedSymbolException(SemanticExceptionCode.MODIFYING_NOT_MUTABLE_SYMBOL, symbol);
+                }
+            }
+            else {
+                this.symbols.put(symbol.getHashName(), symbol);
+            }
+        }
+    }
 
     /**
      * Ajoute une TDS fille à la TDS courante
