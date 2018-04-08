@@ -188,6 +188,9 @@ public class TDS {
     			this.shiftCount = this.shiftCount - 1;
     			break;
     		default:
+    			if (shiftCount < 0) {
+    				this.shiftCount = 0;
+    			}
     			this.shiftCount = this.shiftCount + 1;
     			break;    			
     	}
