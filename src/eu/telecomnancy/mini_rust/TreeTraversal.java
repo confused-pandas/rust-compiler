@@ -586,13 +586,13 @@ public class TreeTraversal {
         } else {
             switch (expr.getType()) {
                 case mini_rustParser.INDEX:
-                    // TODO : explore index
+                    this.exploreIndex(expr);
                     break;
                 case mini_rustParser.DOT:
-                    // TODO : explore dot
+                    this.exploreDot(expr);
                     break;
                 case mini_rustParser.OBJ:
-                    // TODO : explore instanciation obj
+                    this.exploreObjet(expr);
                     break;
                 case mini_rustParser.PRINT_MACRO:
                     this.explorePrintMacro(expr);
@@ -618,27 +618,32 @@ public class TreeTraversal {
     }
 
     private void exploreUnaryOp(CommonTree expr) {
-    		System.out.println("------------");
-    		System.out.println("Unary Expr");
-    	
-    		/*:
-	  	*	MINUS expr_unaire -> ^(UNARY_MINUS expr_unaire)
-		*	| (
-	    * 		EXCL expr_unaire -> ^(NEG expr_unaire)
-	    *		| STAR expr_unaire -> ^(POINTER expr_unaire)
-	    *		| AMPS expr_unaire -> ^(REF expr_unaire)
-	    *	)
-		*	| (a=atom -> $a) 
-	  	*	(
-	  	* 	LSQBRACKET expr RSQBRACKET -> ^(INDEX $expr_unaire expr)
-	  	*| 	DOT dot_factorisation -> ^(DOT $expr_unaire dot_factorisation)
-	  	*	)*
-	  	*/
-    		
     		
     }
 
     private void exploreBinaryOp(CommonTree expr) {
+    }
+    
+    private void exploreIndex(CommonTree index) {
+    	
+	  	this.exploreUnaryOp(CommonTree)index.getChild(0));
+	  	this.exploreExpr((CommonTree)index.getChild(1));
+    }
+    
+    private void exploreDot(CommonTree dot) {
+    	
+	  	
+    		this.exploreExpr((CommonTree)dot.getChild(0));
+    		this.exploreDotFactorisation((CommonTree)dot.getChild(1));
+    }
+    
+    private void exploreDotFactorisation(CommonTree dotFactor) {
+    	
+    		/*	:
+    		*	 IDF -> IDF
+    		*	| LEN LPAREN RPAREN -> LEN
+    		*	;
+    		*/
     }
 
     private void explorePrintMacro(CommonTree printMacro) throws SemanticException {
@@ -668,11 +673,13 @@ public class TreeTraversal {
     private void exploreParam(CommonTree param) throws SemanticException {
         this.exploreExpr(param);
     }
+    
 
     private String exploreIDF(CommonTree idfNode) {
         String idf = idfNode.getText();
         return idf;
     }
+   
 
     private TypeEnum evalExpr(CommonTree expr) {
         if (isBinaryOp(expr)) {
