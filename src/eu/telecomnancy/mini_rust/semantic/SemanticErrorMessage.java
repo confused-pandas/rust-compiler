@@ -12,12 +12,16 @@ public class SemanticErrorMessage {
         return "[line : " + node.getLine() + "] " + message;
     }
 
-    public static String modifyingNotMutableSymbol(Symbol symbol) {
-        return SemanticErrorMessage.appendLine(symbol.getNode(), "Modifying a not mutable symbol : " + symbol.getName());
-    }
-
     public static String undefinedSymbol(String name, CommonTree node) {
         return SemanticErrorMessage.appendLine(node, "Undefined symbol : " + name);
+    }
+
+    public static String callingUndefinedFunction(String name, CommonTree node) {
+        return SemanticErrorMessage.appendLine(node, "Calling undefined function : " + name);
+    }
+
+    public static String modifyingNotMutableSymbol(Symbol symbol) {
+        return SemanticErrorMessage.appendLine(symbol.getNode(), "Modifying a not mutable symbol : " + symbol.getName());
     }
 
     public static String redefiningFunction(Symbol symbol) {

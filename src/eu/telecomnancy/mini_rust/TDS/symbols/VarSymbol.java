@@ -1,5 +1,6 @@
 package eu.telecomnancy.mini_rust.TDS.symbols;
 
+import eu.telecomnancy.mini_rust.TDS.TDS;
 import eu.telecomnancy.mini_rust.TDS.Type;
 import eu.telecomnancy.mini_rust.TDS.TypeEnum;
 import eu.telecomnancy.mini_rust.Utils;
@@ -90,9 +91,9 @@ public class VarSymbol extends Symbol {
         }
 
         str.append(super.getAsRow())
-                .append("| ").append(Utils.padRight(type, 10))
-                .append("| ").append(Utils.padRight(String.valueOf(this.getShift()), 5))
-                .append("| ").append(Utils.padRight(this.getType().toString(), 10))
+                .append("| ").append(Utils.padRight(type, TDS.ELEMENT_TYPE_COL_WIDTH))
+                .append("| ").append(Utils.padRight(String.valueOf(this.getShift()), TDS.SHIFT_COL_WIDTH))
+                .append("| ").append(Utils.padRight(this.getType().toString(), TDS.TYPE_COL_WIDTH))
                 .append("| ");
 
         return str.toString();

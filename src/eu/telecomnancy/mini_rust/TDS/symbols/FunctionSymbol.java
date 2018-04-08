@@ -1,5 +1,6 @@
 package eu.telecomnancy.mini_rust.TDS.symbols;
 
+import eu.telecomnancy.mini_rust.TDS.TDS;
 import eu.telecomnancy.mini_rust.TDS.Type;
 import eu.telecomnancy.mini_rust.TDS.TypeEnum;
 import eu.telecomnancy.mini_rust.Utils;
@@ -150,9 +151,9 @@ public class FunctionSymbol extends SymbolTDSComposed {
         StringBuilder str = new StringBuilder();
 
         str.append(super.getAsRow())
-                .append("| ").append(Utils.padRight("FUNC(" + this.getTDS().getRegion() + ")", 10))
-                .append("| ").append(Utils.padRight(String.valueOf(this.getShift()), 5))
-                .append("| ").append(Utils.padRight("RT : " + this.getReturnType(), 10))
+                .append("| ").append(Utils.padRight("FUNC(" + this.getTDS().getRegion() + ")", TDS.ELEMENT_TYPE_COL_WIDTH))
+                .append("| ").append(Utils.padRight(String.valueOf(this.getShift()), TDS.SHIFT_COL_WIDTH))
+                .append("| ").append(Utils.padRight("RT : " + this.getReturnType(), TDS.TYPE_COL_WIDTH))
                 .append("| ");
 
         return str.toString();

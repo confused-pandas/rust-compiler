@@ -6,11 +6,13 @@ import eu.telecomnancy.mini_rust.semantic.SemanticExceptionCode;
 import eu.telecomnancy.mini_rust.semantic.exceptions.DefinedSymbolException;
 import eu.telecomnancy.mini_rust.semantic.exceptions.SemanticException;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.*;
 
 public class TDS {
+    public static int NAME_COL_WIDTH = 20;
+    public static int ELEMENT_TYPE_COL_WIDTH = 15;
+    public static int SHIFT_COL_WIDTH = 5;
+    public static int TYPE_COL_WIDTH = 15;
     /**
      * Compteur permettant d'attribuer le numéro
      * de région aux TDS
@@ -223,13 +225,16 @@ public class TDS {
                 .append("| ").append(Utils.padRight(String.valueOf(this.nestedLevel), 4))
                 .append("|\n");
 
-        str.append("| ").append(Utils.padRight("NAME", 15))
-                .append("| ").append(Utils.padRight("EL TYPE", 10))
-                .append("| ").append(Utils.padRight("DEP", 5))
-                .append("|")
+        str.append("| ").append(Utils.padRight("NAME", TDS.NAME_COL_WIDTH))
+                .append("| ").append(Utils.padRight("ELEMENT TYPE", TDS.ELEMENT_TYPE_COL_WIDTH))
+                .append("| ").append(Utils.padRight("DEP", TDS.SHIFT_COL_WIDTH))
+                .append("| ").append(Utils.padRight("TYPE", TDS.TYPE_COL_WIDTH))
                 .append("\n");
 
-        for(Symbol symbol: this.symbols.values()) {
+        Symbol[] sortedSymbols = this.symbols.values().toArray(new Symbol[this.symbols.values().size()]);
+        Arrays.sort(sortedSymbols);
+
+        for(Symbol symbol: sortedSymbols) {
             str.append(symbol.getAsRow())
                     .append("\n");
 

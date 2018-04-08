@@ -1,6 +1,7 @@
 package eu.telecomnancy.mini_rust.TDS.symbols;
 
 import eu.telecomnancy.mini_rust.TDS.Scope;
+import eu.telecomnancy.mini_rust.TDS.TDS;
 import eu.telecomnancy.mini_rust.Utils;
 import org.antlr.runtime.tree.CommonTree;
 
@@ -13,7 +14,7 @@ import org.antlr.runtime.tree.CommonTree;
  * HashMap et de faire les opérations sur une
  * seule HashMap
  */
-public abstract class Symbol {
+public abstract class Symbol implements Comparable<Symbol> {
     /**
      * Variable lien le symbole au noeud
      * lui correspondant dans l'AST
@@ -127,8 +128,13 @@ public abstract class Symbol {
     public String getAsRow() {
         StringBuilder str = new StringBuilder();
 
-        str.append("| ").append(Utils.padRight(this.getName(), 15));
+        str.append("| ").append(Utils.padRight(this.getName(), TDS.NAME_COL_WIDTH));
 
         return str.toString();
+    }
+
+    @Override
+    public int compareTo(Symbol symbol) {
+        return this.getShift() - symbol.getShift();
     }
 }
