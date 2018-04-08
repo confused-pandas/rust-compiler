@@ -476,7 +476,7 @@ public class TreeTraversal {
                 CommonTree child = (CommonTree)let.getChild(1);
 
                 this.exploreExpr(child);
-                this.evalExpr(child);
+                varSymbol.setType(this.evalExpr(child));
             }
 
             this.tdsBuilder.getCurrentTDS().addSymbol(varSymbol);
@@ -484,14 +484,14 @@ public class TreeTraversal {
     }
 
     private void exploreObj(CommonTree obj) throws SemanticException {
-    	/*
-    	 * ^(OBJ expr obj_def)
-    	 */
+        /*
+         * ^(OBJ expr obj_def)
+         */
 
-    	this.exploreIDF((CommonTree)obj.getChild(0));
+        this.exploreIDF((CommonTree)obj.getChild(0));
 
-    	
-    	for(int i = 1; i < obj.getChildCount(); i++) {
+
+        for(int i = 1; i < obj.getChildCount(); i++) {
             CommonTree child = (CommonTree)obj.getChild(i);
 
             switch (child.getType()) {
@@ -506,8 +506,8 @@ public class TreeTraversal {
     }
 
     private void exploreObjMember(CommonTree member) throws SemanticException {
-    	/*
-    	 * 
+        /*
+         *
          * ^(MEMBER $i $o)*
          *
          * Un membre d'un obj a toujours deux fils :
@@ -515,21 +515,18 @@ public class TreeTraversal {
          *  - Le second est un obj ou un idf
          */
 
-    	this.exploreIDF((CommonTree)member.getChild(0));
+        this.exploreIDF((CommonTree)member.getChild(0));
 
-        
+
         CommonTree child = (CommonTree)member.getChild(1);
         switch (child.getType()) {
-        	case mini_rustParser.OBJ:
-        		this.exploreObj(child);
-        		break;
-        	default:
-        		this.exploreExpr(child);
-        		break;
-            }
-        
-        VarSymbol varSymbol = new VarSymbol(member);
-        varSymbol.setIDF = idf;
+            case mini_rustParser.OBJ:
+                this.exploreObj(child);
+                break;
+            default:
+                this.exploreExpr(child);
+                break;
+        }
     }
 
     private void exploreWhile(CommonTree whileNode) throws SemanticException {
@@ -556,26 +553,26 @@ public class TreeTraversal {
     }
 
     private void exploreIf(CommonTree ifNode) throws SemanticException {
-    	this.exploreExpr((CommonTree)ifNode.getChild(0));
-    	this.exploreBloc((CommonTree)ifNode.getChild(1));
+        this.exploreExpr((CommonTree)ifNode.getChild(0));
+        this.exploreBloc((CommonTree)ifNode.getChild(1));
 
-    	if(ifNode.getChildCount() > 2){
-    		this.exploreElse((CommonTree)ifNode.getChild(2));
-    	}
-    	
+        if(ifNode.getChildCount() > 2){
+            this.exploreElse((CommonTree)ifNode.getChild(2));
+        }
+
     }
 
     private void exploreElse(CommonTree elseNode) throws SemanticException {
-    	switch (elseNode.getChild(0).getType()){
-    		case mini_rustParser.IF:
-    			this.exploreIf((CommonTree)elseNode.getChild(0));
-    			break;
-    		case mini_rustParser.BLOC:
-    			this.exploreBloc((CommonTree)elseNode.getChild(0));
-    			break;
-    		default:
-    			System.err.println("else" + elseNode.getChild(0).toString());
-    	}
+        switch (elseNode.getChild(0).getType()){
+            case mini_rustParser.IF:
+                this.exploreIf((CommonTree)elseNode.getChild(0));
+                break;
+            case mini_rustParser.BLOC:
+                this.exploreBloc((CommonTree)elseNode.getChild(0));
+                break;
+            default:
+                System.err.println("else" + elseNode.getChild(0).toString());
+        }
     }
 
     private void exploreExpr(CommonTree expr) throws SemanticException {
@@ -592,14 +589,14 @@ public class TreeTraversal {
                     this.exploreDot(expr);
                     break;
                 case mini_rustParser.OBJ:
-                    this.exploreObjet(expr);
+                    this.exploreObject(expr);
                     break;
                 case mini_rustParser.PRINT_MACRO:
                     this.explorePrintMacro(expr);
                     break;
                 case mini_rustParser.VEC_MACRO:
-                		this.exploreVecMacro(expr);
-                		break;
+                    this.exploreVecMacro(expr);
+                    break;
                 case mini_rustParser.FUNCTION_CALL:
                     this.exploreFunctionCall(expr);
                     break;
@@ -618,32 +615,32 @@ public class TreeTraversal {
     }
 
     private void exploreUnaryOp(CommonTree expr) {
-    		
+
     }
 
     private void exploreBinaryOp(CommonTree expr) {
     }
-    
-    private void exploreIndex(CommonTree index) {
-    	
-	  	this.exploreUnaryOp(CommonTree)index.getChild(0));
-	  	this.exploreExpr((CommonTree)index.getChild(1));
+
+    private void exploreIndex(CommonTree index) throws SemanticException {
+
+        this.exploreUnaryOp((CommonTree)index.getChild(0));
+        this.exploreExpr((CommonTree)index.getChild(1));
     }
-    
-    private void exploreDot(CommonTree dot) {
-    	
-	  	
-    		this.exploreExpr((CommonTree)dot.getChild(0));
-    		this.exploreDotFactorisation((CommonTree)dot.getChild(1));
+
+    private void exploreDot(CommonTree dot) throws SemanticException {
+
+
+        this.exploreExpr((CommonTree)dot.getChild(0));
+        this.exploreDotFactorisation((CommonTree)dot.getChild(1));
     }
-    
+
     private void exploreDotFactorisation(CommonTree dotFactor) {
-    	
-    		/*	:
-    		*	 IDF -> IDF
-    		*	| LEN LPAREN RPAREN -> LEN
-    		*	;
-    		*/
+
+        /*	:
+         *	 IDF -> IDF
+         *	| LEN LPAREN RPAREN -> LEN
+         *	;
+         */
     }
 
     private void explorePrintMacro(CommonTree printMacro) throws SemanticException {
@@ -651,10 +648,10 @@ public class TreeTraversal {
     }
 
     private void exploreVecMacro(CommonTree vecMacro) throws SemanticException {
-    	for (int i = 0; i < vecMacro.getChildCount(); i++) {
-    		CommonTree child = (CommonTree)vecMacro.getChild(i);
-    	    this.exploreExpr(child);
-    	}
+        for (int i = 0; i < vecMacro.getChildCount(); i++) {
+            CommonTree child = (CommonTree)vecMacro.getChild(i);
+            this.exploreExpr(child);
+        }
     }
 
     private void exploreFunctionCall(CommonTree functionCall) throws SemanticException {
@@ -670,41 +667,133 @@ public class TreeTraversal {
         }
     }
 
+    public void exploreObject(CommonTree object) {
+
+    }
+
     private void exploreParam(CommonTree param) throws SemanticException {
         this.exploreExpr(param);
     }
-    
+
 
     private String exploreIDF(CommonTree idfNode) {
         String idf = idfNode.getText();
         return idf;
     }
-   
 
-    private TypeEnum evalExpr(CommonTree expr) {
-        if (isBinaryOp(expr)) {
-            TypeEnum evalExprLeft = evalExpr((CommonTree) expr.getChild(0));
-            TypeEnum evalExprRight = evalExpr((CommonTree) expr.getChild(1));
-            if (evalExprLeft.equals(evalExprRight)) {
-                return evalExprLeft;
-            } else {
-                return TypeEnum.ERROR;
+
+    private Type evalExpr(CommonTree expr) {
+        Type type = new Type(TypeEnum.UNKNOWN);
+
+        if(this.isUnaryOp(expr)) {
+            return this.evalExpr((CommonTree)expr.getChild(0));
+        }
+        else if(this.isBinaryOp(expr)) {
+            Type leftEvalType = this.evalExpr((CommonTree)expr.getChild(0));
+            Type rightEvalType = this.evalExpr((CommonTree)expr.getChild(1));
+
+            if(leftEvalType.equals(rightEvalType)) {
+                type = new Type(TypeEnum.ERROR);
             }
-        } else if (isUnaryOp(expr)) {
-            return evalExpr((CommonTree) expr.getChild(0));
-        } else {
-            if (expr.getType() == mini_rustParser.CSTE_ENT) {
-                return TypeEnum.I32;
-            }
-            if (expr.getType() == mini_rustParser.CSTE_STR) {
-                return TypeEnum.STRING;
-            }
-            if (expr.getType() == mini_rustParser.BOOL_TYPE) {
-                return TypeEnum.BOOL;
-            } else {
-                return TypeEnum.ERROR;
+            else {
+                return leftEvalType;
             }
         }
+        else {
+            switch (expr.getType()) {
+                case mini_rustParser.INDEX:
+                    if(expr.getChild(0).getType() == mini_rustParser.DOT) {
+                        return this.evalExpr((CommonTree)expr.getChild(0));
+                    }
+                    else {
+                        CommonTree currentNode = expr;
+                        int subDim = 0;
+
+                        while(currentNode.getType() == mini_rustParser.INDEX) {
+                            currentNode = (CommonTree)currentNode.getChild(0);
+                            subDim++;
+                        }
+
+                        VarSymbol varSymbol = this.tdsBuilder.getCurrentTDS().getVarSymbol(currentNode.getText());
+                        Type varType = varSymbol.getType();
+                        type = new Type(varType.getTypeEnum(), varType.getVecDimension() - subDim);
+
+                        if(varType.isStruct()) {
+                            type.setStructType(varType.getStructType());
+                        }
+                    }
+                    break;
+                case mini_rustParser.DOT:
+                    Stack<String> structs = new Stack<>();
+                    CommonTree currentNode = expr;
+
+                    while(currentNode.getType() == mini_rustParser.DOT) {
+                        structs.push(currentNode.getChild(1).getText());
+                        currentNode = (CommonTree)currentNode.getChild(0);
+                    }
+
+                    Type typeStruct;
+                    String varIdf;
+                    VarSymbol varSymbol = null;
+
+                    if(currentNode.getType() == mini_rustParser.INDEX) {
+                        typeStruct = this.evalExpr(currentNode);
+                    }
+                    else {
+                        varIdf = currentNode.getText();
+                        varSymbol = this.tdsBuilder.getCurrentTDS().getVarSymbol(varIdf);
+                        typeStruct = varSymbol.getType();
+                    }
+
+                    StructSymbol structSymbol = this.tdsBuilder.getCurrentTDS().getStructureSymbol(typeStruct.toString());
+
+                    while(!structs.empty()) {
+                        varIdf = structs.pop();
+                        varSymbol = structSymbol.getTDS().getVarSymbol(varIdf);
+                        structSymbol = this.tdsBuilder.getCurrentTDS().getStructureSymbol(varSymbol.getType().toString());
+                    }
+
+                    if(varSymbol != null) {
+                        type = varSymbol.getType();
+                    }
+
+                    break;
+                case mini_rustParser.IDF:
+                    type = this.tdsBuilder.getCurrentTDS().getVarSymbol(expr.getText()).getType();
+                    break;
+                case mini_rustParser.TRUE:
+                case mini_rustParser.FALSE:
+                    type = new Type(TypeEnum.BOOL);
+                    break;
+                case mini_rustParser.CSTE_STR:
+                    type = new Type(TypeEnum.STRING);
+                    break;
+                case mini_rustParser.CSTE_ENT:
+                    type = new Type(TypeEnum.I32);
+                    break;
+                case mini_rustParser.FUNCTION_CALL:
+                    type = this.tdsBuilder.getCurrentTDS().getFunctionSymbol(expr.getChild(0).getText()).getReturnType();
+                    break;
+                case mini_rustParser.VEC_MACRO:
+                    Type vecType = this.evalExpr((CommonTree)expr.getChild(0));
+
+                    type = new Type(vecType.getTypeEnum(), vecType.getVecDimension() + 1);
+
+                    if(vecType.isStruct()) {
+                        type.setStructType(vecType.getStructType());
+                    }
+                    break;
+                case mini_rustParser.OBJ:
+                    type = new Type(TypeEnum.STRUCTURE);
+                    type.setStructType(expr.getChild(0).getText());
+                    break;
+                default:
+                    System.out.println("type inconnu : " + expr.getText());
+                    break;
+            }
+        }
+
+        return type;
     }
 
     public TDS getGlobalSymbolTable() {

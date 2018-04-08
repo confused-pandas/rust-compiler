@@ -229,9 +229,10 @@ public class TDS {
                 .append("| ").append(Utils.padRight("ELEMENT TYPE", TDS.ELEMENT_TYPE_COL_WIDTH))
                 .append("| ").append(Utils.padRight("DEP", TDS.SHIFT_COL_WIDTH))
                 .append("| ").append(Utils.padRight("TYPE", TDS.TYPE_COL_WIDTH))
+                .append("|")
                 .append("\n");
 
-        Symbol[] sortedSymbols = this.symbols.values().toArray(new Symbol[this.symbols.values().size()]);
+        Symbol[] sortedSymbols = this.symbols.values().toArray(new Symbol[0]);
         Arrays.sort(sortedSymbols);
 
         for(Symbol symbol: sortedSymbols) {
