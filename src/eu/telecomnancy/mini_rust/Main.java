@@ -2,6 +2,7 @@ package eu.telecomnancy.mini_rust;
 
 import eu.telecomnancy.mini_rust.grammar.mini_rustLexer;
 import eu.telecomnancy.mini_rust.grammar.mini_rustParser;
+import eu.telecomnancy.mini_rust.semantic.exceptions.SemanticException;
 import org.antlr.runtime.ANTLRFileStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
@@ -24,6 +25,8 @@ public class Main {
             System.out.println(traversal.getGlobalSymbolTable().getAsTable());
         } catch (RecognitionException e) {
             e.printStackTrace();
+        } catch (SemanticException e) {
+            System.out.println(e.getMessage());
         }
     }
 }

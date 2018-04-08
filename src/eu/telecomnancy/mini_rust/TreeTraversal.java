@@ -6,7 +6,10 @@ import eu.telecomnancy.mini_rust.TDS.symbols.StructSymbol;
 import eu.telecomnancy.mini_rust.TDS.symbols.VarSymbol;
 import eu.telecomnancy.mini_rust.grammar.mini_rustLexer;
 import eu.telecomnancy.mini_rust.grammar.mini_rustParser;
+import eu.telecomnancy.mini_rust.semantic.SemanticExceptionCode;
+import eu.telecomnancy.mini_rust.semantic.exceptions.DefinedSymbolException;
 import eu.telecomnancy.mini_rust.semantic.exceptions.SemanticException;
+import eu.telecomnancy.mini_rust.semantic.exceptions.UndefinedSymbolException;
 import org.antlr.runtime.tree.CommonTree;
 
 public class TreeTraversal {
@@ -68,13 +71,9 @@ public class TreeTraversal {
         }
     }
 
-    public void explore() {
+    public void explore() throws SemanticException {
         this.tdsBuilder = new TDSBuilder();
-        try {
-            this.explore(this.root);
-        } catch (SemanticException e) {
-            System.out.println(e.getMessage());
-        }
+        this.explore(this.root);
     }
 
     private void explore(CommonTree node) throws SemanticException {
@@ -113,7 +112,20 @@ public class TreeTraversal {
          */
         this.TDSGlobal = this.tdsBuilder.pushTDS();
 
+        // Première passe pour construire la table des symboles globales avec
+        // les fonctions et les structures
         this.exploreFile(file, true);
+
+        FunctionSymbol mainFunction = this.tdsBuilder.getCurrentTDS().getFunctionSymbol("main");
+
+        if(mainFunction == null) {
+            throw new UndefinedSymbolException(SemanticExceptionCode.NO_MAIN_FUNCTION);
+        }
+        else if(mainFunction.getArguments().size() != 0) {
+            throw new DefinedSymbolException(SemanticExceptionCode.MAIN_FUNCTION_HAS_PARAMETERS, mainFunction);
+        }
+
+        // Deuxième passe pour construire les TDS des fonctions
         this.exploreFile(file, false);
 
         this.tdsBuilder.popTDS();
@@ -519,7 +531,6 @@ public class TreeTraversal {
         }
     }
 
-    // TODO explore objMember
     private void exploreObjMember(CommonTree member) {
     	/*
     	 * 

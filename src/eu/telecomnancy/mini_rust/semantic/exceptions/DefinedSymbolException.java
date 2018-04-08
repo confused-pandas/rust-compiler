@@ -26,6 +26,9 @@ public class DefinedSymbolException extends SemanticException {
             case REDEFINING_STRUCTURE:
                 message = SemanticErrorMessage.redefiningStructure(this.symbol);
                 break;
+            case MAIN_FUNCTION_HAS_PARAMETERS:
+                message = SemanticErrorMessage.mainFunctionHasParameters(this.symbol);
+                break;
             default:
                 message = super.getMessage();
                 break;

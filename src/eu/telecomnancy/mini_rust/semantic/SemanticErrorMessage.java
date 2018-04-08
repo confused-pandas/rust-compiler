@@ -27,4 +27,12 @@ public class SemanticErrorMessage {
     public static String redefiningStructure(Symbol symbol) {
         return SemanticErrorMessage.appendLine(symbol.getNode(), "Redefining structure : " + symbol.getName());
     }
+
+    public static String mainFunctionHasParameters(Symbol symbol) {
+        return SemanticErrorMessage.appendLine(symbol.getNode(), "Function main has parameters");
+    }
+
+    public static String noMainFunction() {
+        return "No main function";
+    }
 }

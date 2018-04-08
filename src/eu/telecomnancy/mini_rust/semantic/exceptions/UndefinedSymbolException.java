@@ -8,6 +8,10 @@ public class UndefinedSymbolException extends SemanticException {
     private final String name;
     private final CommonTree node;
 
+    public UndefinedSymbolException(SemanticExceptionCode code) {
+        this(code, null, null);
+    }
+
     public UndefinedSymbolException(SemanticExceptionCode code, String name, CommonTree node) {
         super(code);
         this.name = name;
@@ -21,6 +25,9 @@ public class UndefinedSymbolException extends SemanticException {
         switch (this.getCode()) {
             case UNDEFINED_SYMBOL:
                 message = SemanticErrorMessage.undefinedSymbol(this.name, this.node);
+                break;
+            case NO_MAIN_FUNCTION:
+                message = SemanticErrorMessage.noMainFunction();
                 break;
             default:
                 message = super.getMessage();
