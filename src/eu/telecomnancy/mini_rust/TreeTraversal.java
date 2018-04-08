@@ -515,7 +515,10 @@ public class TreeTraversal {
     	System.out.println("---------");
     	System.out.println("Obj");
 
-    	this.exploreIDF((CommonTree)obj.getChild(0));
+    	idf = this.exploreIDF((CommonTree)obj.getChild(0));
+    	VarSymbol varSymbol = new varSymbol (obj);
+    	varSymbol.setName = idf;
+    	this.tdsBuilder.getCurrentTDS().addSymbol(varSymbol);
     	
     	for(int i = 1; i < obj.getChildCount(); i++) {
             CommonTree child = (CommonTree)obj.getChild(i);
@@ -542,19 +545,22 @@ public class TreeTraversal {
          */
     	 
     	System.out.println("---------");
-    	System.out.println("Member");
+    	System.out.println("Member");   	
 
-    	this.exploreIDF((CommonTree)member.getChild(0));
+    	String idf = this.exploreIDF((CommonTree)member.getChild(0));
         
         CommonTree child = (CommonTree)member.getChild(1);
         switch (child.getType()) {
         	case mini_rustParser.OBJ:
-        		exploreObj(child);
+        		this.exploreObj(child);
         		break;
         	default:
         		this.exploreExpr(child);
         		break;
             }
+        
+        VarSymbol varSymbol = new VarSymbol(member);
+        varSymbol.setIDF = idf;
     }
 
     private void exploreWhile(CommonTree whileNode) throws SemanticException {
@@ -631,8 +637,8 @@ public class TreeTraversal {
                     this.explorePrintMacro(expr);
                     break;
                 case mini_rustParser.VEC_MACRO:
-            	   this.exploreVecMacro(expr);
-                	break;
+                		this.exploreVecMacro(expr);
+                		break;
                 case mini_rustParser.FUNCTION_CALL:
                     this.exploreFunctionCall(expr);
                     break;
@@ -651,6 +657,24 @@ public class TreeTraversal {
     }
 
     private void exploreUnaryOp(CommonTree expr) {
+    		System.out.println("------------");
+    		System.out.println("Unary Expr");
+    	
+    		/*:
+	  	*	MINUS expr_unaire -> ^(UNARY_MINUS expr_unaire)
+		*	| (
+	    * 		EXCL expr_unaire -> ^(NEG expr_unaire)
+	    *		| STAR expr_unaire -> ^(POINTER expr_unaire)
+	    *		| AMPS expr_unaire -> ^(REF expr_unaire)
+	    *	)
+		*	| (a=atom -> $a) 
+	  	*	(
+	  	* 	LSQBRACKET expr RSQBRACKET -> ^(INDEX $expr_unaire expr)
+	  	*| 	DOT dot_factorisation -> ^(DOT $expr_unaire dot_factorisation)
+	  	*	)*
+	  	*/
+    		
+    		
     }
 
     private void exploreBinaryOp(CommonTree expr) {
