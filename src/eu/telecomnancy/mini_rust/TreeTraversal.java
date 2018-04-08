@@ -12,6 +12,8 @@ import eu.telecomnancy.mini_rust.semantic.exceptions.SemanticException;
 import eu.telecomnancy.mini_rust.semantic.exceptions.UndefinedSymbolException;
 import org.antlr.runtime.tree.CommonTree;
 
+import java.util.Stack;
+
 public class TreeTraversal {
     private final CommonTree root;
     private TDSBuilder tdsBuilder;
@@ -47,8 +49,6 @@ public class TreeTraversal {
             case mini_rustParser.MINUS:
             case mini_rustParser.MUL:
             case mini_rustParser.DIV:
-            case mini_rustParser.DOT:
-            case mini_rustParser.INDEX:
                 return true;
             default:
                 return false;
@@ -164,9 +164,6 @@ public class TreeTraversal {
         String idf = this.exploreIDF((CommonTree)function.getChild(0));
 
         if(firstPass) {
-            System.out.println("---------");
-            System.out.println("Function");
-
             // On garde la TDS courante de coté pour pouvoir
             // faire l'ajout de la fonction à la TDS
             // après avoir ajouté ses arguments à sa TDS
@@ -244,9 +241,6 @@ public class TreeTraversal {
         String idf = this.exploreIDF((CommonTree)structure.getChild(0));
 
         if(firstPass) {
-            System.out.println("---------");
-            System.out.println("Structure");
-
             StructSymbol structSymbol = new StructSymbol(structure);
             structSymbol.setName(idf);
 
@@ -285,9 +279,6 @@ public class TreeTraversal {
          *  - Le premier est son identifiant
          *  - Le second est son type
          */
-        System.out.println("---------");
-        System.out.println("Member_Structure");
-
         String idf = this.exploreIDF((CommonTree)structureMember.getChild(0));
         Type type = this.exploreType((CommonTree)structureMember.getChild(1));
 
@@ -332,8 +323,6 @@ public class TreeTraversal {
             }
         }
 
-        System.out.println("Type : " + type.toString());
-
         return type;
     }
 
@@ -344,9 +333,6 @@ public class TreeTraversal {
          *  - Le premier est son identifiant
          *  - Le second est son type
          */
-        System.out.println("---------");
-        System.out.println("Argument");
-
         String idf = this.exploreIDF((CommonTree)argument.getChild(0));
         Type type = this.exploreType((CommonTree)argument.getChild(1));
 
@@ -414,9 +400,6 @@ public class TreeTraversal {
          * 	        - expr
          *
          */
-        System.out.println("---------");
-        System.out.println("Bloc");
-
         if(createTDS) {
             this.tdsBuilder.pushTDS();
         }
@@ -481,14 +464,6 @@ public class TreeTraversal {
          * 	    - OBJ
          *
          */
-        System.out.println("---------");
-
-        if(isMutable) {
-            System.out.println("Letmut");
-        }
-        else {
-            System.out.println("Let");
-        }
         this.exploreExpr((CommonTree)let.getChild(0));
 
         if(let.getChild(0).getType() == mini_rustParser.IDF) {
@@ -497,24 +472,21 @@ public class TreeTraversal {
             varSymbol.setScope(Scope.LOCAL);
             varSymbol.setMutable(isMutable);
 
+            if(let.getChildCount() > 1) {
+                CommonTree child = (CommonTree)let.getChild(1);
+
+                this.exploreExpr(child);
+                this.evalExpr(child);
+            }
+
             this.tdsBuilder.getCurrentTDS().addSymbol(varSymbol);
-        }
-
-        if(let.getChildCount() > 1) {
-            CommonTree child = (CommonTree)let.getChild(1);
-            this.evalExpr((CommonTree)let.getChild(1));
-
         }
     }
 
-    private void exploreObj(CommonTree obj) {
+    private void exploreObj(CommonTree obj) throws SemanticException {
     	/*
     	 * ^(OBJ expr obj_def)
     	 */
-    	
-    	System.out.println("---------");
-    	System.out.println("Obj");
-
     	this.exploreIDF((CommonTree)obj.getChild(0));
     	
     	for(int i = 1; i < obj.getChildCount(); i++) {
@@ -531,7 +503,7 @@ public class TreeTraversal {
         }
     }
 
-    private void exploreObjMember(CommonTree member) {
+    private void exploreObjMember(CommonTree member) throws SemanticException {
     	/*
     	 * 
          * ^(MEMBER $i $o)*
@@ -540,10 +512,6 @@ public class TreeTraversal {
          *  - Le premier est son identifiant
          *  - Le second est un obj ou un idf
          */
-    	 
-    	System.out.println("---------");
-    	System.out.println("Member");
-
     	this.exploreIDF((CommonTree)member.getChild(0));
         
         CommonTree child = (CommonTree)member.getChild(1);
@@ -565,33 +533,22 @@ public class TreeTraversal {
          * Le premier une expr
          * Le second un bloc
          */
-
-        System.out.println("---------");
-        System.out.println("While");
-
         this.exploreExpr((CommonTree)whileNode.getChild(0));
         this.exploreBloc((CommonTree)whileNode.getChild(1));
     }
 
-    private void exploreReturn(CommonTree returnNode) {
+    private void exploreReturn(CommonTree returnNode) throws SemanticException {
         /*
          * ^(RETURN expr?)
          *
          * Un return à éventuellement un fils : une expr
          */
-
-        System.out.println("---------");
-        System.out.println("Return");
-
         if(returnNode.getChildCount() > 0) {
             this.exploreExpr((CommonTree)returnNode.getChild(0));
         }
     }
 
     private void exploreIf(CommonTree ifNode) throws SemanticException {
-    	System.out.println("---------");
-    	System.out.println("If");
-
     	this.exploreExpr((CommonTree)ifNode.getChild(0));
     	this.exploreBloc((CommonTree)ifNode.getChild(1));
 
@@ -602,9 +559,6 @@ public class TreeTraversal {
     }
 
     private void exploreElse(CommonTree elseNode) throws SemanticException {
-    	System.out.println("---------");
-    	System.out.println("Else");
-
     	switch (elseNode.getChild(0).getType()){
     		case mini_rustParser.IF:
     			this.exploreIf((CommonTree)elseNode.getChild(0));
@@ -613,20 +567,26 @@ public class TreeTraversal {
     			this.exploreBloc((CommonTree)elseNode.getChild(0));
     			break;
     		default:
-    			System.out.println(elseNode.getChild(0).toString());
+    			System.err.println("else" + elseNode.getChild(0).toString());
     	}
     }
 
-    private void exploreExpr(CommonTree expr) {
-        System.out.println("---------");
-        System.out.println("Expr");
-
+    private void exploreExpr(CommonTree expr) throws SemanticException {
         if(this.isUnaryOp(expr)){
             this.exploreUnaryOp(expr);
         } else if(this.isBinaryOp(expr)) {
             this.exploreBinaryOp(expr);
         } else {
             switch (expr.getType()) {
+                case mini_rustParser.INDEX:
+                    // TODO : explore index
+                    break;
+                case mini_rustParser.DOT:
+                    // TODO : explore dot
+                    break;
+                case mini_rustParser.OBJ:
+                    // TODO : explore instanciation obj
+                    break;
                 case mini_rustParser.PRINT_MACRO:
                     this.explorePrintMacro(expr);
                     break;
@@ -656,43 +616,36 @@ public class TreeTraversal {
     private void exploreBinaryOp(CommonTree expr) {
     }
 
-    private void explorePrintMacro(CommonTree printMacro) {
-        System.out.println("---------");
-        System.out.println("Print");
+    private void explorePrintMacro(CommonTree printMacro) throws SemanticException {
         this.exploreExpr((CommonTree)printMacro.getChild(0));
     }
 
-    private void exploreVecMacro(CommonTree vecMacro) {
-    	System.out.println("---------");
-    	System.out.println("Vec");
-    	
+    private void exploreVecMacro(CommonTree vecMacro) throws SemanticException {
     	for (int i = 0; i < vecMacro.getChildCount(); i++) {
-    		this.exploreExpr((CommonTree)vecMacro.getChild(i));
+    		CommonTree child = (CommonTree)vecMacro.getChild(i);
+    	    this.exploreExpr(child);
     	}
     }
 
-    private void exploreFunctionCall(CommonTree functionCall) {
-        System.out.println("----------");
-        System.out.println("Function_Call");
+    private void exploreFunctionCall(CommonTree functionCall) throws SemanticException {
+        String idf = this.exploreIDF((CommonTree)functionCall.getChild(0));
+        FunctionSymbol functionSymbol = this.tdsBuilder.getCurrentTDS().getFunctionSymbol(idf);
 
-        this.exploreIDF((CommonTree)functionCall.getChild(0));
+        if(functionSymbol == null) {
+            throw new UndefinedSymbolException(SemanticExceptionCode.CALLING_UNDEFINED_FUNCTION, idf, functionCall);
+        }
+
         for(int i = 1; i < functionCall.getChildCount(); i++) {
             this.exploreParam((CommonTree)functionCall.getChild(i));
         }
-
     }
 
-    private void exploreParam(CommonTree param) {
-        System.out.println("---------");
-        System.out.println("Param");
-
+    private void exploreParam(CommonTree param) throws SemanticException {
         this.exploreExpr(param);
     }
 
     private String exploreIDF(CommonTree idfNode) {
         String idf = idfNode.getText();
-        System.out.println("IDF : " + idf);
-
         return idf;
     }
 

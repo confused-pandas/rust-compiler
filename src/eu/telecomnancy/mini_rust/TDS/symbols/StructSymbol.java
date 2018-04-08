@@ -1,5 +1,6 @@
 package eu.telecomnancy.mini_rust.TDS.symbols;
 
+import eu.telecomnancy.mini_rust.TDS.TDS;
 import eu.telecomnancy.mini_rust.Utils;
 import org.antlr.runtime.tree.CommonTree;
 
@@ -22,8 +23,8 @@ public class StructSymbol extends SymbolTDSComposed {
         StringBuilder str = new StringBuilder();
 
         str.append(super.getAsRow())
-                .append("| ").append(Utils.padRight("STRUCT(" + this.getTDS().getRegion() + ")", 10))
-                .append("| ").append(Utils.padRight(String.valueOf(this.getShift()), 5))
+                .append("| ").append(Utils.padRight("STRUCT(" + this.getTDS().getRegion() + ")", TDS.ELEMENT_TYPE_COL_WIDTH))
+                .append("| ").append(Utils.padRight(String.valueOf(this.getShift()), TDS.SHIFT_COL_WIDTH))
                 .append("| ");
 
         return str.toString();

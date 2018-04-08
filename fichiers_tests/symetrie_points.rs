@@ -39,7 +39,7 @@ fn symetrique(p : Point, choix: i32) -> i32 {
 		let y_2 = -p.y;
 		let p.x = x_2;
 		let p.y = y_2;
-		afiche_x(p);
+		affiche_x(p);
 		affiche_y(p);
 		return 1;
 	}

@@ -37,6 +37,10 @@ public class Type {
         return this.typeEnum;
     }
 
+    public int getVecDimension() {
+        return this.vecDimension;
+    }
+
     public static TypeEnum stringToExprType(String type) {
         TypeEnum typeEnum;
 
@@ -54,6 +58,10 @@ public class Type {
         }
 
         return typeEnum;
+    }
+
+    public String getStructType() {
+        return this.structType;
     }
 
     public boolean isStruct() {

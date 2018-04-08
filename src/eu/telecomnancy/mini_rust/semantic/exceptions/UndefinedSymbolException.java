@@ -26,6 +26,9 @@ public class UndefinedSymbolException extends SemanticException {
             case UNDEFINED_SYMBOL:
                 message = SemanticErrorMessage.undefinedSymbol(this.name, this.node);
                 break;
+            case CALLING_UNDEFINED_FUNCTION:
+                message = SemanticErrorMessage.callingUndefinedFunction(this.name, this.node);
+                break;
             case NO_MAIN_FUNCTION:
                 message = SemanticErrorMessage.noMainFunction();
                 break;
