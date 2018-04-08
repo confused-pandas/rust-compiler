@@ -55,6 +55,11 @@ public class Type {
 
         return typeEnum;
     }
+
+    public boolean isStruct() {
+        return this.typeEnum == TypeEnum.STRUCTURE;
+    }
+
     /**
      * Retourne une chaine de caractère représentant le type
      *

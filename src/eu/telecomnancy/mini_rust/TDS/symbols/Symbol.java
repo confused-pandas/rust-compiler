@@ -53,6 +53,7 @@ public abstract class Symbol {
      */
     public Symbol(final CommonTree node) {
         this.node = node;
+        this.scope = Scope.LOCAL;
     }
 
     /**

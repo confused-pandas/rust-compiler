@@ -686,7 +686,6 @@ public class TreeTraversal {
     }
 
     private TypeEnum evalExpr(CommonTree expr) {
-
         if (isBinaryOp(expr)) {
             TypeEnum evalExprLeft = evalExpr((CommonTree) expr.getChild(0));
             TypeEnum evalExprRight = evalExpr((CommonTree) expr.getChild(1));
