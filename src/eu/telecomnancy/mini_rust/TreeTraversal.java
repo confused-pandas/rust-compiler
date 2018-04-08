@@ -628,8 +628,6 @@ public class TreeTraversal {
     }
 
     private void exploreDot(CommonTree dot) throws SemanticException {
-
-
         this.exploreExpr((CommonTree)dot.getChild(0));
         this.exploreDotFactorisation((CommonTree)dot.getChild(1));
     }
@@ -681,7 +679,6 @@ public class TreeTraversal {
         return idf;
     }
 
-
     private Type evalExpr(CommonTree expr) {
         Type type = new Type(TypeEnum.UNKNOWN);
 
@@ -702,61 +699,49 @@ public class TreeTraversal {
         else {
             switch (expr.getType()) {
                 case mini_rustParser.INDEX:
-                    if(expr.getChild(0).getType() == mini_rustParser.DOT) {
-                        return this.evalExpr((CommonTree)expr.getChild(0));
-                    }
-                    else {
-                        CommonTree currentNode = expr;
-                        int subDim = 0;
-
-                        while(currentNode.getType() == mini_rustParser.INDEX) {
-                            currentNode = (CommonTree)currentNode.getChild(0);
-                            subDim++;
-                        }
-
-                        VarSymbol varSymbol = this.tdsBuilder.getCurrentTDS().getVarSymbol(currentNode.getText());
-                        Type varType = varSymbol.getType();
-                        type = new Type(varType.getTypeEnum(), varType.getVecDimension() - subDim);
-
-                        if(varType.isStruct()) {
-                            type.setStructType(varType.getStructType());
-                        }
-                    }
-                    break;
                 case mini_rustParser.DOT:
-                    Stack<String> structs = new Stack<>();
                     CommonTree currentNode = expr;
+                    Stack<CommonTree> nodes = new Stack<>();
 
-                    while(currentNode.getType() == mini_rustParser.DOT) {
-                        structs.push(currentNode.getChild(1).getText());
-                        currentNode = (CommonTree)currentNode.getChild(0);
+                    while(currentNode.getType() == mini_rustParser.INDEX || currentNode.getType() == mini_rustParser.DOT) {
+                            nodes.push(currentNode);
+                            currentNode = (CommonTree)currentNode.getChild(0);
                     }
 
-                    Type typeStruct;
-                    String varIdf;
-                    VarSymbol varSymbol = null;
+                    boolean first = true;
+                    CommonTree node;
+                    CommonTree child;
 
-                    if(currentNode.getType() == mini_rustParser.INDEX) {
-                        typeStruct = this.evalExpr(currentNode);
+                    while(!nodes.empty()) {
+                        node = nodes.pop();
+
+                        if(first) {
+                            child = (CommonTree)node.getChild(0);
+                            type = this.evalExpr(child);
+                        }
+                        else {
+                            child = (CommonTree)node.getChild(1);
+                        }
+
+                        if(node.getType() == mini_rustParser.DOT) {
+                            StructSymbol structSymbol = this.tdsBuilder.getCurrentTDS().getStructureSymbol(type.getStructType());
+                            VarSymbol varSymbol = structSymbol.getTDS().getVarSymbol(child.getText());
+                            type = varSymbol.getType();
+                        }
+                        else {
+                            Type tempType = new Type(type.getTypeEnum(), type.getVecDimension() - 1);
+
+                            if(type.isStruct()) {
+                                tempType.setStructType(type.getStructType());
+                            }
+
+                            type = tempType;
+                        }
+
+                        if(first) {
+                            first = false;
+                        }
                     }
-                    else {
-                        varIdf = currentNode.getText();
-                        varSymbol = this.tdsBuilder.getCurrentTDS().getVarSymbol(varIdf);
-                        typeStruct = varSymbol.getType();
-                    }
-
-                    StructSymbol structSymbol = this.tdsBuilder.getCurrentTDS().getStructureSymbol(typeStruct.toString());
-
-                    while(!structs.empty()) {
-                        varIdf = structs.pop();
-                        varSymbol = structSymbol.getTDS().getVarSymbol(varIdf);
-                        structSymbol = this.tdsBuilder.getCurrentTDS().getStructureSymbol(varSymbol.getType().toString());
-                    }
-
-                    if(varSymbol != null) {
-                        type = varSymbol.getType();
-                    }
-
                     break;
                 case mini_rustParser.IDF:
                     type = this.tdsBuilder.getCurrentTDS().getVarSymbol(expr.getText()).getType();
