@@ -195,6 +195,11 @@ public class TDS {
     			break;    			
     	}
     }
+    
+    
+    public void setShift(int shiftCount) {
+    	this.shiftCount = shiftCount;
+    }
 
     /**
      * Ajoute une TDS fille à la TDS courante
