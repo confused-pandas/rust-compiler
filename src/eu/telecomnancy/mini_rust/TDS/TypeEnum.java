@@ -7,5 +7,6 @@ public enum TypeEnum {
     BOOL,
     STRUCTURE,
     UNKNOWN,
-    ERROR
+    ERROR,
+    NOT_INITIALIZED
 }

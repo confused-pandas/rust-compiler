@@ -472,14 +472,15 @@ public class TreeTraversal {
             varSymbol.setScope(Scope.LOCAL);
             varSymbol.setMutable(isMutable);
 
+            this.tdsBuilder.getCurrentTDS().addSymbol(varSymbol);
+
             if(let.getChildCount() > 1) {
                 CommonTree child = (CommonTree)let.getChild(1);
 
                 this.exploreExpr(child);
-                varSymbol.setType(this.evalExpr(child));
+                Type rightType = this.evalExpr(child);
+                varSymbol.setType(rightType);
             }
-
-            this.tdsBuilder.getCurrentTDS().addSymbol(varSymbol);
         }
     }
 
@@ -679,7 +680,7 @@ public class TreeTraversal {
         return idf;
     }
 
-    private Type evalExpr(CommonTree expr) {
+    private Type evalExpr(CommonTree expr) throws UndefinedSymbolException {
         Type type = new Type(TypeEnum.UNKNOWN);
 
         if(this.isUnaryOp(expr)) {
@@ -689,7 +690,7 @@ public class TreeTraversal {
             Type leftEvalType = this.evalExpr((CommonTree)expr.getChild(0));
             Type rightEvalType = this.evalExpr((CommonTree)expr.getChild(1));
 
-            if(leftEvalType.equals(rightEvalType)) {
+            if(!leftEvalType.equals(rightEvalType)) {
                 type = new Type(TypeEnum.ERROR);
             }
             else {
@@ -723,9 +724,24 @@ public class TreeTraversal {
                             child = (CommonTree)node.getChild(1);
                         }
 
-                        if(node.getType() == mini_rustParser.DOT) {
+                        if(child.getType() == mini_rustParser.LEN) {
+                            if(!nodes.empty()) {
+                                // TODO : semnantique .len pas à la fin
+                            }
+                            else if(nodes.empty() && !type.isVec()) {
+                                // TODO : semantique .len pas sur un vecteur
+                            }
+                            else {
+                                type = new Type(TypeEnum.I32);
+                            }
+                        }
+                        else if(node.getType() == mini_rustParser.DOT) {
                             StructSymbol structSymbol = this.tdsBuilder.getCurrentTDS().getStructureSymbol(type.getStructType());
                             VarSymbol varSymbol = structSymbol.getTDS().getVarSymbol(child.getText());
+
+                            if(varSymbol == null) {
+                                throw new UndefinedSymbolException(SemanticExceptionCode.UNDEFINED_SYMBOL, child.getText(), child);
+                            }
                             type = varSymbol.getType();
                         }
                         else {

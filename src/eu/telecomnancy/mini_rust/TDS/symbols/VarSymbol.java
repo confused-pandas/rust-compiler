@@ -35,7 +35,7 @@ public class VarSymbol extends Symbol {
     public VarSymbol(CommonTree node) {
         super(node);
         this.mutable = false;
-        this.type = new Type(TypeEnum.UNKNOWN);
+        this.type = new Type(TypeEnum.NOT_INITIALIZED);
     }
 
     /**
