@@ -8,7 +8,6 @@ import eu.telecomnancy.mini_rust.semantic.exceptions.SemanticException;
 
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.PriorityQueue;
 import java.util.Queue;
 
 public class TDS {
@@ -141,11 +140,11 @@ public class TDS {
                     throw new DefinedSymbolException(SemanticExceptionCode.REDEFINING_FUNCTION, symbol);
                 }
                 else {
-                    updateShift(symbol);
+                    addSymbolAndUpdateShift(symbol);
                 }
             }
             else {
-                updateShift(symbol);
+                addSymbolAndUpdateShift(symbol);
             }
         }
         //Le cas des structures
@@ -158,7 +157,7 @@ public class TDS {
                 throw new DefinedSymbolException(SemanticExceptionCode.REDEFINING_STRUCTURE, symbol);
             }
             else {
-                updateShift(symbol);
+                addSymbolAndUpdateShift(symbol);
             }
         }
         //Le cas des variables
@@ -173,32 +172,30 @@ public class TDS {
                 }
             }
             else {
-                updateShift(symbol);
+                addSymbolAndUpdateShift(symbol);
             }
         }
     }
-    
+
     /**
      * Calcul le déplacement ( shiftcount )
      */
-    public void updateShift(Symbol symbol) {
+    private void addSymbolAndUpdateShift(Symbol symbol) {
     	this.symbols.put(symbol.getHashName(), symbol);
+
     	switch (symbol.getScope()) {
     		case FUNCTION:
     			this.shiftCount = this.shiftCount - 1;
+    			symbol.setShift(this.shiftCount);
     			break;
     		default:
     			if (shiftCount < 0) {
     				this.shiftCount = 0;
     			}
+    			symbol.setShift(this.shiftCount);
     			this.shiftCount = this.shiftCount + 1;
     			break;    			
     	}
-    }
-    
-    
-    public void setShift(int shiftCount) {
-    	this.shiftCount = shiftCount;
     }
 
     /**
