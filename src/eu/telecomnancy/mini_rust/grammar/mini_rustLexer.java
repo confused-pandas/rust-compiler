@@ -1,4 +1,4 @@
-// $ANTLR 3.2 Sep 23, 2009 12:02:23 D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g 2018-04-07 17:08:34
+// $ANTLR 3.2 Sep 23, 2009 12:02:23 D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g 2018-04-08 08:29:31
 
 	package eu.telecomnancy.mini_rust.grammar;
 
@@ -958,8 +958,8 @@ public class mini_rustLexer extends Lexer {
         try {
             int _type = IDF;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g:251:5: ( ( LOWERCASE | UPPERCASE | '_' ) ( LOWERCASE | UPPERCASE | DIGIT | '_' )* )
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g:251:7: ( LOWERCASE | UPPERCASE | '_' ) ( LOWERCASE | UPPERCASE | DIGIT | '_' )*
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g:253:5: ( ( LOWERCASE | UPPERCASE | '_' ) ( LOWERCASE | UPPERCASE | DIGIT | '_' )* )
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g:253:7: ( LOWERCASE | UPPERCASE | '_' ) ( LOWERCASE | UPPERCASE | DIGIT | '_' )*
             {
             if ( (input.LA(1)>='A' && input.LA(1)<='Z')||input.LA(1)=='_'||(input.LA(1)>='a' && input.LA(1)<='z') ) {
                 input.consume();
@@ -970,7 +970,7 @@ public class mini_rustLexer extends Lexer {
                 recover(mse);
                 throw mse;}
 
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g:251:37: ( LOWERCASE | UPPERCASE | DIGIT | '_' )*
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g:253:37: ( LOWERCASE | UPPERCASE | DIGIT | '_' )*
             loop1:
             do {
                 int alt1=2;
@@ -1019,10 +1019,10 @@ public class mini_rustLexer extends Lexer {
         try {
             int _type = CSTE_ENT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g:252:10: ( ( DIGIT )+ )
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g:252:12: ( DIGIT )+
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g:254:10: ( ( DIGIT )+ )
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g:254:12: ( DIGIT )+
             {
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g:252:12: ( DIGIT )+
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g:254:12: ( DIGIT )+
             int cnt2=0;
             loop2:
             do {
@@ -1036,7 +1036,7 @@ public class mini_rustLexer extends Lexer {
 
                 switch (alt2) {
             	case 1 :
-            	    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g:252:12: DIGIT
+            	    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g:254:12: DIGIT
             	    {
             	    mDIGIT(); 
 
@@ -1068,11 +1068,11 @@ public class mini_rustLexer extends Lexer {
         try {
             int _type = CSTE_STR;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g:253:10: ( '\"' ( . )* '\"' )
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g:253:12: '\"' ( . )* '\"'
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g:255:10: ( '\"' ( . )* '\"' )
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g:255:12: '\"' ( . )* '\"'
             {
             match('\"'); 
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g:253:16: ( . )*
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g:255:16: ( . )*
             loop3:
             do {
                 int alt3=2;
@@ -1088,7 +1088,7 @@ public class mini_rustLexer extends Lexer {
 
                 switch (alt3) {
             	case 1 :
-            	    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g:253:16: .
+            	    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g:255:16: .
             	    {
             	    matchAny(); 
 
@@ -1117,12 +1117,12 @@ public class mini_rustLexer extends Lexer {
         try {
             int _type = COMMENTS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g:254:10: ( '/*' ( . )* '*/' )
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g:254:12: '/*' ( . )* '*/'
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g:256:10: ( '/*' ( . )* '*/' )
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g:256:12: '/*' ( . )* '*/'
             {
             match("/*"); 
 
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g:254:17: ( . )*
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g:256:17: ( . )*
             loop4:
             do {
                 int alt4=2;
@@ -1147,7 +1147,7 @@ public class mini_rustLexer extends Lexer {
 
                 switch (alt4) {
             	case 1 :
-            	    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g:254:17: .
+            	    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g:256:17: .
             	    {
             	    matchAny(); 
 
@@ -1178,8 +1178,8 @@ public class mini_rustLexer extends Lexer {
         try {
             int _type = WS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g:255:4: ( ( ' ' | '\\r' | '\\n' | '\\t' ) )
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g:255:6: ( ' ' | '\\r' | '\\n' | '\\t' )
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g:257:4: ( ( ' ' | '\\r' | '\\n' | '\\t' ) )
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g:257:6: ( ' ' | '\\r' | '\\n' | '\\t' )
             {
             if ( (input.LA(1)>='\t' && input.LA(1)<='\n')||input.LA(1)=='\r'||input.LA(1)==' ' ) {
                 input.consume();
@@ -1205,8 +1205,8 @@ public class mini_rustLexer extends Lexer {
     // $ANTLR start "LOWERCASE"
     public final void mLOWERCASE() throws RecognitionException {
         try {
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g:257:20: ( 'a' .. 'z' )
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g:257:22: 'a' .. 'z'
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g:259:20: ( 'a' .. 'z' )
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g:259:22: 'a' .. 'z'
             {
             matchRange('a','z'); 
 
@@ -1221,8 +1221,8 @@ public class mini_rustLexer extends Lexer {
     // $ANTLR start "UPPERCASE"
     public final void mUPPERCASE() throws RecognitionException {
         try {
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g:258:20: ( 'A' .. 'Z' )
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g:258:22: 'A' .. 'Z'
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g:260:20: ( 'A' .. 'Z' )
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g:260:22: 'A' .. 'Z'
             {
             matchRange('A','Z'); 
 
@@ -1237,8 +1237,8 @@ public class mini_rustLexer extends Lexer {
     // $ANTLR start "DIGIT"
     public final void mDIGIT() throws RecognitionException {
         try {
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g:259:16: ( '0' .. '9' )
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g:259:18: '0' .. '9'
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g:261:16: ( '0' .. '9' )
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g:261:18: '0' .. '9'
             {
             matchRange('0','9'); 
 

@@ -228,8 +228,10 @@ expr_unaire
 	    | AMPS expr_unaire -> ^(REF expr_unaire)
 	  )
 	| (a=atom -> $a)
-	  (LSQBRACKET expr RSQBRACKET -> ^(INDEX $expr_unaire expr))*
-	  (DOT dot_factorisation -> ^(DOT $expr_unaire dot_factorisation))*
+	  (
+	  	  LSQBRACKET expr RSQBRACKET -> ^(INDEX $expr_unaire expr)
+	  	| DOT dot_factorisation -> ^(DOT $expr_unaire dot_factorisation)
+	  )*
 	;
 
 atom
