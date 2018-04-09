@@ -661,12 +661,12 @@ public class TreeTraversal {
     private void exploreFunctionCall(CommonTree functionCall) throws SemanticException {
         String idf = this.exploreIDF((CommonTree)functionCall.getChild(0));
         FunctionSymbol functionSymbol = this.tdsBuilder.getCurrentTDS().getFunctionSymbol(idf);
-        int taille = functionSymbol.getTDS().getNbSymbols();
-
 
         if(functionSymbol == null) {
             throw new UndefinedSymbolException(SemanticExceptionCode.CALLING_UNDEFINED_FUNCTION, idf, functionCall);
         }
+
+        int taille = functionSymbol.getTDS().getNbSymbols();
 
         if (taille != functionCall.getChildCount()-1){
             throw new DefinedSymbolException(SemanticExceptionCode.UNCORRECT_NUMBER_OF_SYMBOLS_F, functionSymbol);
@@ -732,9 +732,13 @@ public class TreeTraversal {
                             child = (CommonTree)node.getChild(1);
                         }
 
+                        if(nodes.empty()) {
+                            child = (CommonTree)node.getChild(1);
+                        }
+
                         if(child.getType() == mini_rustParser.LEN) {
                             if(!nodes.empty()) {
-                                // TODO : semnantique .len pas à la fin
+                                // TODO : semantique .len pas à la fin
                             }
                             else if(nodes.empty() && !type.isVec()) {
                                 // TODO : semantique .len pas sur un vecteur
@@ -797,7 +801,7 @@ public class TreeTraversal {
                     type.setStructType(expr.getChild(0).getText());
                     break;
                 default:
-                    System.out.println("type inconnu : " + expr.getText());
+                    System.err.println("type inconnu : " + expr.getText());
                     break;
             }
         }
