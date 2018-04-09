@@ -669,7 +669,7 @@ public class TreeTraversal {
             throw new UndefinedSymbolException(SemanticExceptionCode.CALLING_UNDEFINED_FUNCTION, idf, functionCall);
         }
 
-        int taille = functionSymbol.getTDS().getNbSymbols();
+        int taille = functionSymbol.getArguments().size();
 
         if (taille != functionCall.getChildCount()-1){
             throw new DefinedSymbolException(SemanticExceptionCode.UNCORRECT_NUMBER_OF_SYMBOLS_F, functionSymbol);
