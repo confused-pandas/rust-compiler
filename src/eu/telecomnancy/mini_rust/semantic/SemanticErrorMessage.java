@@ -26,16 +26,20 @@ public class SemanticErrorMessage {
         return SemanticErrorMessage.appendLine(node, "Undefined type : " + name);
     }
     
-    public static String boolExprIf(String name, CommonTree node){
-        return SemanticErrorMessage.appendLine(node, "No bool in if expression " + name);
+    public static String boolExprIf(CommonTree node){
+        return SemanticErrorMessage.appendLine(node, "No bool in if expression");
     }
     
-    public static String boolExprWhile(String name, CommonTree node){
-        return SemanticErrorMessage.appendLine(node, "No bool in while expression " + name);
+    public static String boolExprWhile(CommonTree node){
+        return SemanticErrorMessage.appendLine(node, "No bool in while expression ");
     }
     
-    public static String vecExprSameType(String name, CommonTree node) {
-    	return SemanticErrorMessage.appendLine(node, "Expressions in Vector are not of same type" + name);
+    public static String vecExprSameType(CommonTree node) {
+    	return SemanticErrorMessage.appendLine(node, "Expressions in Vector are not of same type");
+    }
+    
+    public static String compBoolExpr(String name, CommonTree node) {
+    	return SemanticErrorMessage.appendLine(node, "Comparaison is not of boolean type " + name );
     }
 
     public static String modifyingNotMutableSymbol(Symbol symbol) {
