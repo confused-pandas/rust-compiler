@@ -33,6 +33,10 @@ public class SemanticErrorMessage {
     public static String boolExprWhile(String name, CommonTree node){
         return SemanticErrorMessage.appendLine(node, "No bool in while expression " + name);
     }
+    
+    public static String vecExprSameType(String name, CommonTree node) {
+    	return SemanticErrorMessage.appendLine(node, "Expressions in Vector are not of same type" + name);
+    }
 
     public static String modifyingNotMutableSymbol(Symbol symbol) {
         return SemanticErrorMessage.appendLine(symbol.getNode(), "Modifying a not mutable symbol : " + symbol.getName());

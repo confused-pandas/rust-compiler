@@ -37,8 +37,13 @@ public class UndefinedSymbolException extends SemanticException {
                 break;
             case IF_BOOL_EXPR:
             	message = SemanticErrorMessage.boolExprIf(this.name, this.node);
+            	break;
             case WHILE_BOOL_EXPR:
             	message = SemanticErrorMessage.boolExprWhile(this.name, this.node);
+            	break;
+            case VEC_EXPR_SAME_TYPE:
+            	message = SemanticErrorMessage.vecExprSameType(this.name, this.node);
+            	break;
             default:
                 message = super.getMessage();
                 break;

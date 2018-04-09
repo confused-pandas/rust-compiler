@@ -658,8 +658,14 @@ public class TreeTraversal {
     }
 
     private void exploreVecMacro(CommonTree vecMacro) throws SemanticException {
+    	Type type = null;
         for (int i = 0; i < vecMacro.getChildCount(); i++) {
             CommonTree child = (CommonTree)vecMacro.getChild(i);
+            if (type == null) {
+            	type = this.evalExpr(child);
+            } else if (!(type.equals(this.evalExpr(child)))) {
+            	throws new UndefinedSymbolException(SemanticExceptionCode.VEC_EXPR_SAME_TYPE);
+            }
             this.exploreExpr(child);
         }
     }
