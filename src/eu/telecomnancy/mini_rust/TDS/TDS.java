@@ -127,6 +127,10 @@ public class TDS {
         return (StructSymbol)this.getSymbol(StructSymbol.genHashName(name));
     }
 
+    public int getNbSymbols (){
+        return this.symbols.size();
+    }
+
     public void addSymbol(Symbol symbol) throws SemanticException {
         //on teste si c'est une fonction
         if(symbol instanceof FunctionSymbol) {

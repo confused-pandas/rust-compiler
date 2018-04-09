@@ -32,6 +32,9 @@ public class UndefinedSymbolException extends SemanticException {
             case NO_MAIN_FUNCTION:
                 message = SemanticErrorMessage.noMainFunction();
                 break;
+            case UNDEFINED_TYPE:
+                message = SemanticErrorMessage.undefinedType(this.name, this.node);
+                break;
             default:
                 message = super.getMessage();
                 break;

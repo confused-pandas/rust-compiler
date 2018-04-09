@@ -12,6 +12,7 @@ import eu.telecomnancy.mini_rust.semantic.exceptions.SemanticException;
 import eu.telecomnancy.mini_rust.semantic.exceptions.UndefinedSymbolException;
 import org.antlr.runtime.tree.CommonTree;
 
+import java.util.HashMap;
 import java.util.Stack;
 
 public class TreeTraversal {
@@ -289,7 +290,7 @@ public class TreeTraversal {
         this.tdsBuilder.getCurrentTDS().addSymbol(varSymbol);
     }
 
-    private Type exploreType(CommonTree typeNode) {
+    private Type exploreType(CommonTree typeNode) throws SemanticException {
         /*
          * type
          * 	:
@@ -316,7 +317,7 @@ public class TreeTraversal {
             StructSymbol structSymbol = this.tdsBuilder.getCurrentTDS().getStructureSymbol(currentNode.getText());
 
             if(structSymbol == null) {
-                // TODO : throw new undefined type
+                throw new UndefinedSymbolException(SemanticExceptionCode.UNDEFINED_TYPE, typeNode.getText(), typeNode);
             }
             else {
                 type.setStructType(structSymbol.getName());
@@ -489,9 +490,13 @@ public class TreeTraversal {
          * ^(OBJ expr obj_def)
          */
 
-        this.exploreIDF((CommonTree)obj.getChild(0));
+        String idf = this.exploreIDF((CommonTree)obj.getChild(0));
 
-
+        StructSymbol structSymbol = this.tdsBuilder.getCurrentTDS().getStructureSymbol(idf);
+        int nbSymbols = structSymbol.getTDS().getNbSymbols();
+        if (nbSymbols != obj.getChildCount() - 1){
+            throw new DefinedSymbolException(SemanticExceptionCode.UNCORRECT_NUMBER_OF_SYMBOLS, structSymbol );
+        }
         for(int i = 1; i < obj.getChildCount(); i++) {
             CommonTree child = (CommonTree)obj.getChild(i);
 
@@ -590,7 +595,7 @@ public class TreeTraversal {
                     this.exploreDot(expr);
                     break;
                 case mini_rustParser.OBJ:
-                    this.exploreObject(expr);
+                    this.exploreObj(expr);
                     break;
                 case mini_rustParser.PRINT_MACRO:
                     this.explorePrintMacro(expr);
@@ -656,9 +661,15 @@ public class TreeTraversal {
     private void exploreFunctionCall(CommonTree functionCall) throws SemanticException {
         String idf = this.exploreIDF((CommonTree)functionCall.getChild(0));
         FunctionSymbol functionSymbol = this.tdsBuilder.getCurrentTDS().getFunctionSymbol(idf);
+        int taille = functionSymbol.getTDS().getNbSymbols();
+
 
         if(functionSymbol == null) {
             throw new UndefinedSymbolException(SemanticExceptionCode.CALLING_UNDEFINED_FUNCTION, idf, functionCall);
+        }
+
+        if (taille != functionCall.getChildCount()-1){
+            throw new DefinedSymbolException(SemanticExceptionCode.UNCORRECT_NUMBER_OF_SYMBOLS_F, functionSymbol);
         }
 
         for(int i = 1; i < functionCall.getChildCount(); i++) {
@@ -666,9 +677,6 @@ public class TreeTraversal {
         }
     }
 
-    public void exploreObject(CommonTree object) {
-
-    }
 
     private void exploreParam(CommonTree param) throws SemanticException {
         this.exploreExpr(param);
