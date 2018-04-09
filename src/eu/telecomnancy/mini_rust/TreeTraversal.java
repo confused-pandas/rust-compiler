@@ -664,7 +664,7 @@ public class TreeTraversal {
             if (type == null) {
             	type = this.evalExpr(child);
             } else if (!(type.equals(this.evalExpr(child)))) {
-            	throws new UndefinedSymbolException(SemanticExceptionCode.VEC_EXPR_SAME_TYPE);
+            	throw new UndefinedSymbolException(SemanticExceptionCode.VEC_EXPR_SAME_TYPE);
             }
             this.exploreExpr(child);
         }
@@ -676,12 +676,6 @@ public class TreeTraversal {
 
         if(functionSymbol == null) {
             throw new UndefinedSymbolException(SemanticExceptionCode.CALLING_UNDEFINED_FUNCTION, idf, functionCall);
-        }
-
-        int taille = functionSymbol.getArguments().size();
-
-        if (taille != functionCall.getChildCount()-1){
-            throw new DefinedSymbolException(SemanticExceptionCode.UNCORRECT_NUMBER_OF_SYMBOLS_F, functionSymbol);
         }
 
         for(int i = 1; i < functionCall.getChildCount(); i++) {
@@ -707,14 +701,46 @@ public class TreeTraversal {
             return this.evalExpr((CommonTree)expr.getChild(0));
         }
         else if(this.isBinaryOp(expr)) {
-            Type leftEvalType = this.evalExpr((CommonTree)expr.getChild(0));
-            Type rightEvalType = this.evalExpr((CommonTree)expr.getChild(1));
+            Type leftEvalType;
+            Type rightEvalType;
 
-            if(!leftEvalType.equals(rightEvalType)) {
-                type = new Type(TypeEnum.ERROR);
-            }
-            else {
-                return leftEvalType;
+            switch (expr.getType()) {
+                case mini_rustParser.OR:
+                case mini_rustParser.AND:
+                case mini_rustParser.LT:
+                case mini_rustParser.LE:
+                case mini_rustParser.GT:
+                case mini_rustParser.GE:
+                case mini_rustParser.EQ:
+                case mini_rustParser.NE:
+                    leftEvalType = this.evalExpr((CommonTree)expr.getChild(0));
+                    rightEvalType = this.evalExpr((CommonTree)expr.getChild(1));
+
+                    if(leftEvalType.equals(rightEvalType)) {
+                        type = new Type(TypeEnum.BOOL);
+                    }
+                    else {
+                        // TODO : MISMATCH TYPE SEMANTIC
+                    }
+                    break;
+                case mini_rustParser.PLUS:
+                case mini_rustParser.MINUS:
+                case mini_rustParser.MUL:
+                case mini_rustParser.DIV:
+                    leftEvalType = this.evalExpr((CommonTree)expr.getChild(0));
+                    rightEvalType = this.evalExpr((CommonTree)expr.getChild(1));
+
+                    if(leftEvalType.equals(rightEvalType)) {
+                        type = new Type(TypeEnum.I32);
+                    }
+                    else {
+                        // TODO : MISMATCH TYPE SEMANTIC
+                        return null;
+                    }
+                    break;
+                default:
+
+                    break;
             }
         }
         else {
