@@ -25,7 +25,6 @@ public class TDS {
      * généré par la fonction .getHashName() de Symbol
      */
     private final HashMap<String, Symbol> symbols;
-
     /**
      * TDS des blocs enfants de ce bloc
      */
@@ -37,7 +36,7 @@ public class TDS {
      * nulle
      */
     private TDS parent;
-
+    private Symbol symbol;
     /**
      * Niveau d'imbrication de la TDS
      */
@@ -215,6 +214,14 @@ public class TDS {
     public void addTDS(TDS tds) {
         tds.parent = this;
         this.children.add(tds);
+    }
+
+    public void setSymbol(Symbol symbol) {
+        this.symbol = symbol;
+    }
+
+    public Symbol getSymbol() {
+        return this.symbol;
     }
 
     public int getRegion() {

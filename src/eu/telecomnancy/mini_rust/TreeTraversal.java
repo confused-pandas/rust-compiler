@@ -433,6 +433,15 @@ public class TreeTraversal {
                     this.exploreBloc(child, true);
                     break;
                 default:
+                    if(bloc.getChildCount() - 1 == i) {
+                        FunctionSymbol functionSymbol = (FunctionSymbol)this.tdsBuilder.getCurrentTDS().getSymbol();
+
+                        if(functionSymbol != null && !functionSymbol.getReturnType().equals(this.evalExpr(child))) {
+                            // TODO : error
+                            System.out.println();
+                        }
+                    }
+
                     this.exploreExpr(child);
                     break;
             }
@@ -556,8 +565,23 @@ public class TreeTraversal {
          *
          * Un return à éventuellement un fils : une expr
          */
+        FunctionSymbol symbol = (FunctionSymbol)this.tdsBuilder.getCurrentTDS().getSymbol();
+
         if(returnNode.getChildCount() > 0) {
-            this.exploreExpr((CommonTree)returnNode.getChild(0));
+            CommonTree child = (CommonTree)returnNode.getChild(0);
+
+            if(!this.evalExpr(child).equals(symbol.getReturnType())) {
+                // TODO : error
+                System.out.println();
+            }
+
+            this.exploreExpr(child);
+        }
+        else {
+            if(symbol.getReturnType().getTypeEnum() != TypeEnum.VOID) {
+                // TODO : error
+                System.out.println();
+            }
         }
     }
 
@@ -735,7 +759,6 @@ public class TreeTraversal {
                     }
                     else {
                         // TODO : MISMATCH TYPE SEMANTIC
-                        return null;
                     }
                     break;
                 default:
@@ -745,6 +768,9 @@ public class TreeTraversal {
         }
         else {
             switch (expr.getType()) {
+                case mini_rustParser.PRINT_MACRO:
+                    type = new Type(TypeEnum.VOID);
+                    break;
                 case mini_rustParser.INDEX:
                 case mini_rustParser.DOT:
                     CommonTree currentNode = expr;

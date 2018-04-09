@@ -24,6 +24,7 @@ public abstract class SymbolTDSComposed extends Symbol {
      */
     public void setTDS(TDS TDS) {
         this.TDS = TDS;
+        this.TDS.setSymbol(this);
     }
 
     /**
