@@ -11,7 +11,11 @@ public class UndefinedSymbolException extends SemanticException {
     public UndefinedSymbolException(SemanticExceptionCode code) {
         this(code, null, null);
     }
-
+    
+    public UndefinedSymbolException(SemanticExceptionCode code, CommonTree node) {
+        this(code, null, node);
+    }
+    
     public UndefinedSymbolException(SemanticExceptionCode code, String name, CommonTree node) {
         super(code);
         this.name = name;
@@ -36,13 +40,16 @@ public class UndefinedSymbolException extends SemanticException {
                 message = SemanticErrorMessage.undefinedType(this.name, this.node);
                 break;
             case IF_BOOL_EXPR:
-            	message = SemanticErrorMessage.boolExprIf(this.name, this.node);
+            	message = SemanticErrorMessage.boolExprIf(this.node);
             	break;
             case WHILE_BOOL_EXPR:
-            	message = SemanticErrorMessage.boolExprWhile(this.name, this.node);
+            	message = SemanticErrorMessage.boolExprWhile(this.node);
             	break;
             case VEC_EXPR_SAME_TYPE:
-            	message = SemanticErrorMessage.vecExprSameType(this.name, this.node);
+            	message = SemanticErrorMessage.vecExprSameType(this.node);
+            	break;
+            case COMP_BOOL:
+            	message = SemanticErrorMessage.compBoolExpr(this.name, this.node);
             	break;
             default:
                 message = super.getMessage();

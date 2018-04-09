@@ -545,7 +545,7 @@ public class TreeTraversal {
          */
         this.exploreExpr((CommonTree)whileNode.getChild(0));
         if (!(this.evalExpr((CommonTree)whileNode.getChild(0)).getTypeEnum().equals(TypeEnum.BOOL))) {
-        	throw new UndefinedSymbolException(SemanticExceptionCode.WHILE_BOOL_EXPR);
+        	throw new UndefinedSymbolException(SemanticExceptionCode.WHILE_BOOL_EXPR, whileNode);
         }
         this.exploreBloc((CommonTree)whileNode.getChild(1));
     }
@@ -564,7 +564,7 @@ public class TreeTraversal {
     private void exploreIf(CommonTree ifNode) throws SemanticException {
         this.exploreExpr((CommonTree)ifNode.getChild(0));
         if (!(this.evalExpr((CommonTree)ifNode.getChild(0)).getTypeEnum().equals(TypeEnum.BOOL))) {
-        	throw new UndefinedSymbolException(SemanticExceptionCode.IF_BOOL_EXPR);
+        	throw new UndefinedSymbolException(SemanticExceptionCode.IF_BOOL_EXPR, ifNode);
         }
         this.exploreBloc((CommonTree)ifNode.getChild(1));
 
@@ -664,7 +664,7 @@ public class TreeTraversal {
             if (type == null) {
             	type = this.evalExpr(child);
             } else if (!(type.equals(this.evalExpr(child)))) {
-            	throw new UndefinedSymbolException(SemanticExceptionCode.VEC_EXPR_SAME_TYPE);
+            	throw new UndefinedSymbolException(SemanticExceptionCode.VEC_EXPR_SAME_TYPE, vecMacro);
             }
             this.exploreExpr(child);
         }
@@ -720,7 +720,7 @@ public class TreeTraversal {
                         type = new Type(TypeEnum.BOOL);
                     }
                     else {
-                        // TODO : MISMATCH TYPE SEMANTIC
+                    	throw new UndefinedSymbolException(SemanticExceptionCode.COMP_BOOL);
                     }
                     break;
                 case mini_rustParser.PLUS:
