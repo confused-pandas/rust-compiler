@@ -27,7 +27,11 @@ public class SemanticErrorMessage {
     }
     
     public static String boolExprIf(String name, CommonTree node){
-        return SemanticErrorMessage.appendLine(node, "Non bool expr in if " + name);
+        return SemanticErrorMessage.appendLine(node, "No bool in if expression " + name);
+    }
+    
+    public static String boolExprWhile(String name, CommonTree node){
+        return SemanticErrorMessage.appendLine(node, "No bool in while expression " + name);
     }
 
     public static String modifyingNotMutableSymbol(Symbol symbol) {

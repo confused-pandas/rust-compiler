@@ -544,6 +544,9 @@ public class TreeTraversal {
          * Le second un bloc
          */
         this.exploreExpr((CommonTree)whileNode.getChild(0));
+        if (!(this.evalExpr((CommonTree)whileNode.getChild(0)).getTypeEnum().equals(TypeEnum.BOOL))) {
+        	throw new UndefinedSymbolException(SemanticExceptionCode.WHILE_BOOL_EXPR);
+        }
         this.exploreBloc((CommonTree)whileNode.getChild(1));
     }
 

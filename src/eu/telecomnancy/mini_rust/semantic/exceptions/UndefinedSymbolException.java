@@ -35,6 +35,10 @@ public class UndefinedSymbolException extends SemanticException {
             case UNDEFINED_TYPE:
                 message = SemanticErrorMessage.undefinedType(this.name, this.node);
                 break;
+            case IF_BOOL_EXPR:
+            	message = SemanticErrorMessage.boolExprIf(this.name, this.node);
+            case WHILE_BOOL_EXPR:
+            	message = SemanticErrorMessage.boolExprWhile(this.name, this.node);
             default:
                 message = super.getMessage();
                 break;
