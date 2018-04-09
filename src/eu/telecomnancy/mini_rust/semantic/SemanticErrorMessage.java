@@ -25,6 +25,10 @@ public class SemanticErrorMessage {
     public static String undefinedType(String name, CommonTree node){
         return SemanticErrorMessage.appendLine(node, "Undefined type : " + name);
     }
+    
+    public static String boolExprIf(String name, CommonTree node){
+        return SemanticErrorMessage.appendLine(node, "Non bool expr in if " + name);
+    }
 
     public static String modifyingNotMutableSymbol(Symbol symbol) {
         return SemanticErrorMessage.appendLine(symbol.getNode(), "Modifying a not mutable symbol : " + symbol.getName());
@@ -49,7 +53,6 @@ public class SemanticErrorMessage {
     public static String uncorrectNbSymbolsFunction(Symbol symbol) {
         return SemanticErrorMessage.appendLine(symbol.getNode(), "Calling function : " + symbol.getName() + " with wrong number of parameters");
     }
-
 
 
     public static String noMainFunction() {

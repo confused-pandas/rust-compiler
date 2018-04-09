@@ -560,6 +560,9 @@ public class TreeTraversal {
 
     private void exploreIf(CommonTree ifNode) throws SemanticException {
         this.exploreExpr((CommonTree)ifNode.getChild(0));
+        if (this.evalExpr((CommonTree)ifNode.getChild(0)).getTypeEnum().equals(TypeEnum.BOOL)) {
+        	throw new UndefinedSymbolException(SemanticExceptionCode.IF_BOOL_EXPR);
+        }
         this.exploreBloc((CommonTree)ifNode.getChild(1));
 
         if(ifNode.getChildCount() > 2){
