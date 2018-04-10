@@ -505,6 +505,11 @@ public class TreeTraversal {
         String idf = this.exploreIDF((CommonTree)obj.getChild(0));
 
         StructSymbol structSymbol = this.tdsBuilder.getCurrentTDS().getStructureSymbol(idf);
+
+        if(structSymbol == null) {
+            throw new UndefinedSymbolException(SemanticExceptionCode.UNDEFINED_SYMBOL, idf, obj);
+        }
+
         int nbSymbols = structSymbol.getTDS().getNbSymbols();
         if (nbSymbols != obj.getChildCount() - 1){
             throw new DefinedSymbolException(SemanticExceptionCode.INCORRECT_NUMBER_OF_SYMBOLS_STRUCTURE, structSymbol );
@@ -533,8 +538,7 @@ public class TreeTraversal {
          *  - Le second est un obj ou un idf
          */
 
-        this.exploreIDF((CommonTree)member.getChild(0));
-
+        String idf = this.exploreIDF((CommonTree)member.getChild(0));
 
         CommonTree child = (CommonTree)member.getChild(1);
         switch (child.getType()) {
@@ -543,6 +547,15 @@ public class TreeTraversal {
                 break;
             default:
                 this.exploreExpr(child);
+
+                Type type = this.evalExpr(child);
+                String structName = member.getParent().getChild(0).getText();
+                StructSymbol structSymbol = this.tdsBuilder.getCurrentTDS().getStructureSymbol(structName);
+
+                if(structSymbol == null) {
+                    throw new UndefinedSymbolException(SemanticExceptionCode.UNDEFINED_SYMBOL, structName, member);
+                }
+
                 break;
         }
     }

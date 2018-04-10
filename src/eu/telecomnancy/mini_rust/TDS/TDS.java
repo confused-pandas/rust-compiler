@@ -141,15 +141,7 @@ public class TDS {
 
             //on verifie qu'elle ne figure pas deja dans la TDS
             if (dejaVu != null) {
-                //si elle existe deja on verifie si elle n'a pas les memes arguments
-                //si oui il y a une erreur semantique sinon on l'ajoute a la TDS
-
-                if (functionSymbol.equals(dejaVu)) {
-                    throw new DefinedSymbolException(SemanticExceptionCode.REDEFINING_FUNCTION, symbol);
-                }
-                else {
-                    addSymbolAndUpdateShift(symbol);
-                }
+                throw new DefinedSymbolException(SemanticExceptionCode.REDEFINING_FUNCTION, symbol);
             }
             else {
                 addSymbolAndUpdateShift(symbol);

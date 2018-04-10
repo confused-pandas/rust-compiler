@@ -19,7 +19,6 @@ public class Main {
         try {
             mini_rustParser.fichier_return ret = g.fichier();
             CommonTree root = (CommonTree)ret.getTree();
-
             TreeTraversal traversal = new TreeTraversal(root);
             traversal.explore();
             System.out.println(traversal.getGlobalSymbolTable().getAsTable());
