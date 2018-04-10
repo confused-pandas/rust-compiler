@@ -136,7 +136,6 @@ public class TDS {
     public void addSymbol(Symbol symbol) throws SemanticException {
         //on teste si c'est une fonction
         if(symbol instanceof FunctionSymbol) {
-            FunctionSymbol functionSymbol = (FunctionSymbol) symbol;
             FunctionSymbol dejaVu = this.getFunctionSymbol(symbol.getName());
 
             //on verifie qu'elle ne figure pas deja dans la TDS
@@ -149,7 +148,6 @@ public class TDS {
         }
         //Le cas des structures
         else if (symbol instanceof StructSymbol) {
-            StructSymbol structsymbol = (StructSymbol) symbol;
             StructSymbol dejaVu = this.getStructureSymbol(symbol.getName());
 
             //on verifie qu'elle ne figure pas deja dans la TDS
@@ -162,7 +160,6 @@ public class TDS {
         }
         //Le cas des variables
         else {
-            VarSymbol varsymbol = (VarSymbol) symbol;
             VarSymbol dejaVu = this.getVarSymbol(symbol.getName());
 
             //on verifie qu'elle ne figure pas deja dans la TDS

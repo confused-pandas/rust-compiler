@@ -60,6 +60,9 @@ public class UndefinedSymbolException extends SemanticException {
             case BINARY_EXPRESSION_MISMATCH_TYPE:
                 message = SemanticErrorMessage.binaryExpressionMismatchType(this.node);
                 break;
+            case WRONG_STRUCTURE_INITIALIZATION_TYPE:
+                message = SemanticErrorMessage.structWrongType(this.node);
+                break;
             default:
                 message = super.getMessage();
                 break;

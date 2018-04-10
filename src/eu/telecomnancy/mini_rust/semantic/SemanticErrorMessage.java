@@ -85,6 +85,10 @@ public class SemanticErrorMessage {
         return SemanticErrorMessage.appendLine(node, "Binary expression mismatch type");
     }
 
+    public static String structWrongType(CommonTree node) {
+        return SemanticErrorMessage.appendLine(node, "Wrong type structure initialization");
+    }
+
     public static String noMainFunction() {
         return "No main function";
     }

@@ -556,6 +556,15 @@ public class TreeTraversal {
                     throw new UndefinedSymbolException(SemanticExceptionCode.UNDEFINED_SYMBOL, structName, member);
                 }
 
+                VarSymbol varSymbol = structSymbol.getTDS().getVarSymbol(idf);
+
+                if(varSymbol == null) {
+                    throw new UndefinedSymbolException(SemanticExceptionCode.UNDEFINED_SYMBOL, idf, member);
+                }
+
+                if(!varSymbol.getType().equals(type)) {
+                    throw new UndefinedSymbolException(SemanticExceptionCode.WRONG_STRUCTURE_INITIALIZATION_TYPE, member);
+                }
                 break;
         }
     }

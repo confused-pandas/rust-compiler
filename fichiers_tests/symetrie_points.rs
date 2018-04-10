@@ -50,7 +50,7 @@ fn symetrique(p : Point, choix: i32) -> i32 {
 
 
 fn main(){
-	let A  = Point {id : 12,x : 4,y : 3};
+	let A  = Point {id : "12",x : 4,y : 3};
 	let B = Point {id : 15, x : 9, y : -3};
 	affiche_id(A);
 	affiche_id(B);
