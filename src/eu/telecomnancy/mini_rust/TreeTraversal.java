@@ -702,6 +702,7 @@ public class TreeTraversal {
 
     private void explorePrintMacro(CommonTree printMacro) throws SemanticException {
         this.exploreExpr((CommonTree)printMacro.getChild(0));
+        this.evalExpr((CommonTree)printMacro.getChild(0));
     }
 
     private void exploreVecMacro(CommonTree vecMacro) throws SemanticException {
