@@ -725,6 +725,12 @@ public class TreeTraversal {
             throw new UndefinedSymbolException(SemanticExceptionCode.CALLING_UNDEFINED_FUNCTION, idf, functionCall);
         }
 
+        int taille = functionSymbol.getArguments().size();
+
+        if (taille != functionCall.getChildCount()-1){
+            throw new DefinedSymbolException(SemanticExceptionCode.INCORRECT_NUMBER_OF_SYMBOLS_FUNCTION, functionSymbol);
+        }
+
         for(int i = 1; i < functionCall.getChildCount(); i++) {
            CommonTree child = (CommonTree)functionCall.getChild(i);
            Type paramType = functionSymbol.getArguments().get(i - 1).getType();
