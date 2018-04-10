@@ -35,6 +35,9 @@ public class DefinedSymbolException extends SemanticException {
             case UNCORRECT_NUMBER_OF_SYMBOLS_F:
                 message = SemanticErrorMessage.uncorrectNbSymbolsFunction(this.symbol);
                 break;
+            case WRONG_TYPE_PARAM:
+                message = SemanticErrorMessage.wrongTypeParam(this.symbol);
+                break;
             default:
                 message = super.getMessage();
                 break;

@@ -66,6 +66,10 @@ public class SemanticErrorMessage {
         return SemanticErrorMessage.appendLine(symbol.getNode(), "Calling function : " + symbol.getName() + " with wrong number of parameters");
     }
 
+    public static String wrongTypeParam(Symbol symbol) {
+        return SemanticErrorMessage.appendLine(symbol.getNode(), "Calling function : " + symbol.getName() + " with wrong type");
+    }
+
 
     public static String noMainFunction() {
         return "No main function";

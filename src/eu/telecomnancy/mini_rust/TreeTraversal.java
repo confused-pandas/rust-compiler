@@ -3,6 +3,7 @@ package eu.telecomnancy.mini_rust;
 import eu.telecomnancy.mini_rust.TDS.*;
 import eu.telecomnancy.mini_rust.TDS.symbols.FunctionSymbol;
 import eu.telecomnancy.mini_rust.TDS.symbols.StructSymbol;
+import eu.telecomnancy.mini_rust.TDS.symbols.Symbol;
 import eu.telecomnancy.mini_rust.TDS.symbols.VarSymbol;
 import eu.telecomnancy.mini_rust.grammar.mini_rustLexer;
 import eu.telecomnancy.mini_rust.grammar.mini_rustParser;
@@ -703,14 +704,18 @@ public class TreeTraversal {
         }
 
         for(int i = 1; i < functionCall.getChildCount(); i++) {
-            this.exploreParam((CommonTree)functionCall.getChild(i));
+           CommonTree child = (CommonTree)functionCall.getChild(i);
+           Type paramType = functionSymbol.getArguments().get(i).getType();
+           Type typeChild = evalExpr(child);
+
+           if (typeChild != paramType){
+                throw new DefinedSymbolException(SemanticExceptionCode.WRONG_TYPE_PARAM, functionSymbol);
+
+            }
         }
     }
 
 
-    private void exploreParam(CommonTree param) throws SemanticException {
-        this.exploreExpr(param);
-    }
 
 
     private String exploreIDF(CommonTree idfNode) {
