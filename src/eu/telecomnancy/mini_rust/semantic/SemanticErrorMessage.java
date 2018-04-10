@@ -1,9 +1,8 @@
 package eu.telecomnancy.mini_rust.semantic;
 
+import eu.telecomnancy.mini_rust.TDS.symbols.FunctionSymbol;
 import eu.telecomnancy.mini_rust.TDS.symbols.Symbol;
 import org.antlr.runtime.tree.CommonTree;
-
-import javax.print.DocFlavor;
 
 public class SemanticErrorMessage {
     private SemanticErrorMessage() {
@@ -58,11 +57,11 @@ public class SemanticErrorMessage {
         return SemanticErrorMessage.appendLine(symbol.getNode(), "Function main has parameters");
     }
 
-    public static String uncorrectNbSymbols(Symbol symbol) {
+    public static String incorrectNbSymbolsStructure(Symbol symbol) {
         return SemanticErrorMessage.appendLine(symbol.getNode(), "Initializing structure : " + symbol.getName() + " with wrong number of elements");
     }
 
-    public static String uncorrectNbSymbolsFunction(Symbol symbol) {
+    public static String incorrectNbSymbolsFunction(Symbol symbol) {
         return SemanticErrorMessage.appendLine(symbol.getNode(), "Calling function : " + symbol.getName() + " with wrong number of parameters");
     }
 
@@ -70,6 +69,21 @@ public class SemanticErrorMessage {
         return SemanticErrorMessage.appendLine(symbol.getNode(), "Calling function : " + symbol.getName() + " with wrong type");
     }
 
+    public static String wrongReturnType(Symbol symbol, CommonTree node) {
+        return SemanticErrorMessage.appendLine(node, "Wrong return type, expecting : " + ((FunctionSymbol)symbol).getReturnType());
+    }
+
+    public static String lenNotOnVector(CommonTree node) {
+        return SemanticErrorMessage.appendLine(node, "len() can't be applied on scalar type");
+    }
+
+    public static String lenNotAtEnd(CommonTree node) {
+        return SemanticErrorMessage.appendLine(node, "Misuse of len.");
+    }
+
+    public static String binaryExpressionMismatchType(CommonTree node) {
+        return SemanticErrorMessage.appendLine(node, "Binary expression mismatch type");
+    }
 
     public static String noMainFunction() {
         return "No main function";

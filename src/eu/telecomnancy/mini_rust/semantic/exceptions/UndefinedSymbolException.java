@@ -51,6 +51,15 @@ public class UndefinedSymbolException extends SemanticException {
             case COMP_BOOL:
             	message = SemanticErrorMessage.compBoolExpr(this.name, this.node);
             	break;
+            case LEN_NOT_AT_ENT:
+                message = SemanticErrorMessage.lenNotAtEnd(this.node);
+                break;
+            case LEN_NOT_ON_VECTOR:
+                message = SemanticErrorMessage.lenNotOnVector(this.node);
+                break;
+            case BINARY_EXPRESSION_MISMATCH_TYPE:
+                message = SemanticErrorMessage.binaryExpressionMismatchType(this.node);
+                break;
             default:
                 message = super.getMessage();
                 break;

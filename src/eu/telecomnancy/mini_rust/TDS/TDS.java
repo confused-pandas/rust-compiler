@@ -6,7 +6,10 @@ import eu.telecomnancy.mini_rust.semantic.SemanticExceptionCode;
 import eu.telecomnancy.mini_rust.semantic.exceptions.DefinedSymbolException;
 import eu.telecomnancy.mini_rust.semantic.exceptions.SemanticException;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class TDS {
     public static int NAME_COL_WIDTH = 20;
@@ -216,12 +219,27 @@ public class TDS {
         this.children.add(tds);
     }
 
-    public void setSymbol(Symbol symbol) {
+    public void setFunction(Symbol symbol) {
         this.symbol = symbol;
     }
 
-    public Symbol getSymbol() {
-        return this.symbol;
+    public FunctionSymbol getFunction() {
+        if(this.symbol == null) {
+            if(this.parent == null) {
+                return null;
+            }
+            else {
+                return this.parent.getFunction();
+            }
+        }
+        else {
+            if(this.symbol instanceof FunctionSymbol) {
+                return (FunctionSymbol)this.symbol;
+            }
+            else {
+                return null;
+            }
+        }
     }
 
     public int getRegion() {

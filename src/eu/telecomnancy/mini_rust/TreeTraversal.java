@@ -13,7 +13,6 @@ import eu.telecomnancy.mini_rust.semantic.exceptions.SemanticException;
 import eu.telecomnancy.mini_rust.semantic.exceptions.UndefinedSymbolException;
 import org.antlr.runtime.tree.CommonTree;
 
-import java.util.HashMap;
 import java.util.Stack;
 
 public class TreeTraversal {
@@ -434,14 +433,17 @@ public class TreeTraversal {
                     this.exploreBloc(child, true);
                     break;
                 default:
+                    /*
                     if(bloc.getChildCount() - 1 == i) {
-                        FunctionSymbol functionSymbol = (FunctionSymbol)this.tdsBuilder.getCurrentTDS().getSymbol();
+                        FunctionSymbol functionSymbol = this.tdsBuilder.getCurrentTDS().getFunction();
 
                         if(functionSymbol != null && !functionSymbol.getReturnType().equals(this.evalExpr(child))) {
-                            // TODO : error
-                            System.out.println();
+                            throw new UndefinedSymbolException(SemanticExceptionCode.WRONG_RETURN_TYPE, child);
                         }
                     }
+                    */
+
+                    this.evalExpr(child);
 
                     this.exploreExpr(child);
                     break;
@@ -505,7 +507,7 @@ public class TreeTraversal {
         StructSymbol structSymbol = this.tdsBuilder.getCurrentTDS().getStructureSymbol(idf);
         int nbSymbols = structSymbol.getTDS().getNbSymbols();
         if (nbSymbols != obj.getChildCount() - 1){
-            throw new DefinedSymbolException(SemanticExceptionCode.UNCORRECT_NUMBER_OF_SYMBOLS, structSymbol );
+            throw new DefinedSymbolException(SemanticExceptionCode.INCORRECT_NUMBER_OF_SYMBOLS_STRUCTURE, structSymbol );
         }
         for(int i = 1; i < obj.getChildCount(); i++) {
             CommonTree child = (CommonTree)obj.getChild(i);
@@ -566,22 +568,20 @@ public class TreeTraversal {
          *
          * Un return à éventuellement un fils : une expr
          */
-        FunctionSymbol symbol = (FunctionSymbol)this.tdsBuilder.getCurrentTDS().getSymbol();
+        FunctionSymbol symbol = this.tdsBuilder.getCurrentTDS().getFunction();
 
         if(returnNode.getChildCount() > 0) {
             CommonTree child = (CommonTree)returnNode.getChild(0);
 
             if(!this.evalExpr(child).equals(symbol.getReturnType())) {
-                // TODO : error
-                System.out.println();
+                throw new DefinedSymbolException(SemanticExceptionCode.WRONG_RETURN_TYPE, symbol, returnNode);
             }
 
             this.exploreExpr(child);
         }
         else {
             if(symbol.getReturnType().getTypeEnum() != TypeEnum.VOID) {
-                // TODO : error
-                System.out.println();
+                throw new DefinedSymbolException(SemanticExceptionCode.WRONG_RETURN_TYPE, symbol, returnNode);
             }
         }
     }
@@ -763,7 +763,7 @@ public class TreeTraversal {
                         type = new Type(TypeEnum.I32);
                     }
                     else {
-                        // TODO : MISMATCH TYPE SEMANTIC
+                        throw new UndefinedSymbolException(SemanticExceptionCode.BINARY_EXPRESSION_MISMATCH_TYPE, expr);
                     }
                     break;
                 default:
@@ -807,10 +807,10 @@ public class TreeTraversal {
 
                         if(child.getType() == mini_rustParser.LEN) {
                             if(!nodes.empty()) {
-                                // TODO : semantique .len pas à la fin
+                                //throw new UndefinedSymbolException(SemanticExceptionCode.LEN_NOT_AT_ENT, child);
                             }
                             else if(nodes.empty() && !type.isVec()) {
-                                // TODO : semantique .len pas sur un vecteur
+                                throw new UndefinedSymbolException(SemanticExceptionCode.LEN_NOT_ON_VECTOR, child);
                             }
                             else {
                                 type = new Type(TypeEnum.I32);
@@ -841,7 +841,13 @@ public class TreeTraversal {
                     }
                     break;
                 case mini_rustParser.IDF:
-                    type = this.tdsBuilder.getCurrentTDS().getVarSymbol(expr.getText()).getType();
+                    VarSymbol varSymbol = this.tdsBuilder.getCurrentTDS().getVarSymbol(expr.getText());
+
+                    if(varSymbol == null) {
+                        throw new UndefinedSymbolException(SemanticExceptionCode.UNDEFINED_SYMBOL, expr.getText(), expr);
+                    }
+
+                    type = varSymbol.getType();
                     break;
                 case mini_rustParser.TRUE:
                 case mini_rustParser.FALSE:
