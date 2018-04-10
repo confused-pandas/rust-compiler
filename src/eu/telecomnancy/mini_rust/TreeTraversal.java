@@ -705,10 +705,10 @@ public class TreeTraversal {
 
         for(int i = 1; i < functionCall.getChildCount(); i++) {
            CommonTree child = (CommonTree)functionCall.getChild(i);
-           Type paramType = functionSymbol.getArguments().get(i).getType();
+           Type paramType = functionSymbol.getArguments().get(i - 1).getType();
            Type typeChild = evalExpr(child);
 
-           if (typeChild != paramType){
+           if (!typeChild.equals(paramType)){
                 throw new DefinedSymbolException(SemanticExceptionCode.WRONG_TYPE_PARAM, functionSymbol);
 
             }
