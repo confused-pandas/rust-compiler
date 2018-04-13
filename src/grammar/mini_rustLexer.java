@@ -1,12 +1,9 @@
 // $ANTLR 3.2 Sep 23, 2009 12:02:23 D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\eu\\telecomnancy\\mini_rust\\grammar\\mini_rust.g 2018-04-08 08:29:31
 
-	package eu.telecomnancy.mini_rust.grammar;
+	package grammar;
 
 
 import org.antlr.runtime.*;
-import java.util.Stack;
-import java.util.List;
-import java.util.ArrayList;
 
 public class mini_rustLexer extends Lexer {
     public static final int LSQBRACKET=24;

@@ -75,11 +75,11 @@ tokens{
 }
 
 @header {
-	package eu.telecomnancy.mini_rust.grammar;
+	package grammar;
 }
 
 @lexer::header {
-	package eu.telecomnancy.mini_rust.grammar;
+	package grammar;
 }
 
 fichier
