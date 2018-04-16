@@ -126,7 +126,10 @@ public class TreeTraversal {
     }
 
     private void traverseStructObj(Tree traverseStructObj){
-
+    	this.getIDF(traverseStructObj.getChild(0));
+    	if (traverseStructObj.getType() == mini_rustParser.OBJ) {
+    		this.traverseObject(traverseStructObj);
+    	}
     }
 
     private void traverseParameter(Tree argNode){
