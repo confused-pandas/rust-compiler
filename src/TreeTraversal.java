@@ -36,6 +36,7 @@ public class TreeTraversal {
 
     private void traverseFunction(Tree functionNode){
 
+
     }
 
     private void traverseStructure(Tree structureNode){
@@ -88,5 +89,9 @@ public class TreeTraversal {
 
     private void traverseObject(Tree objectNode){
 
+    }
+
+    public String getIDF(Tree node){
+        return node.getText();
     }
 }
