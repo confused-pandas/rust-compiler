@@ -50,11 +50,46 @@ public class TreeTraversal {
     }
 
     private void traverseStructure(Tree structureNode){
+        String idf = this.getIDF(structureNode.getChild(0));
 
+        for(int i = 1; i < structureNode.getChildCount(); i++) {
+            Tree child = structureNode.getChild(0);
+
+            switch (child.getType()) {
+                case mini_rustParser.MEMBER:
+                    this.traverseStructMember(child);
+                    break;
+                default:
+                    // TODO : exception unknown node
+                    break;
+            }
+        }
     }
 
     private void traverseBloc(Tree blocNode){
+        for(int i = 0; i < blocNode.getChildCount(); i++) {
+            Tree child = blocNode.getChild(i);
 
+            switch (child.getType()) {
+                case mini_rustParser.LET:
+                    this.traverseLet(child, false);
+                case mini_rustParser.LETMUT:
+                    this.traverseLet(child, true);
+                    break;
+                case mini_rustParser.WHILE:
+                    this.traverseWhile(child);
+                    break;
+                case mini_rustParser.RETURN:
+                    this.traverseReturn(child);
+                    break;
+                case mini_rustParser.IF:
+                    this.traverseIf(child);
+                    break;
+                default:
+                    this.traverseExpr(child);
+                    break;
+            }
+        }
     }
 
     private void traverseType(Tree typeNode){
