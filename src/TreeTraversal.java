@@ -36,6 +36,7 @@ public class TreeTraversal {
 
     private void traverseFunction(Tree functionNode){
 
+
     }
 
     private void traverseStructure(Tree structureNode){
@@ -51,7 +52,8 @@ public class TreeTraversal {
     }
 
     private void traverseStructMember(Tree structMemberNode){
-
+    	this.getIDF(structMemberNode.getChild(0));
+    	this.traverseType(structMemberNode.getChild(1));
     }
 
     private void traverseStructObj(Tree traverseStructObj){
@@ -63,36 +65,29 @@ public class TreeTraversal {
     }
 
     private void traverseWhile(Tree whileNode){
-    	if(whileNode.getChildCount() != 2){
-    		//TODO: erreur
-    	} else {
-    		traverseExpr(whileNode.getChild(0));
-    		traverseBloc(whileNode.getChild(1));
-    	}
-
+    	this.traverseExpr(whileNode.getChild(0));
+    	this.traverseBloc(whileNode.getChild(1));
     }
-
+    
+    
     private void traverseIf(Tree ifNode){
-    	if(ifNode.getChildCount() < 2){
-    		//TODO: erreur
-    	} else {
-    		traverseExpr(ifNode.getChild(0));
-    		traverseBloc(ifNode.getChild(1));
-    		if(ifNode.getChildCount() > 2){
-    			for(int i = 2; i < ifNode.getChildCount(); i++){
-    				traverseElse(ifNode.getChild(i));
-    			}
-    		}
-    	}
+		traverseExpr(ifNode.getChild(0));
+		traverseBloc(ifNode.getChild(1));
+		if(ifNode.getChildCount() > 2){
+				traverseElse(ifNode.getChild(2));
+		}
     }
 
     private void traverseElse(Tree elseNode){
-    	if(elseNode.getChildCount() != 1){
-    		//TODO: erreur
-    	} else {
-    		traverseIf(elseNode.getChild(0));
+    	switch(elseNode.getChild(0).getType()){
+    		case mini_rustParser.BLOC :
+    			traverseBloc(elseNode.getChild(0));
+    			break;
+    		case mini_rustParser.IF :
+    			traverseIf(elseNode.getChild(0));
+    			break;
     	}
-
+    	
     }
 
     private void traverseExpr(Tree exprNode){
@@ -115,5 +110,9 @@ public class TreeTraversal {
 
     private void traverseObject(Tree objectNode){
 
+    }
+
+    public String getIDF(Tree node){
+        return node.getText();
     }
 }
