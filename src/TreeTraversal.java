@@ -35,7 +35,17 @@ public class TreeTraversal {
     }
 
     private void traverseFunction(Tree functionNode){
+        int argIndex = 2;
+        getIDF(functionNode.getChild(0));
+        traverseBloc(functionNode.getChild(1));
 
+        if (functionNode.getChild(2).getType() != mini_rustParser.ARGUMENT){
+           traverseType(functionNode.getChild(2));
+           argIndex ++;
+        }
+        for (int i =  argIndex; i < functionNode.getChildCount(); i++){
+            traverseParameter(functionNode.getChild(i));
+        }
 
     }
 
@@ -48,6 +58,30 @@ public class TreeTraversal {
     }
 
     private void traverseType(Tree typeNode){
+
+        switch (typeNode.getType()){
+
+            case mini_rustParser.IDF :
+                //TODO IDF
+                break;
+
+            case mini_rustParser.VEC_TYPE :
+                traverseType(typeNode.getChild(0));
+                break;
+
+            case mini_rustParser.AMPS:
+                //TODO amps
+                break;
+
+            case mini_rustParser.INT32_TYPE :
+                //TODO int
+                break;
+
+            case mini_rustParser.BOOL_TYPE :
+                //TODO bool
+                break;
+
+        }
 
     }
 
@@ -104,11 +138,18 @@ public class TreeTraversal {
     	}
     }
 
-    private void traverseLet(Tree letNode){
+    private void traverseLet(Tree letNode, boolean isMutable){
+        //TODO : isMutable
+        traverseExpr(letNode.getChild(0));
+        if (letNode.getChildCount() == 1){
+            traverseObject(letNode.getChild(1));
+        }
 
     }
 
     private void traverseObject(Tree objectNode){
+        traverseExpr(objectNode.getChild(0));
+        traverseObject(objectNode.getChild(1));
 
     }
 
