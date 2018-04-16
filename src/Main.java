@@ -1,3 +1,4 @@
+import exception.SemanticException;
 import grammar.mini_rustLexer;
 import grammar.mini_rustParser;
 import org.antlr.runtime.ANTLRFileStream;
@@ -15,8 +16,12 @@ public class Main {
         try {
             mini_rustParser.fichier_return ret = g.fichier();
             Tree root = (Tree)ret.getTree();
+            TreeTraversal treeTraversal = new TreeTraversal(root);
+            treeTraversal.traverse();
 
         } catch (RecognitionException e) {
+            e.printStackTrace();
+        } catch (SemanticException e) {
             e.printStackTrace();
         }
     }
