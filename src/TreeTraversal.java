@@ -52,7 +52,8 @@ public class TreeTraversal {
     }
 
     private void traverseStructMember(Tree structMemberNode){
-
+    	this.getIDF(structMemberNode.getChild(0));
+    	this.traverseType(structMemberNode.getChild(1));
     }
 
     private void traverseStructObj(Tree traverseStructObj){
