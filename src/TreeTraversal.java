@@ -63,14 +63,35 @@ public class TreeTraversal {
     }
 
     private void traverseWhile(Tree whileNode){
+    	if(whileNode.getChildCount() != 2){
+    		//TODO: erreur
+    	} else {
+    		traverseExpr(whileNode.getChild(0));
+    		traverseBloc(whileNode.getChild(1));
+    	}
 
     }
 
     private void traverseIf(Tree ifNode){
-
+    	if(ifNode.getChildCount() < 2){
+    		//TODO: erreur
+    	} else {
+    		traverseExpr(ifNode.getChild(0));
+    		traverseBloc(ifNode.getChild(1));
+    		if(ifNode.getChildCount() > 2){
+    			for(int i = 2; i < ifNode.getChildCount(); i++){
+    				traverseElse(ifNode.getChild(i));
+    			}
+    		}
+    	}
     }
 
     private void traverseElse(Tree elseNode){
+    	if(elseNode.getChildCount() != 1){
+    		//TODO: erreur
+    	} else {
+    		traverseIf(elseNode.getChild(0));
+    	}
 
     }
 
@@ -79,7 +100,13 @@ public class TreeTraversal {
     }
 
     private void traverseReturn(Tree returnNode){
-
+    	if(returnNode.getChildCount() > 1){
+    		//TODO: erreur
+    	} else {
+    		if(returnNode.getChildCount() == 1){
+    			traverseExpr(returnNode.getChild(0));
+    		}
+    	}
     }
 
     private void traverseLet(Tree letNode){
