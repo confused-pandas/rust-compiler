@@ -69,7 +69,11 @@ public class TreeTraversal {
     }
 
     private void traverseIf(Tree ifNode){
-
+    	this.traverseExpr(ifNode.getChild(0));
+    	this.traverseBloc(ifNode.getChild(1));
+    	if (ifNode.getChildCount() > 2) {
+    		this.traverseElse(ifNode.getChild(2));
+    	}
     }
 
     private void traverseElse(Tree elseNode){
