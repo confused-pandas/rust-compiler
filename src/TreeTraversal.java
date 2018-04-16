@@ -16,13 +16,11 @@ public class TreeTraversal {
     }
 
     private void traverseFile(Tree root) throws SemanticException{
-
         if (root.getChildCount() <= 0 ){
             throw new EmptyFileException();
         }
-
         else {
-            for(int i = 0; i <= root.getChildCount() ; i ++){
+            for(int i = 0; i < root.getChildCount() ; i ++){
                 switch (root.getChild(i).getType()){
 
                     case mini_rustParser.DECL_FUNC :
@@ -34,9 +32,6 @@ public class TreeTraversal {
 
             }
         }
-
-
-
     }
 
     private void traverseFunction(Tree functionNode){
@@ -94,9 +89,4 @@ public class TreeTraversal {
     private void traverseObject(Tree objectNode){
 
     }
-
-
-
-
-
 }
