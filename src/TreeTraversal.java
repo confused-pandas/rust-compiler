@@ -65,9 +65,11 @@ public class TreeTraversal {
     }
 
     private void traverseWhile(Tree whileNode){
-
+    	this.traverseExpr(whileNode.getChild(0));
+    	this.traverseBloc(whileNode.getChild(1));
     }
-
+    
+    
     private void traverseIf(Tree ifNode){
     	this.traverseExpr(ifNode.getChild(0));
     	this.traverseBloc(ifNode.getChild(1));
