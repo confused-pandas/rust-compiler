@@ -112,7 +112,11 @@ public class TreeTraversal {
                 //TODO int
                 break;
 
-            case mini_rustParser.BOOL_TYPE :
+            case mini_rustParser.TRUE :
+                //TODO bool
+                break;
+
+            case mini_rustParser.FALSE :
                 //TODO bool
                 break;
 
