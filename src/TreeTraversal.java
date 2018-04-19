@@ -2,6 +2,7 @@ import exception.DifferentTypeException;
 import exception.EmptyFileException;
 import exception.RedefiningStructElemException;
 import exception.SemanticException;
+import exception.UnknownNodeException;
 import org.antlr.runtime.tree.Tree;
 import grammar.mini_rustParser;
 
@@ -75,8 +76,7 @@ public class TreeTraversal {
                     this.traverseStructMember(child);
                     break;
                 default:
-                    // TODO : exception unknown node
-                    break;
+                    throw new UnknownNodeException();
             }
         }
 
