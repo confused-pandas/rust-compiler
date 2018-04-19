@@ -30,20 +30,27 @@ public class SymbolTable {
 		this.symbols.put(symbol.getHashName(), symbol);
 	}
 	
-	private Symbol getSymbol(String key){
-		return symbols.get(key);
-	}
+	private Symbol getSymbol(String key, boolean checkParent){
+	    Symbol symbol = symbols.get(key);
+
+	    if(symbol == null && checkParent && this.getParent() != null) {
+	        return this.getParent().getSymbol(key, true);
+        }
+        else {
+            return symbol;
+        }
+    }
 	
-	public FunctionSymbol getFunctionSymbol(String name){	
-		return (FunctionSymbol) getSymbol(name + Symbol.SUFFIX_HASH_FUNCTION);
+	public FunctionSymbol getFunctionSymbol(String name, boolean checkParent){
+		return (FunctionSymbol) getSymbol(name + Symbol.SUFFIX_HASH_FUNCTION, checkParent);
 	}
 
-	public StructureSymbol getStructureSymbol(String name){	
-		return (StructureSymbol) getSymbol(name + Symbol.SUFFIX_HASH_STRUCTURE);
+	public StructureSymbol getStructureSymbol(String name, boolean checkParent){
+		return (StructureSymbol) getSymbol(name + Symbol.SUFFIX_HASH_STRUCTURE, checkParent);
 	}
 
-	public VariableSymbol getVariableSymbol(String name){	
-		return (VariableSymbol) getSymbol(name + Symbol.SUFFIX_HASH_VARIABLE);
+	public VariableSymbol getVariableSymbol(String name, boolean checkParent){
+		return (VariableSymbol) getSymbol(name + Symbol.SUFFIX_HASH_VARIABLE, checkParent);
 	}
 
 	public HashMap<String,Symbol> getSymbols(){
@@ -58,7 +65,7 @@ public class SymbolTable {
 		return nestingLevel;
 	}
 
-	public int getRegionCounter() {
-		return regionCounter;
+	public int getRegionNum() {
+		return regionNum;
 	}
 }

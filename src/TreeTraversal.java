@@ -64,7 +64,6 @@ public class TreeTraversal {
 
     private void traverseStructure(Tree structureNode) throws SemanticException {
         String idf = this.getIDF(structureNode.getChild(0));
-
         this.symbolTableManager.openSymbolTable();
 
         for(int i = 1; i < structureNode.getChildCount(); i++) {
@@ -141,8 +140,9 @@ public class TreeTraversal {
     	if(this.symbolTableManager.getCurrentTable().symbolExists(variableSymbol, false)) {
     	    throw new RedefiningStructElemException();
         }
-
-    	this.symbolTableManager.getCurrentTable().addSymbol(variableSymbol);
+        else {
+            this.symbolTableManager.getCurrentTable().addSymbol(variableSymbol);
+        }
     }
 
     private void traverseStructObj(Tree traverseStructObj) throws SemanticException {
