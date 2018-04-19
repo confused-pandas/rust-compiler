@@ -1,28 +1,29 @@
 import java.util.HashMap;
 
 public class SymbolTable {
+	private static int regionCounter = 0;
 
-	private final int regionCounter;
-	private int nestingLevel;
-	private int regionNum;
-	private HashMap<String,Symbol> symbols;
-	private final SymbolTable parent;
+    private final SymbolTable parent;
+    private final HashMap<String,Symbol> symbols;
+	private final int nestingLevel;
+	private final int regionNum;
 
-	public SymbolTable(SymbolTable parent, int regionNum) {
+	public SymbolTable(SymbolTable parent, int nestingLevel) {
 		this.parent = parent;
-		this.regionCounter = regionNum;
+		this.regionNum = SymbolTable.regionCounter++;
+		this.nestingLevel = nestingLevel;
+		this.symbols = new HashMap<>();
 	}
 
 	public boolean SymbolExists(Symbol symbol,boolean checkParent){
 		boolean exists = symbols.containsValue(symbol);
+		
 		if(!exists && checkParent){
 			if(this.getParent() != null){
-				return this.getParent().SymbolExists(symbol, checkParent);
+				return this.getParent().SymbolExists(symbol, true);
 			}
-		} else if(!exists && !checkParent){
-			return false;
 		}
-		return true;
+		return exists;
 	}
 
 	private void addSymbol(String key, Symbol symbol){
@@ -71,10 +72,6 @@ public class SymbolTable {
 
 	public int getNestingLevel() {
 		return nestingLevel;
-	}
-
-	public void setNestingLevel(int nestingLevel) {
-		this.nestingLevel = nestingLevel;
 	}
 
 	public int getRegionCounter() {

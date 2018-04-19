@@ -1,4 +1,5 @@
-
-public class Scope {
-
+public enum Scope {
+    GLOBAL,
+    LOCAL,
+    FUNCTION
 }
