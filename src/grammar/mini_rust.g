@@ -11,7 +11,7 @@ tokens{
 	DECL_FUNC;
 	DECL_STRUCT;
 	TYPE;
-	ARGUMENT;
+	PARAMETER;
 	BLOC;
 	INDEX;
 	FUNCTION_CALL;
@@ -107,14 +107,14 @@ type
 	:
 	  IDF
 	| VEC_TYPE LT type GT -> ^(VEC_TYPE type)
-	| AMPS type
+	| AMPS type -> ^(REF type)
 	| INT32_TYPE
 	| BOOL_TYPE
 	;
 
 argument
 	:
-	IDF COLON type -> ^(ARGUMENT IDF type)
+	IDF COLON type -> ^(PARAMETER IDF type)
 	;
 
 bloc
@@ -134,7 +134,6 @@ instruction
 	| WHILE expr bloc -> ^(WHILE expr bloc)
 	| RETURN (expr)? SEMICOLON -> ^(RETURN expr?)
 	| if_expr
-	| bloc
 	;
 
 instruction_let
@@ -169,7 +168,8 @@ else_expr
 
 expr
 	:
-	expr_ou
+	  expr_ou
+	| bloc
 	;
 
 dot_factorisation
