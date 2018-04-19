@@ -7,12 +7,8 @@ public class FunctionSymbol extends SymbolTableSymbolComposed{
 	public static String suffixHash = "_F";
 
 
-	public static String genHash(String name){
-		return name + suffixHash;
-	}
-
-	public String getHash(){
-		return genHash(this.getName());
+	public String genHash(){
+		return this.getName() + suffixHash;
 	}
 
 	public Type getReturnType(){
