@@ -8,32 +8,20 @@ public class SymbolTableManager {
         this.stack = new Stack<>();
     }
 
-    public SymbolTable openSymbolTable(boolean ignoreNext) {
-        if(this.ignoreNext) {
-            this.ignoreNext = false;
-            return this.stack.peek();
+    public SymbolTable openSymbolTable() {
+        SymbolTable parent;
+
+        if(this.stack.empty()) {
+            parent  = null;
         }
         else {
-            this.ignoreNext = ignoreNext;
-
-            SymbolTable parent;
-
-            if(this.stack.empty()) {
-                parent  = null;
-            }
-            else {
-                parent = stack.peek();
-            }
-
-            SymbolTable symbolTable = new SymbolTable(parent, this.stack.size());
-            this.stack.push(symbolTable);
-
-            return symbolTable;
+            parent = stack.peek();
         }
-    }
 
-    public SymbolTable openSymbolTable() {
-        return openSymbolTable(false);
+        SymbolTable symbolTable = new SymbolTable(parent, this.stack.size());
+        this.stack.push(symbolTable);
+
+        return symbolTable;
     }
 
     public SymbolTable closeSymbolTable() {
