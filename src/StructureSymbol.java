@@ -1,5 +1,5 @@
 public class StructureSymbol extends SymbolTableSymbolComposed {
-	public static String suffixHash = "_S";
+
 
 	public StructureSymbol(String name, int offset, Scope scope, SymbolTable symbolTable) {
 		super(name, offset, scope, symbolTable);
@@ -7,6 +7,6 @@ public class StructureSymbol extends SymbolTableSymbolComposed {
 
 	@Override
 	public String getHashName(){
-		return this.getName() + suffixHash;
+		return this.getName() + SUFFIX_HASH_STRUCTURE;
 	}
 }

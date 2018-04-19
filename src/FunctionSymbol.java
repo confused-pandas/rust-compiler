@@ -3,7 +3,6 @@ import java.util.LinkedList;
 public class FunctionSymbol extends SymbolTableSymbolComposed{
 	private Type returnType;
 	private LinkedList<VariableSymbol> arguments;
-	public static String suffixHash = "_F";
 
 	public FunctionSymbol(String name, int offset, Scope scope, SymbolTable symbolTable) {
 		super(name, offset, scope, symbolTable);
@@ -11,7 +10,7 @@ public class FunctionSymbol extends SymbolTableSymbolComposed{
 
 	@Override
 	public String getHashName(){
-		return this.getName() + suffixHash;
+		return this.getName() + SUFFIX_HASH_FUNCTION;
 	}
 
 	public Type getReturnType(){

@@ -52,6 +52,19 @@ public class TreeTraversal {
         }
     }
 
+    private void traverseFunctionCall(Tree functioncallNode){
+        this.getIDF(functioncallNode.getChild(0));
+
+        for (int i = 1; i <functioncallNode.getChildCount(); i++){
+            this.traverseExpr(functioncallNode.getChild(i));
+        }
+    }
+
+
+
+
+
+
     private void traverseStructure(Tree structureNode){
         String idf = this.getIDF(structureNode.getChild(0));
 
@@ -128,8 +141,9 @@ public class TreeTraversal {
     	}
     }
 
-    private void traverseParameter(Tree argNode){
-
+    private void traverseParameter(Tree paramNode){
+        this.getIDF(paramNode.getChild(0));
+        this.traverseType(paramNode.getChild(1));
     }
 
     private void traverseWhile(Tree whileNode){

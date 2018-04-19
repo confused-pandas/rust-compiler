@@ -1,7 +1,6 @@
 public class VariableSymbol extends Symbol {
 	public Type type;
 	public boolean isMutable;
-	public static String suffixHash = "_V";
 
 	public VariableSymbol(String name, int offset, Scope scope) {
 		super(name, offset, scope);
@@ -17,6 +16,6 @@ public class VariableSymbol extends Symbol {
 
 	@Override
 	public String getHashName() {
-		return this.getName() + suffixHash;
+		return this.getName() + SUFFIX_HASH_VARIABLE;
 	}
 }
