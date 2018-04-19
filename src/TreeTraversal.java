@@ -1,3 +1,4 @@
+import exception.DifferentTypeException;
 import exception.EmptyFileException;
 import exception.RedefiningStructElemException;
 import exception.SemanticException;
@@ -83,7 +84,8 @@ public class TreeTraversal {
     }
 
     private void traverseBloc(Tree blocNode) throws SemanticException {
-        for(int i = 0; i < blocNode.getChildCount(); i++) {
+        this.symbolTableManager.openSymbolTable();
+    	for(int i = 0; i < blocNode.getChildCount(); i++) {
             Tree child = blocNode.getChild(i);
 
             switch (child.getType()) {
@@ -106,6 +108,7 @@ public class TreeTraversal {
                     break;
             }
         }
+    	this.symbolTableManager.closeSymbolTable();
     }
 
     private Type traverseType(Tree typeNode) throws SemanticException {
@@ -181,8 +184,66 @@ public class TreeTraversal {
     	}
     }
 
-    private void traverseExpr(Tree exprNode) throws SemanticException {
+    private Type traverseExpr(Tree exprNode) throws SemanticException {
+    	Tree child = exprNode.getChild(0);
+    	Type type = null;
+    	
+    	switch(child.getType()){
+    	case mini_rustParser.BLOC :
+    		this.traverseBloc(child);
+    		break;
+    	case mini_rustParser.OR :
+    	case mini_rustParser.AND :
+    		Type leftExpr = this.traverseExpr(child.getChild(0));
+    		Type rightExpr = this.traverseExpr(child.getChild(1));
+    		
+    		if(!leftExpr.equals(rightExpr)) {
+    			throw new DifferentTypeException();
+    		}
+    		break;
+    	case mini_rustParser.LT :
+    	case mini_rustParser.LE :
+    	case mini_rustParser.GT :
+    	case mini_rustParser.GE :
+    	case mini_rustParser.EQ :
+    	case mini_rustParser.NE :
+    		break;
+    	case mini_rustParser.PLUS :
+    	case mini_rustParser.MINUS :
+    	case mini_rustParser.MUL :
+    	case mini_rustParser.DIV :
+    		break;
+    	case mini_rustParser.UNARY_MINUS :
+    		break;
+    	case mini_rustParser.NEG :
+    		break;
+    	case mini_rustParser.POINTER :
+    		break;
+    	case mini_rustParser.REF :
+    		break;
+    	case mini_rustParser.INDEX :
+    		break;
+    	case mini_rustParser.DOT :
+    		break;
+    	case mini_rustParser.FUNCTION_CALL :
+    		break;
+    	case mini_rustParser.VEC_MACRO :
+    		break;
+    	case mini_rustParser.PRINT_MACRO :
+    		break;
+    	case mini_rustParser.CSTE_ENT :
+    		break;
+    	case mini_rustParser.CSTE_STR :
+    		break;
+    	case mini_rustParser.TRUE :
+    		break;
+    	case mini_rustParser.FALSE :
+    		break;
+    	case mini_rustParser.IDF :
+    		break;
+    	}
 
+    		return type;
     }
 
     private void traverseReturn(Tree returnNode) throws SemanticException {
