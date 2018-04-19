@@ -4,10 +4,11 @@ import org.antlr.runtime.tree.Tree;
 import grammar.mini_rustParser;
 
 public class TreeTraversal {
-
+    private final SymbolTableManager symbolTableManager;
     private final Tree root;
 
     public TreeTraversal(Tree tree){
+        this.symbolTableManager = new SymbolTableManager();
         this.root = tree;
     }
 
@@ -59,11 +60,6 @@ public class TreeTraversal {
             this.traverseExpr(functioncallNode.getChild(i));
         }
     }
-
-
-
-
-
 
     private void traverseStructure(Tree structureNode){
         String idf = this.getIDF(structureNode.getChild(0));

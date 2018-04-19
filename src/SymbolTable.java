@@ -31,17 +31,17 @@ public class SymbolTable {
 	}
 
 	public void addFunctionSymbol(FunctionSymbol symbol){
-		String key = symbol.getName() + FunctionSymbol.suffixHash;
+		String key = symbol.getName() + Symbol.SUFFIX_HASH_FUNCTION;
 		addSymbol(key, symbol);
 	}
 	
 	public void addStructureSymbol(StructureSymbol symbol){
-		String key = symbol.getName() + StructureSymbol.suffixHash;
+		String key = symbol.getName() + Symbol.SUFFIX_HASH_STRUCTURE;
 		addSymbol(key, symbol);
 	}
 	
 	public void addVariableSymbol(VariableSymbol symbol){
-		String key = symbol.getName() + VariableSymbol.suffixHash;
+		String key = symbol.getName() + Symbol.SUFFIX_HASH_VARIABLE;
 		addSymbol(key, symbol);
 	}
 
@@ -51,15 +51,15 @@ public class SymbolTable {
 	}
 	
 	public FunctionSymbol getFunctionSymbol(String name){	
-		return (FunctionSymbol) getSymbol(name + FunctionSymbol.suffixHash);
+		return (FunctionSymbol) getSymbol(name + Symbol.SUFFIX_HASH_FUNCTION);
 	}
 
 	public StructureSymbol getStructureSymbol(String name){	
-		return (StructureSymbol) getSymbol(name + StructureSymbol.suffixHash);
+		return (StructureSymbol) getSymbol(name + Symbol.SUFFIX_HASH_STRUCTURE);
 	}
 
 	public VariableSymbol getVariableSymbol(String name){	
-		return (VariableSymbol) getSymbol(name + VariableSymbol.suffixHash);
+		return (VariableSymbol) getSymbol(name + Symbol.SUFFIX_HASH_VARIABLE);
 	}
 
 	public HashMap<String,Symbol> getSymbols(){
