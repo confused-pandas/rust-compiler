@@ -1,8 +1,6 @@
 public class StructureSymbol extends SymbolTableSymbolComposed {
-
-
-	public StructureSymbol(String name, int offset, Scope scope, SymbolTable symbolTable) {
-		super(name, offset, scope, symbolTable);
+	public StructureSymbol(String name, Scope scope, SymbolTable symbolTable) {
+		super(name, scope, symbolTable);
 	}
 
 	@Override

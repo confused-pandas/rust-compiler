@@ -1,8 +1,8 @@
 public abstract class SymbolTableSymbolComposed extends Symbol {
     public final SymbolTable symbolTable;
 
-	public SymbolTableSymbolComposed(String name, int offset, Scope scope, SymbolTable symbolTable) {
-		super(name, offset, scope);
+	public SymbolTableSymbolComposed(String name, Scope scope, SymbolTable symbolTable) {
+		super(name, scope);
 		this.symbolTable = symbolTable;
 	}
 

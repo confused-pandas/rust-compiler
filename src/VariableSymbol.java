@@ -2,8 +2,9 @@ public class VariableSymbol extends Symbol {
 	public Type type;
 	public boolean isMutable;
 
-	public VariableSymbol(String name, int offset, Scope scope) {
-		super(name, offset, scope);
+	public VariableSymbol(String name, Type type, Scope scope) {
+		super(name, scope);
+		this.type = type;
 	}
 
 	public boolean isMutable(){

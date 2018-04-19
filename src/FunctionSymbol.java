@@ -4,8 +4,8 @@ public class FunctionSymbol extends SymbolTableSymbolComposed{
 	private Type returnType;
 	private LinkedList<VariableSymbol> arguments;
 
-	public FunctionSymbol(String name, int offset, Scope scope, SymbolTable symbolTable) {
-		super(name, offset, scope, symbolTable);
+	public FunctionSymbol(String name, Scope scope, SymbolTable symbolTable) {
+		super(name, scope, symbolTable);
 	}
 
 	@Override

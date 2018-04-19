@@ -1,4 +1,5 @@
 import exception.EmptyFileException;
+import exception.RedefiningStructElemException;
 import exception.SemanticException;
 import org.antlr.runtime.tree.Tree;
 import grammar.mini_rustParser;
@@ -7,7 +8,7 @@ public class TreeTraversal {
     private final SymbolTableManager symbolTableManager;
     private final Tree root;
 
-    public TreeTraversal(Tree tree){
+    public TreeTraversal(Tree tree) throws SemanticException {
         this.symbolTableManager = new SymbolTableManager();
         this.root = tree;
     }
@@ -16,7 +17,7 @@ public class TreeTraversal {
         this.traverseFile(root);
     }
 
-    private void traverseFile(Tree root) throws SemanticException{
+    private void traverseFile(Tree root) throws SemanticException {
         if (root.getChildCount() <= 0 ){
             throw new EmptyFileException();
         }
@@ -36,7 +37,7 @@ public class TreeTraversal {
         }
     }
 
-    private void traverseFunction(Tree functionNode){
+    private void traverseFunction(Tree functionNode) throws SemanticException {
         int argIndex = 2;
         getIDF(functionNode.getChild(0));
         traverseBloc(functionNode.getChild(1));
@@ -53,7 +54,7 @@ public class TreeTraversal {
         }
     }
 
-    private void traverseFunctionCall(Tree functioncallNode){
+    private void traverseFunctionCall(Tree functioncallNode) throws SemanticException {
         this.getIDF(functioncallNode.getChild(0));
 
         for (int i = 1; i <functioncallNode.getChildCount(); i++){
@@ -61,11 +62,13 @@ public class TreeTraversal {
         }
     }
 
-    private void traverseStructure(Tree structureNode){
+    private void traverseStructure(Tree structureNode) throws SemanticException {
         String idf = this.getIDF(structureNode.getChild(0));
 
+        this.symbolTableManager.openSymbolTable();
+
         for(int i = 1; i < structureNode.getChildCount(); i++) {
-            Tree child = structureNode.getChild(0);
+            Tree child = structureNode.getChild(i);
 
             switch (child.getType()) {
                 case mini_rustParser.MEMBER:
@@ -76,9 +79,11 @@ public class TreeTraversal {
                     break;
             }
         }
+
+        this.symbolTableManager.closeSymbolTable();
     }
 
-    private void traverseBloc(Tree blocNode){
+    private void traverseBloc(Tree blocNode) throws SemanticException {
         for(int i = 0; i < blocNode.getChildCount(); i++) {
             Tree child = blocNode.getChild(i);
 
@@ -104,7 +109,7 @@ public class TreeTraversal {
         }
     }
 
-    private void traverseType(Tree typeNode){
+    private Type traverseType(Tree typeNode) throws SemanticException {
         switch (typeNode.getType()){
             case mini_rustParser.IDF :
                 //TODO IDF
@@ -123,32 +128,41 @@ public class TreeTraversal {
                 //TODO bool
                 break;
         }
+
+        return null;
     }
 
-    private void traverseStructMember(Tree structMemberNode){
-    	this.getIDF(structMemberNode.getChild(0));
-    	this.traverseType(structMemberNode.getChild(1));
+    private void traverseStructMember(Tree structMemberNode) throws SemanticException {
+    	String idf = this.getIDF(structMemberNode.getChild(0));
+    	Type type = this.traverseType(structMemberNode.getChild(1));
+
+    	VariableSymbol variableSymbol = new VariableSymbol(idf, type, Scope.LOCAL);
+
+    	if(this.symbolTableManager.getCurrentTable().symbolExists(variableSymbol, false)) {
+    	    throw new RedefiningStructElemException();
+        }
+
+    	this.symbolTableManager.getCurrentTable().addSymbol(variableSymbol);
     }
 
-    private void traverseStructObj(Tree traverseStructObj){
+    private void traverseStructObj(Tree traverseStructObj) throws SemanticException {
     	this.getIDF(traverseStructObj.getChild(0));
     	if (traverseStructObj.getType() == mini_rustParser.OBJ) {
     		this.traverseObject(traverseStructObj);
     	}
     }
 
-    private void traverseParameter(Tree paramNode){
+    private void traverseParameter(Tree paramNode) throws SemanticException{
         this.getIDF(paramNode.getChild(0));
         this.traverseType(paramNode.getChild(1));
     }
 
-    private void traverseWhile(Tree whileNode){
+    private void traverseWhile(Tree whileNode) throws SemanticException {
     	this.traverseExpr(whileNode.getChild(0));
     	this.traverseBloc(whileNode.getChild(1));
     }
     
-    
-    private void traverseIf(Tree ifNode){
+    private void traverseIf(Tree ifNode) throws SemanticException {
 		traverseExpr(ifNode.getChild(0));
 		traverseBloc(ifNode.getChild(1));
 		if(ifNode.getChildCount() > 2){
@@ -156,7 +170,7 @@ public class TreeTraversal {
 		}
     }
 
-    private void traverseElse(Tree elseNode){
+    private void traverseElse(Tree elseNode) throws SemanticException {
     	switch(elseNode.getChild(0).getType()){
     		case mini_rustParser.BLOC :
     			traverseBloc(elseNode.getChild(0));
@@ -167,17 +181,17 @@ public class TreeTraversal {
     	}
     }
 
-    private void traverseExpr(Tree exprNode){
+    private void traverseExpr(Tree exprNode) throws SemanticException {
 
     }
 
-    private void traverseReturn(Tree returnNode){
+    private void traverseReturn(Tree returnNode) throws SemanticException {
     	if(returnNode.getChildCount() == 1){
             traverseExpr(returnNode.getChild(0));
     	}
     }
 
-    private void traverseLet(Tree letNode, boolean isMutable){
+    private void traverseLet(Tree letNode, boolean isMutable) throws SemanticException {
         //TODO : isMutable
         traverseExpr(letNode.getChild(0));
         if (letNode.getChildCount() == 1){
@@ -185,13 +199,13 @@ public class TreeTraversal {
         }
     }
 
-    private void traverseObject(Tree objectNode){
+    private void traverseObject(Tree objectNode) throws SemanticException {
         traverseExpr(objectNode.getChild(0));
         traverseObject(objectNode.getChild(1));
 
     }
 
-    public String getIDF(Tree node){
+    public String getIDF(Tree node) throws SemanticException {
         if(node.getType() == mini_rustParser.IDF) {
             return node.getText();
         }

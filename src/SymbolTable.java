@@ -15,36 +15,20 @@ public class SymbolTable {
 		this.symbols = new HashMap<>();
 	}
 
-	public boolean SymbolExists(Symbol symbol,boolean checkParent){
+	public boolean symbolExists(Symbol symbol,boolean checkParent){
 		boolean exists = symbols.containsValue(symbol);
 		
 		if(!exists && checkParent){
 			if(this.getParent() != null){
-				return this.getParent().SymbolExists(symbol, true);
+				return this.getParent().symbolExists(symbol, true);
 			}
 		}
 		return exists;
 	}
 
-	private void addSymbol(String key, Symbol symbol){
-		symbols.put(key,symbol);
+	public void addSymbol(Symbol symbol){
+		this.symbols.put(symbol.getHashName(), symbol);
 	}
-
-	public void addFunctionSymbol(FunctionSymbol symbol){
-		String key = symbol.getName() + Symbol.SUFFIX_HASH_FUNCTION;
-		addSymbol(key, symbol);
-	}
-	
-	public void addStructureSymbol(StructureSymbol symbol){
-		String key = symbol.getName() + Symbol.SUFFIX_HASH_STRUCTURE;
-		addSymbol(key, symbol);
-	}
-	
-	public void addVariableSymbol(VariableSymbol symbol){
-		String key = symbol.getName() + Symbol.SUFFIX_HASH_VARIABLE;
-		addSymbol(key, symbol);
-	}
-
 	
 	private Symbol getSymbol(String key){
 		return symbols.get(key);
