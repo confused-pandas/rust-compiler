@@ -7,12 +7,14 @@ public class SymbolTable {
     private final HashMap<String,Symbol> symbols;
 	private final int nestingLevel;
 	private final int regionNum;
+	private int offsetCount;
 
 	public SymbolTable(SymbolTable parent, int nestingLevel) {
 		this.parent = parent;
 		this.regionNum = SymbolTable.regionCounter++;
 		this.nestingLevel = nestingLevel;
 		this.symbols = new HashMap<>();
+		this.offsetCount = 0;
 	}
 
 	public boolean symbolExists(Symbol symbol,boolean checkParent){
@@ -28,6 +30,19 @@ public class SymbolTable {
 
 	public void addSymbol(Symbol symbol){
 		this.symbols.put(symbol.getHashName(), symbol);
+		if (symbol instanceof VariableSymbol && symbol.getScope()== Scope.FUNCTION){
+			this.offsetCount --;
+			symbol.setOffset(this.offsetCount);
+		}
+		else{
+			if (this.offsetCount <0){
+				this.offsetCount = 0;
+			}
+			symbol.setOffset(this.offsetCount);
+			this.offsetCount ++;
+		}
+
+
 	}
 	
 	private Symbol getSymbol(String key, boolean checkParent){
