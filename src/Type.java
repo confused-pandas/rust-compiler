@@ -39,4 +39,14 @@ public class Type {
 	    }
 	}
 
+	public boolean isInt() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean isBool() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

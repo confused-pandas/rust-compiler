@@ -1,4 +1,4 @@
 package exception;
 
-public class IsNotWithoutBoolException {
+public class IsNotWithoutBoolException extends SemanticException{
 }
