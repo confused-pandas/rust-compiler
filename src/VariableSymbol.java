@@ -1,13 +1,14 @@
 
 public class VariableSymbol extends Symbol {
 
+	public VariableSymbol(String name, int offset, Scope scope) {
+		super(name, offset, scope);
+		// TODO Auto-generated constructor stub
+	}
+
 	public Type type;
 	public boolean isMutable;
 	public static String suffixHash = "_V";
-
-	public String genHash(){
-		return this.getName() + suffixHash;
-	}
 
 	public boolean CheckMutable(){
 		return this.isMutable;
@@ -15,6 +16,11 @@ public class VariableSymbol extends Symbol {
 
 	public Type getType(){
 		return this.type;
+	}
+
+	@Override
+	public String getHashName() {
+		return this.getName() + suffixHash;
 	}
 
 
