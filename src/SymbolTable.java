@@ -1,7 +1,6 @@
 import java.util.HashMap;
 
 public class SymbolTable {
-
 	private final int regionCounter;
 	private int nestingLevel;
 	private int regionNum;
@@ -23,8 +22,6 @@ public class SymbolTable {
 		return SymbolExists(symbol, ST.getParent());
 
 	}
-
-
 
 	public void AddFunctionSymbol(FunctionSymbol symbol){
 		String key = symbol.getName() + FunctionSymbol.suffixHash;

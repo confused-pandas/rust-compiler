@@ -21,15 +21,16 @@ public class TreeTraversal {
         }
         else {
             for(int i = 0; i < root.getChildCount() ; i ++){
-                switch (root.getChild(i).getType()){
+                Tree child = root.getChild(i);
 
+                switch (child.getType()){
                     case mini_rustParser.DECL_FUNC :
+                        this.traverseFunction(child);
                         break;
-
                     case mini_rustParser.DECL_STRUCT :
+                        this.traverseStructure(child);
                         break;
                 }
-
             }
         }
     }
@@ -39,14 +40,14 @@ public class TreeTraversal {
         getIDF(functionNode.getChild(0));
         traverseBloc(functionNode.getChild(1));
 
-        if (functionNode.getChild(2).getType() != mini_rustParser.ARGUMENT){
+        if (functionNode.getChild(2).getType() != mini_rustParser.PARAMETER){
            traverseType(functionNode.getChild(2));
            argIndex ++;
         }
+
         for (int i =  argIndex; i < functionNode.getChildCount(); i++){
             traverseParameter(functionNode.getChild(i));
         }
-
     }
 
     private void traverseStructure(Tree structureNode){
@@ -93,35 +94,24 @@ public class TreeTraversal {
     }
 
     private void traverseType(Tree typeNode){
-
         switch (typeNode.getType()){
-
             case mini_rustParser.IDF :
                 //TODO IDF
                 break;
-
             case mini_rustParser.VEC_TYPE :
                 traverseType(typeNode.getChild(0));
                 break;
-
-            case mini_rustParser.AMPS:
+            case mini_rustParser.REF:
                 //TODO amps
                 break;
-
-            case mini_rustParser.INT32_TYPE :
+            case mini_rustParser.CSTE_ENT :
                 //TODO int
                 break;
-
             case mini_rustParser.TRUE :
-                //TODO bool
-                break;
-
             case mini_rustParser.FALSE :
                 //TODO bool
                 break;
-
         }
-
     }
 
     private void traverseStructMember(Tree structMemberNode){
@@ -163,7 +153,6 @@ public class TreeTraversal {
     			traverseIf(elseNode.getChild(0));
     			break;
     	}
-    	
     }
 
     private void traverseExpr(Tree exprNode){
@@ -171,12 +160,8 @@ public class TreeTraversal {
     }
 
     private void traverseReturn(Tree returnNode){
-    	if(returnNode.getChildCount() > 1){
-    		//TODO: erreur
-    	} else {
-    		if(returnNode.getChildCount() == 1){
-    			traverseExpr(returnNode.getChild(0));
-    		}
+    	if(returnNode.getChildCount() == 1){
+            traverseExpr(returnNode.getChild(0));
     	}
     }
 
@@ -186,7 +171,6 @@ public class TreeTraversal {
         if (letNode.getChildCount() == 1){
             traverseObject(letNode.getChild(1));
         }
-
     }
 
     private void traverseObject(Tree objectNode){
@@ -196,6 +180,11 @@ public class TreeTraversal {
     }
 
     public String getIDF(Tree node){
-        return node.getText();
+        if(node.getType() == mini_rustParser.IDF) {
+            return node.getText();
+        }
+
+        // TODO : unknown node
+        return null;
     }
 }
