@@ -30,7 +30,7 @@ public class SymbolTable {
 
 	public void addSymbol(Symbol symbol){
 		this.symbols.put(symbol.getHashName(), symbol);
-		if (symbol instanceof VariableSymbol && symbol.getScope()== Scope.LOCAL){
+		if (symbol instanceof VariableSymbol && symbol.getScope()== Scope.FUNCTION){
 			this.offsetCount --;
 			symbol.setOffset(this.offsetCount);
 		}
