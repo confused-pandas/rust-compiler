@@ -1,15 +1,16 @@
 import java.util.HashMap;
 
 public class SymbolTable {
-	private final int regionCounter;
+	private static int regionCounter = 0;
+
+    private final SymbolTable parent;
+    private HashMap<String,Symbol> symbols;
 	private int nestingLevel;
 	private int regionNum;
-	private HashMap<String,Symbol> symbols;
-	private final SymbolTable parent;
 
-	public SymbolTable(SymbolTable parent, int regionNum) {
+	public SymbolTable(SymbolTable parent) {
 		this.parent = parent;
-		this.regionCounter = regionNum;
+		this.regionNum = SymbolTable.regionCounter++;
 	}
 
 	public boolean SymbolExists(Symbol symbol,SymbolTable ST){
