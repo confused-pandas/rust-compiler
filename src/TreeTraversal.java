@@ -41,7 +41,7 @@ public class TreeTraversal {
     private void traverseFunction(Tree functionNode) throws SemanticException {
         int argIndex = 2;
         getIDF(functionNode.getChild(0));
-        traverseBloc(functionNode.getChild(1));
+        traverseBloc(functionNode.getChild(1), false);
 
         if(functionNode.getChildCount() > 2) {
             if (functionNode.getChild(2).getType() != mini_rustParser.PARAMETER){
@@ -84,8 +84,15 @@ public class TreeTraversal {
     }
 
     private void traverseBloc(Tree blocNode) throws SemanticException {
-        this.symbolTableManager.openSymbolTable();
-    	for(int i = 0; i < blocNode.getChildCount(); i++) {
+        this.traverseBloc(blocNode, true);
+    }
+
+    private void traverseBloc(Tree blocNode, boolean createBloc) throws SemanticException {
+        if(createBloc) {
+            this.symbolTableManager.openSymbolTable();
+        }
+
+        for(int i = 0; i < blocNode.getChildCount(); i++) {
             Tree child = blocNode.getChild(i);
 
             switch (child.getType()) {
@@ -108,7 +115,10 @@ public class TreeTraversal {
                     break;
             }
         }
-    	this.symbolTableManager.closeSymbolTable();
+
+        if(createBloc) {
+            this.symbolTableManager.closeSymbolTable();
+        }
     }
 
     private Type traverseType(Tree typeNode) throws SemanticException {
