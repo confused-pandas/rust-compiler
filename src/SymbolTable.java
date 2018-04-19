@@ -13,48 +13,52 @@ public class SymbolTable {
 		this.regionCounter = regionNum;
 	}
 
-	public boolean SymbolExists(Symbol symbol,SymbolTable ST){
-		if(ST.getSymbols().containsValue(symbol)){
-			return true;
-		} 
-		if(ST.getParent() == null) {
+	public boolean SymbolExists(Symbol symbol,boolean checkParent){
+		boolean exists = symbols.containsValue(symbol);
+		if(!exists && checkParent){
+			if(this.getParent() != null){
+				return this.getParent().SymbolExists(symbol, checkParent);
+			}
+		} else if(!exists && !checkParent){
 			return false;
 		}
-		return SymbolExists(symbol, ST.getParent());
-
+		return true;
 	}
 
-
-
-	public void AddFunctionSymbol(FunctionSymbol symbol){
-		String key = symbol.getName() + FunctionSymbol.suffixHash;
+	private void addSymbol(String key, Symbol symbol){
 		symbols.put(key,symbol);
 	}
+
+	public void addFunctionSymbol(FunctionSymbol symbol){
+		String key = symbol.getName() + FunctionSymbol.suffixHash;
+		addSymbol(key, symbol);
+	}
 	
-	public void AddStructureSymbol(StructureSymbol symbol){
+	public void addStructureSymbol(StructureSymbol symbol){
 		String key = symbol.getName() + StructureSymbol.suffixHash;
-		symbols.put(key, symbol);
+		addSymbol(key, symbol);
 	}
 	
-	public void AddVariableSymbol(VariableSymbol symbol){
+	public void addVariableSymbol(VariableSymbol symbol){
 		String key = symbol.getName() + VariableSymbol.suffixHash;
-		symbols.put(key, symbol);
+		addSymbol(key, symbol);
 	}
 
-
-	public FunctionSymbol getFunctionSymbol(String key){
-		FunctionSymbol functionSymbol = (FunctionSymbol) symbols.get(key + FunctionSymbol.suffixHash);
-		return functionSymbol;
+	
+	private Symbol getSymbol(String key){
+		return symbols.get(key);
+	}
+	
+	public FunctionSymbol getFunctionSymbol(String name){	
+		return (FunctionSymbol) getSymbol(name + FunctionSymbol.suffixHash);
 	}
 
-	public StructureSymbol getStructureSymbol(String key){
-		StructureSymbol structureSymbol = (StructureSymbol) symbols.get(key + StructureSymbol.suffixHash);
-		return structureSymbol;
+	public StructureSymbol getStructureSymbol(String name){	
+		return (StructureSymbol) getSymbol(name + StructureSymbol.suffixHash);
 	}
 
-	public VariableSymbol getVariableSymbol(String key){
-		VariableSymbol variableSymbol = (VariableSymbol) symbols.get(key + VariableSymbol.suffixHash);
-		return variableSymbol;
+	public VariableSymbol getVariableSymbol(String name){	
+		return (VariableSymbol) getSymbol(name + VariableSymbol.suffixHash);
 	}
 
 	public HashMap<String,Symbol> getSymbols(){
