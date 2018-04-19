@@ -95,7 +95,7 @@ decl
 
 decl_func
 	:
-	FN IDF LPAREN (argument (COMMA argument)*)? RPAREN (ARROW type)? bloc -> ^(DECL_FUNC IDF bloc (type)? (argument)*)
+	FN IDF LPAREN (parameter (COMMA parameter)*)? RPAREN (ARROW type)? bloc -> ^(DECL_FUNC IDF bloc (type)? (parameter)*)
 	;
 
 decl_struct
@@ -112,7 +112,7 @@ type
 	| BOOL_TYPE
 	;
 
-argument
+parameter
 	:
 	IDF COLON type -> ^(PARAMETER IDF type)
 	;
@@ -138,21 +138,21 @@ instruction
 
 instruction_let
 	:
-	  MUT expr (ASSIGN obj_expr)? -> ^(LETMUT expr (obj_expr)?)
-	| expr (ASSIGN obj_expr)? -> ^(LET expr (obj_expr)?)
+	  MUT expr (ASSIGN structure_initialisation_expr)? -> ^(LETMUT expr (structure_initialisation_expr)?)
+	| expr (ASSIGN structure_initialisation_expr)? -> ^(LET expr (structure_initialisation_expr)?)
 	;
 
-obj_def
+structure_initialisation
 	:
-	LBRACKET (i+=IDF COLON o+=obj_expr (COMMA i+=IDF COLON o+=obj_expr)*)? RBRACKET -> ^(MEMBER $i $o)*
+	LBRACKET (i+=IDF COLON o+=structure_initialisation_expr (COMMA i+=IDF COLON o+=structure_initialisation_expr)*)? RBRACKET -> ^(MEMBER $i $o)*
 	;
 
-obj_expr
+structure_initialisation_expr
 	:
 	  expr
 	  (
 	  	  -> expr
-	  	| obj_def -> ^(OBJ expr obj_def)
+	  	| structure_initialisation -> ^(OBJ expr structure_initialisation)
 	  )
 	;
 
