@@ -178,6 +178,9 @@ public class TreeTraversal {
 
     private void traverseWhile(Tree whileNode) throws SemanticException {
     	this.traverseExpr(whileNode.getChild(0));
+    	if (!(this.traverseExpr(whileNode.getChild(0)).isBool())) {
+    		throw new WhileWithoutBoolException("Boolean expected in while expression. Line : " + whileNode.getLine() + ".");
+    	}
     	this.traverseBloc(whileNode.getChild(1));
     }
     
@@ -328,6 +331,18 @@ public class TreeTraversal {
         traverseExpr(objectNode.getChild(0));
         traverseObject(objectNode.getChild(1));
 
+    }
+    
+    private void traverseVec(Tree vecNode) throws SemanticException {
+    	Type type = null;
+    	for (int i = 0; i < vecNode.getChildCount(); i++) {
+    		Tree child = vecNode.getChild(i);
+    		if (type == null) {
+    			type = this.traverseExpr(child);
+    		} else if (!(type.equals(this.traverseExpr(child)))) {
+    			throw new DifferentTypeException("Expressions of same types expected in vector. Line : " + vecNode.getLine() + ".");
+    		}
+    	}
     }
 
     public String getIDF(Tree node) throws SemanticException {
