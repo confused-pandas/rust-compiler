@@ -18,7 +18,7 @@ public class SymbolTable {
 	}
 
 	public boolean symbolExists(Symbol symbol,boolean checkParent){
-		boolean exists = symbols.containsValue(symbol);
+		boolean exists = symbols.containsKey(symbol.getHashName());
 		
 		if(!exists && checkParent){
 			if(this.getParent() != null){

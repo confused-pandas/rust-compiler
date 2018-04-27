@@ -1,3 +1,5 @@
+import grammar.mini_rustParser;
+
 public class Type {
 	
 	String type;
@@ -40,12 +42,16 @@ public class Type {
 	}
 
 	public boolean isInt() {
-		// TODO Auto-generated method stub
+		if (this.type.equals(mini_rustParser.INT32_TYPE)){
+			return true;
+		}
 		return false;
 	}
 
 	public boolean isBool() {
-		// TODO Auto-generated method stub
+		if (this.type.equals(mini_rustParser.TRUE) || this.type.equals(mini_rustParser.FALSE)){
+			return true;
+		}
 		return false;
 	}
 

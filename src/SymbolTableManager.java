@@ -2,7 +2,6 @@ import java.util.Stack;
 
 public class SymbolTableManager {
     private final Stack<SymbolTable> stack;
-    private boolean ignoreNext;
 
     public SymbolTableManager() {
         this.stack = new Stack<>();
