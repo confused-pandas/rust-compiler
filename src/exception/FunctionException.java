@@ -2,8 +2,8 @@ package exception;
 
 public class FunctionException extends SemanticException {
 
-    public FunctionException() {
-        super();
+    public FunctionException(String message) {
+        super(message);
     }
 
 }

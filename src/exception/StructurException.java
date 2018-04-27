@@ -2,8 +2,8 @@ package exception;
 
 public class StructurException extends SemanticException{
 
-    public StructurException() {
-        super();
+    public StructurException(String message) {
+        super(message);
     }
 
 

@@ -55,11 +55,30 @@ public class TreeTraversal {
     }
 
     private void traverseFunctionCall(Tree functioncallNode) throws SemanticException {
-        this.getIDF(functioncallNode.getChild(0));
-
-        for (int i = 1; i <functioncallNode.getChildCount(); i++){
-            this.traverseExpr(functioncallNode.getChild(i));
+        String idf = this.getIDF(functioncallNode.getChild(0));
+        FunctionSymbol functionSymbol =  new FunctionSymbol(idf, Scope.GLOBAL, this.symbolTableManager.getCurrentTable());
+        if (functionSymbol == null){
+            throw new UndefinedFunctionException("The function "+ idf + "is not defined. Line :" + functioncallNode.getLine());
         }
+
+        int size = functionSymbol.getArguments().size();
+        int realSize = functioncallNode.getChildCount();
+
+        if (size != realSize){
+
+            throw new WrongNbArgumentException("The function"+ idf + " has been called with wrong number of arguments (" + size + "instead of " + realSize + ". Line :" + functioncallNode.getLine());
+        }
+
+        for (int i = 1; i < realSize; i++){
+            Tree param = functioncallNode.getChild(i);
+            Type realType = functionSymbol.getArguments().get(i-1).getType();
+            Type type = traverseExpr(param);
+
+            if(!type.equals(realType)){
+                throw new WrongTypeArgumentException("The argument "+ param.getText() + "is called with the wrong type (" + type + "instead of " + realType + ". Line :" + functioncallNode.getLine());
+            }
+        }
+
     }
 
     private void traverseStructure(Tree structureNode) throws SemanticException {
@@ -149,7 +168,7 @@ public class TreeTraversal {
     	VariableSymbol variableSymbol = new VariableSymbol(idf, type, Scope.LOCAL);
 
     	if(this.symbolTableManager.getCurrentTable().symbolExists(variableSymbol, false)) {
-    	    throw new RedefiningStructElemException();
+    	    throw new RedefiningStructElemException(variableSymbol.getName()+"is already defined in the structure" + structMemberNode.getAncestor(0).getChild(0).getText() + ". Line :" + structMemberNode.getLine());
         }
         else {
             this.symbolTableManager.getCurrentTable().addSymbol(variableSymbol);
@@ -168,7 +187,7 @@ public class TreeTraversal {
         Type type = this.traverseType(paramNode.getChild(1));
         VariableSymbol variableSymbol = new VariableSymbol(idf, type, Scope.FUNCTION);
         if(this.symbolTableManager.getCurrentTable().symbolExists(variableSymbol, false)){
-            throw new RedefiningParamException();
+            throw new RedefiningParamException(idf + " is already defined in the function " + paramNode.getAncestor(0).getChild(0).getText() + ". Line : " + paramNode.getLine());
         }
         else {
             this.symbolTableManager.getCurrentTable().addSymbol(variableSymbol);
