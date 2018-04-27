@@ -183,10 +183,14 @@ public class TreeTraversal {
     
     private void traverseIf(Tree ifNode) throws SemanticException {
 		traverseExpr(ifNode.getChild(0));
+		if (!(this.traverseExpr(ifNode.getChild(0)).isBool())) {
+			throw new IfWithoutBoolException("Boolean expected in if expression. Line : "+ ifNode.getLine()+ ".");
+		}
 		traverseBloc(ifNode.getChild(1));
 		if(ifNode.getChildCount() > 2){
 				traverseElse(ifNode.getChild(2));
 		}
+		
     }
 
     private void traverseElse(Tree elseNode) throws SemanticException {
