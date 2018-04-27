@@ -1,10 +1,4 @@
-import exception.DifferentTypeException;
-import exception.EmptyFileException;
-import exception.IsNotWithoutBoolException;
-import exception.OperationWithNoIntException;
-import exception.RedefiningStructElemException;
-import exception.SemanticException;
-import exception.UnknownNodeException;
+import exception.*;
 import org.antlr.runtime.tree.Tree;
 import grammar.mini_rustParser;
 
@@ -43,6 +37,7 @@ public class TreeTraversal {
 
     private void traverseFunction(Tree functionNode) throws SemanticException {
         int argIndex = 2;
+        this.symbolTableManager.openSymbolTable();
         getIDF(functionNode.getChild(0));
         traverseBloc(functionNode.getChild(1), false);
 
@@ -56,6 +51,7 @@ public class TreeTraversal {
                  traverseParameter(functionNode.getChild(i));
              }        	
         }
+        this.symbolTableManager.closeSymbolTable();
     }
 
     private void traverseFunctionCall(Tree functioncallNode) throws SemanticException {
@@ -168,8 +164,16 @@ public class TreeTraversal {
     }
 
     private void traverseParameter(Tree paramNode) throws SemanticException{
-        this.getIDF(paramNode.getChild(0));
-        this.traverseType(paramNode.getChild(1));
+        String idf = this.getIDF(paramNode.getChild(0));
+        Type type = this.traverseType(paramNode.getChild(1));
+        VariableSymbol variableSymbol = new VariableSymbol(idf, type, Scope.FUNCTION);
+        if(this.symbolTableManager.getCurrentTable().symbolExists(variableSymbol, false)){
+            throw new RedefiningParamException();
+        }
+        else {
+            this.symbolTableManager.getCurrentTable().addSymbol(variableSymbol);
+        }
+
     }
 
     private void traverseWhile(Tree whileNode) throws SemanticException {
@@ -222,7 +226,7 @@ public class TreeTraversal {
     	case mini_rustParser.NE :
     		leftExpr = this.traverseExpr(exprNode.getChild(0));
     		rightExpr = this.traverseExpr(exprNode.getChild(1));
-    		
+
     		if(!leftExpr.isInt() && !rightExpr.isInt()) { // check type int
     			throw new OperationWithNoIntException();
     		}
@@ -233,7 +237,7 @@ public class TreeTraversal {
     	case mini_rustParser.DIV :
     		leftExpr = this.traverseExpr(exprNode.getChild(0));
     		rightExpr = this.traverseExpr(exprNode.getChild(1));
-    		
+
     		if(!leftExpr.isInt() && !rightExpr.isInt()) { // check type int
     			throw new OperationWithNoIntException();
     		}
@@ -269,6 +273,8 @@ public class TreeTraversal {
     		break;
     	case mini_rustParser.CSTE_ENT :
     		break;
+    	case mini_rustParser.CSTE_STR :
+    		break;
     	case mini_rustParser.TRUE :
     		leftExpr = this.traverseExpr(exprNode.getChild(0));
     		if(!leftExpr.isBool()){
@@ -295,11 +301,23 @@ public class TreeTraversal {
     }
 
     private void traverseLet(Tree letNode, boolean isMutable) throws SemanticException {
-        //TODO : isMutable
-        traverseExpr(letNode.getChild(0));
-        if (letNode.getChildCount() == 1){
-            traverseObject(letNode.getChild(1));
+        String idf = this.getIDF(letNode.getChild(0));
+        Type type = this.traverseExpr(letNode.getChild(0));
+        int compteur = 0;
+
+        VariableSymbol variableSymbol = new VariableSymbol(idf, type, Scope.LOCAL);
+
+        if (letNode.getChildCount() == 2){
+            compteur ++;
+
         }
+
+        traverseExpr(letNode.getChild(compteur));
+
+        if (letNode.getChildCount() >= 2 + compteur) {
+            traverseStructure(letNode.getChild(2+compteur));
+        }
+
     }
 
     private void traverseObject(Tree objectNode) throws SemanticException {
