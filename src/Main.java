@@ -1,10 +1,12 @@
-import exception.SemanticException;
+import exception.semantic.SemanticException;
 import grammar.mini_rustLexer;
 import grammar.mini_rustParser;
 import org.antlr.runtime.ANTLRFileStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.tree.Tree;
+import symbolTable.TreeTraversal;
+
 import java.io.IOException;
 
 public class Main {

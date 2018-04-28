@@ -1,0 +1,7 @@
+package exception.semantic;
+
+public class UndefinedSymbolException extends SymbolException {
+    public UndefinedSymbolException(String message) {
+        super(message);
+    }
+}
