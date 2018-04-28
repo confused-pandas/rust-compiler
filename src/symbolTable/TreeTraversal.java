@@ -16,11 +16,11 @@ public class TreeTraversal {
         this.root = tree;
     }
 
-    public void traverse() throws SemanticException {
+    public void traverse() throws SemanticException, UnknownNodeException {
         this.traverseFile(root);
     }
 
-    private void traverseFile(Tree root) throws SemanticException {
+    private void traverseFile(Tree root) throws SemanticException, UnknownNodeException {
         if (root.getChildCount() <= 0 ){
             throw new EmptyFileException("");
         }
@@ -40,7 +40,7 @@ public class TreeTraversal {
         }
     }
 
-    private void traverseFunction(Tree functionNode) throws SemanticException {
+    private void traverseFunction(Tree functionNode) throws SemanticException, UnknownNodeException {
         int argIndex = 2;
         this.symbolTableManager.openSymbolTable();
         getIDF(functionNode.getChild(0));
@@ -59,7 +59,7 @@ public class TreeTraversal {
         this.symbolTableManager.closeSymbolTable();
     }
 
-    private void traverseFunctionCall(Tree functioncallNode) throws SemanticException {
+    private void traverseFunctionCall(Tree functioncallNode) throws SemanticException, UnknownNodeException {
         String idf = this.getIDF(functioncallNode.getChild(0));
         FunctionSymbol functionSymbol =  new FunctionSymbol(idf, Scope.GLOBAL, this.symbolTableManager.getCurrentTable());
         if (functionSymbol == null){
@@ -86,7 +86,7 @@ public class TreeTraversal {
 
     }
 
-    private void traverseStructure(Tree structureNode) throws SemanticException {
+    private void traverseStructure(Tree structureNode) throws SemanticException, UnknownNodeException {
         String idf = this.getIDF(structureNode.getChild(0));
         this.symbolTableManager.openSymbolTable();
 
@@ -105,11 +105,11 @@ public class TreeTraversal {
         this.symbolTableManager.closeSymbolTable();
     }
 
-    private void traverseBloc(Tree blocNode) throws SemanticException {
+    private void traverseBloc(Tree blocNode) throws SemanticException, UnknownNodeException {
         this.traverseBloc(blocNode, true);
     }
 
-    private void traverseBloc(Tree blocNode, boolean createBloc) throws SemanticException {
+    private void traverseBloc(Tree blocNode, boolean createBloc) throws SemanticException, UnknownNodeException {
         if(createBloc) {
             this.symbolTableManager.openSymbolTable();
         }
@@ -120,6 +120,7 @@ public class TreeTraversal {
             switch (child.getType()) {
                 case mini_rustParser.LET:
                     this.traverseLet(child, false);
+                    break;
                 case mini_rustParser.LETMUT:
                     this.traverseLet(child, true);
                     break;
@@ -180,7 +181,7 @@ public class TreeTraversal {
         }
     }
 
-    private void traverseStructObj(Tree traverseStructObj) throws SemanticException {
+    private void traverseStructObj(Tree traverseStructObj) throws SemanticException, UnknownNodeException {
     	this.getIDF(traverseStructObj.getChild(0));
     	if (traverseStructObj.getType() == mini_rustParser.OBJ) {
     		this.traverseObject(traverseStructObj);
@@ -200,7 +201,7 @@ public class TreeTraversal {
 
     }
 
-    private void traverseWhile(Tree whileNode) throws SemanticException {
+    private void traverseWhile(Tree whileNode) throws SemanticException, UnknownNodeException {
     	this.traverseExpr(whileNode.getChild(0));
     	if (!(this.traverseExpr(whileNode.getChild(0)).isBool())) {
     		throw new WhileWithoutBoolException("Boolean expected in while expression. Line : " + whileNode.getLine() + ".");
@@ -208,7 +209,7 @@ public class TreeTraversal {
     	this.traverseBloc(whileNode.getChild(1));
     }
     
-    private void traverseIf(Tree ifNode) throws SemanticException {
+    private void traverseIf(Tree ifNode) throws SemanticException, UnknownNodeException {
 		traverseExpr(ifNode.getChild(0));
 		if (!(this.traverseExpr(ifNode.getChild(0)).isBool())) {
 			throw new IfWithoutBoolException("Boolean expected in if expression. Line : "+ ifNode.getLine()+ ".");
@@ -220,7 +221,7 @@ public class TreeTraversal {
 		
     }
 
-    private void traverseElse(Tree elseNode) throws SemanticException {
+    private void traverseElse(Tree elseNode) throws SemanticException, UnknownNodeException {
     	switch(elseNode.getChild(0).getType()){
     		case mini_rustParser.BLOC :
     			traverseBloc(elseNode.getChild(0));
@@ -231,10 +232,10 @@ public class TreeTraversal {
     	}
     }
 
-    private Type traverseExpr(Tree exprNode) throws SemanticException {
+    private Type traverseExpr(Tree exprNode) throws SemanticException, UnknownNodeException {
     	Type leftExpr;
     	Type rightExpr;
-    	Type type = null;
+    	Type type = new Type(EnumType.UNKNOWN);
     	
     	switch(exprNode.getType()){
     	case mini_rustParser.BLOC :
@@ -325,13 +326,13 @@ public class TreeTraversal {
     		return type;
     }
 
-    private void traverseReturn(Tree returnNode) throws SemanticException {
+    private void traverseReturn(Tree returnNode) throws SemanticException, UnknownNodeException {
     	if(returnNode.getChildCount() == 1){
             traverseExpr(returnNode.getChild(0));
     	}
     }
 
-    private void traverseLet(Tree letNode, boolean isMutable) throws SemanticException {
+    private void traverseLet(Tree letNode, boolean isMutable) throws SemanticException, UnknownNodeException {
         String idf = this.getIDF(letNode.getChild(0));
         Type type = this.traverseExpr(letNode.getChild(0));
         int compteur = 0;
@@ -351,13 +352,13 @@ public class TreeTraversal {
 
     }
 
-    private void traverseObject(Tree objectNode) throws SemanticException {
+    private void traverseObject(Tree objectNode) throws SemanticException, UnknownNodeException {
         traverseExpr(objectNode.getChild(0));
         traverseObject(objectNode.getChild(1));
 
     }
     
-    private void traverseVec(Tree vecNode) throws SemanticException {
+    private void traverseVec(Tree vecNode) throws SemanticException, UnknownNodeException {
     	Type type = null;
     	for (int i = 0; i < vecNode.getChildCount(); i++) {
     		Tree child = vecNode.getChild(i);
