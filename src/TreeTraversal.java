@@ -17,7 +17,7 @@ public class TreeTraversal {
 
     private void traverseFile(Tree root) throws SemanticException {
         if (root.getChildCount() <= 0 ){
-            throw new EmptyFileException();
+            throw new EmptyFileException("");
         }
         else {
             for(int i = 0; i < root.getChildCount() ; i ++){
@@ -93,7 +93,7 @@ public class TreeTraversal {
                     this.traverseStructMember(child);
                     break;
                 default:
-                    throw new UnknownNodeException();
+                    throw new UnknownNodeException("");
             }
         }
 
@@ -241,7 +241,7 @@ public class TreeTraversal {
     		rightExpr = this.traverseExpr(exprNode.getChild(1));
     		
     		if(!leftExpr.isBool() && !rightExpr.isBool()) { //TODO: check type bool
-    			throw new IsNotWithoutBoolException();
+    			throw new IsNotWithoutBoolException("");
     		}
     		break;
     	case mini_rustParser.LT :
@@ -254,7 +254,7 @@ public class TreeTraversal {
     		rightExpr = this.traverseExpr(exprNode.getChild(1));
 
     		if(!leftExpr.isInt() && !rightExpr.isInt()) { // check type int
-    			throw new OperationWithNoIntException();
+    			throw new OperationWithNoIntException("");
     		}
     		break;
     	case mini_rustParser.PLUS :
@@ -265,19 +265,19 @@ public class TreeTraversal {
     		rightExpr = this.traverseExpr(exprNode.getChild(1));
 
     		if(!leftExpr.isInt() && !rightExpr.isInt()) { // check type int
-    			throw new OperationWithNoIntException();
+    			throw new OperationWithNoIntException("");
     		}
     		break;
     	case mini_rustParser.UNARY_MINUS :
     		leftExpr = this.traverseExpr(exprNode.getChild(0));
     		if(!leftExpr.isInt()){
-    			throw new OperationWithNoIntException();
+    			throw new OperationWithNoIntException("");
     		}
     		break;
     	case mini_rustParser.NEG :
     		leftExpr = this.traverseExpr(exprNode.getChild(0));
     		if(!leftExpr.isBool()){
-    			throw new IsNotWithoutBoolException();
+    			throw new IsNotWithoutBoolException("");
     		}
     		break;
     	case mini_rustParser.POINTER :
@@ -304,13 +304,13 @@ public class TreeTraversal {
     	case mini_rustParser.TRUE :
     		leftExpr = this.traverseExpr(exprNode.getChild(0));
     		if(!leftExpr.isBool()){
-    			throw new IsNotWithoutBoolException();
+    			throw new IsNotWithoutBoolException("");
     		}
     		break;
     	case mini_rustParser.FALSE :
     		leftExpr = this.traverseExpr(exprNode.getChild(0));
     		if(!leftExpr.isBool()){
-    			throw new IsNotWithoutBoolException();
+    			throw new IsNotWithoutBoolException("");
     		}
     		break;
     	case mini_rustParser.IDF :

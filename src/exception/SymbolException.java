@@ -1,7 +1,7 @@
 package exception;
 
-public class SymbolException extends SemanticException {
-
-    public SymbolException() { super();}
-
+public class SymbolException extends FunctionException {
+    public SymbolException(String message) {
+        super(message);
+    }
 }

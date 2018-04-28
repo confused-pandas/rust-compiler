@@ -1,7 +1,7 @@
 package exception;
 
 public class VectorException extends SemanticException {
-
-    public VectorException() {super();}
-
+    public VectorException(String message) {
+        super(message);
+    }
 }
