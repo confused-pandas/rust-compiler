@@ -61,7 +61,7 @@ public class TreeTraversal {
         this.symbolTableManager.closeSymbolTable();
     }
 
-    private void traverseFunctionCall(Tree functioncallNode) throws SemanticException, UnknownNodeException {
+    private Type traverseFunctionCall(Tree functioncallNode) throws SemanticException, UnknownNodeException {
         String idf = this.getIDF(functioncallNode.getChild(0));
         FunctionSymbol functionSymbol = this.symbolTableManager.getCurrentTable().getFunctionSymbol(idf,false);
         if (functionSymbol == null){
@@ -85,6 +85,7 @@ public class TreeTraversal {
                 throw new WrongTypeArgumentException("The argument "+ param.getText() + "is called with the wrong type (" + type + "instead of " + realType + ". Line :" + functioncallNode.getLine());
             }
         }
+        return functionSymbol.getReturnType();
 
     }
 
@@ -291,40 +292,57 @@ public class TreeTraversal {
     		}
     		break;
     	case mini_rustParser.POINTER :
+    	    leftExpr = this.traverseExpr(exprNode.getChild(0));
+    	    if(!leftExpr.isPointer()){
+                throw new DifferentTypeException("");
+            }
     		break;
     	case mini_rustParser.REF :
+            leftExpr = this.traverseExpr(exprNode.getChild(0));
+            if(!leftExpr.isRef()){
+                throw new DifferentTypeException("");
     		break;
     	case mini_rustParser.INDEX :
+            leftExpr = this.traverseExpr(exprNode.getChild(0));
+            rightExpr = this.traverseExpr(exprNode.getChild(1));
     		break;
     	case mini_rustParser.DOT :
+            leftExpr = this.traverseExpr(exprNode.getChild(0));
+            rightExpr = this.traverseExpr(exprNode.getChild(1));
     		break;
     	case mini_rustParser.FUNCTION_CALL :
-    		for(int i=0; i < exprNode.getChildCount(); i++){
-    			rightExpr = this.traverseExpr(exprNode.getChild(i));
-    		}
+    	    type = this.traverseFunctionCall(exprNode);
     		break;
     	case mini_rustParser.VEC_MACRO :
+    	    type = this.traverseVec(exprNode);
     		break;
     	case mini_rustParser.PRINT_MACRO :
+                leftExpr = this.traverseExpr(exprNode.getChild(0));
+                type = new Type(EnumType.VOID);
     		break;
     	case mini_rustParser.CSTE_ENT :
-    		break;
-    	case mini_rustParser.CSTE_STR :
+    	    type = new Type(EnumType.I32);
     		break;
     	case mini_rustParser.TRUE :
     		leftExpr = this.traverseExpr(exprNode.getChild(0));
     		if(!leftExpr.isBool()){
     			throw new IsNotWithoutBoolException("");
     		}
+    		type = new Type(EnumType.BOOL);
     		break;
     	case mini_rustParser.FALSE :
     		leftExpr = this.traverseExpr(exprNode.getChild(0));
     		if(!leftExpr.isBool()){
     			throw new IsNotWithoutBoolException("");
     		}
+    		type = new Type(EnumType.BOOL);
     		break;
     	case mini_rustParser.IDF :
+    	    type = exprNode.getType();
     		break;
+    	case mini_rustParser.LEN :
+    	    type = new Type(EnumType.I32);
+    	    break;
     	}
 
     		return type;
@@ -384,7 +402,7 @@ public class TreeTraversal {
     }
 
     
-    private void traverseVec(Tree vecNode) throws SemanticException, UnknownNodeException {
+    private Type traverseVec(Tree vecNode) throws SemanticException, UnknownNodeException {
     	Type type = null;
     	for (int i = 0; i < vecNode.getChildCount(); i++) {
     		Tree child = vecNode.getChild(i);
@@ -394,6 +412,7 @@ public class TreeTraversal {
     			throw new DifferentTypeException("Expressions of same types expected in vector. Line : " + vecNode.getLine() + ".");
     		}
     	}
+    	return type;
     }
 
 
