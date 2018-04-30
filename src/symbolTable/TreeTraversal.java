@@ -338,12 +338,27 @@ public class TreeTraversal {
 
     private void traverseLet(Tree letNode, boolean isMutable) throws SemanticException, UnknownNodeException {
         String idf = this.getIDF(letNode.getChild(0));
-        Type type = this.traverseExpr(letNode.getChild(0));
-        VariableSymbol variableSymbol = new VariableSymbol(idf, type, Scope.LOCAL);
+        Type type = null;
 
         if (letNode.getChildCount() >= 1) {
-            traverseObject(letNode.getChild(1));
+
+            switch(letNode.getChild(1).getType()) {
+                case mini_rustParser.OBJ :
+                    traverseObject(letNode.getChild(1));
+                    break;
+                default:
+                    type = this.traverseExpr(letNode.getChild(1));
+                    break;
+            }
         }
+        VariableSymbol variableSymbol = new VariableSymbol(idf, type, Scope.LOCAL);
+        if(this.symbolTableManager.getCurrentTable().symbolExists(variableSymbol, false)) {
+            if (!variableSymbol.isMutable()) {
+                throw new NonMutableException(idf + "is not a mutable variable and is already defined. Line : " + letNode.getLine());
+            }
+        }
+        this.symbolTableManager.getCurrentTable().addSymbol(variableSymbol);
+
 
     }
 
