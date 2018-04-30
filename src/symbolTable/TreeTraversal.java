@@ -340,10 +340,9 @@ public class TreeTraversal {
         String idf = this.getIDF(letNode.getChild(0));
         Type type = this.traverseExpr(letNode.getChild(0));
         VariableSymbol variableSymbol = new VariableSymbol(idf, type, Scope.LOCAL);
-        traverseExpr(letNode.getChild(0));
 
         if (letNode.getChildCount() >= 1) {
-            traverseStructure(letNode.getChild(1));
+            traverseObject(letNode.getChild(1));
         }
 
     }
