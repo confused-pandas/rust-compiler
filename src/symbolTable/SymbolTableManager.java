@@ -10,19 +10,17 @@ public class SymbolTableManager {
     }
 
     public SymbolTable openSymbolTable() {
-        SymbolTable parent;
+        SymbolTable parent = null;
 
-        if(this.stack.empty()) {
-            parent  = null;
-        }
-        else {
+        if(!this.stack.empty()) {
             parent = stack.peek();
         }
 
-        SymbolTable symbolTable = new SymbolTable(parent, this.stack.size());
-        this.stack.push(symbolTable);
+        return this.stack.push(new SymbolTable(parent, this.stack.size()));
+    }
 
-        return symbolTable;
+    public SymbolTable openSymbolTable(SymbolTable symbolTable) {
+        return this.stack.push(symbolTable);
     }
 
     public SymbolTable closeSymbolTable() {

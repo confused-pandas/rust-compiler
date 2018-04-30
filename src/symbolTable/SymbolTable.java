@@ -1,8 +1,6 @@
 package symbolTable;
 
-import symbolTable.symbols.FunctionSymbol;
-import symbolTable.symbols.StructureSymbol;
-import symbolTable.symbols.VariableSymbol;
+import symbolTable.symbols.*;
 
 import java.util.HashMap;
 
@@ -63,15 +61,15 @@ public class SymbolTable {
     }
 	
 	public FunctionSymbol getFunctionSymbol(String name, boolean checkParent){
-		return (FunctionSymbol) getSymbol(name + Symbol.SUFFIX_HASH_FUNCTION, checkParent);
+		return (FunctionSymbol) getSymbol(name + EnumSymbolType.FUNCTION.getSuffix(), checkParent);
 	}
 
 	public StructureSymbol getStructureSymbol(String name, boolean checkParent){
-		return (StructureSymbol) getSymbol(name + Symbol.SUFFIX_HASH_STRUCTURE, checkParent);
+		return (StructureSymbol) getSymbol(name + EnumSymbolType.STRUCTURE.getSuffix(), checkParent);
 	}
 
 	public VariableSymbol getVariableSymbol(String name, boolean checkParent){
-		return (VariableSymbol) getSymbol(name + Symbol.SUFFIX_HASH_VARIABLE, checkParent);
+		return (VariableSymbol) getSymbol(name + EnumSymbolType.VARIABLE.getSuffix(), checkParent);
 	}
 
 	public HashMap<String,Symbol> getSymbols(){

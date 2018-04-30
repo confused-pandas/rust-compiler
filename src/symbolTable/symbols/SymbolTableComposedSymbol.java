@@ -1,14 +1,13 @@
 package symbolTable.symbols;
 
 import symbolTable.Scope;
-import symbolTable.Symbol;
 import symbolTable.SymbolTable;
 
 public abstract class SymbolTableComposedSymbol extends Symbol {
     public final SymbolTable symbolTable;
 
-	public SymbolTableComposedSymbol(String name, Scope scope, SymbolTable symbolTable) {
-		super(name, scope);
+	protected SymbolTableComposedSymbol(EnumSymbolType symbolType, String name, Scope scope, SymbolTable symbolTable) {
+		super(symbolType, name, scope);
 		this.symbolTable = symbolTable;
 	}
 

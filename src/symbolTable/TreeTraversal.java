@@ -12,16 +12,22 @@ public class TreeTraversal {
     private final SymbolTableManager symbolTableManager;
     private final Tree root;
 
-    public TreeTraversal(Tree tree) throws SemanticException {
+    public TreeTraversal(Tree tree) {
         this.symbolTableManager = new SymbolTableManager();
         this.root = tree;
     }
 
-    public void traverse() throws SemanticException, UnknownNodeException {
-        this.traverseFile(root);
+    public SymbolTable buildSymbolTable() throws SemanticException, UnknownNodeException {
+        SymbolTable symbolTable = this.symbolTableManager.openSymbolTable();
+
+        this.traverseFile(root, true);
+        this.traverseFile(root, false);
+        this.symbolTableManager.closeSymbolTable();
+
+        return symbolTable;
     }
 
-    private void traverseFile(Tree root) throws SemanticException, UnknownNodeException {
+    private void traverseFile(Tree root, boolean onlyDeclarations) throws SemanticException, UnknownNodeException {
         if (root.getChildCount() <= 0 ){
             throw new EmptyFileException("");
         }
@@ -31,34 +37,109 @@ public class TreeTraversal {
 
                 switch (child.getType()){
                     case mini_rustParser.DECL_FUNC :
-                        this.traverseFunction(child);
+                        this.traverseFunction(child, onlyDeclarations);
                         break;
                     case mini_rustParser.DECL_STRUCT :
-                        this.traverseStructure(child);
+                        this.traverseStructure(child, onlyDeclarations);
                         break;
                 }
             }
         }
     }
 
-    private void traverseFunction(Tree functionNode) throws SemanticException, UnknownNodeException {
-        int argIndex = 2;
-        this.symbolTableManager.openSymbolTable();
-        getIDF(functionNode.getChild(0));
-        traverseBloc(functionNode.getChild(1), false);
+    private void traverseFunction(Tree functionNode, boolean onlyDeclarations) throws SemanticException, UnknownNodeException {
+        String idf = getIDF(functionNode.getChild(0));
 
-        if(functionNode.getChildCount() > 2) {
-            if (functionNode.getChild(2).getType() != mini_rustParser.PARAMETER){
-                traverseType(functionNode.getChild(2));
-                argIndex ++;
-                //returntype ?
-             }
+        if(onlyDeclarations) {
+            int parameterStartIndex = 2;
+            Type returnType = new Type(EnumType.VOID);
+            SymbolTable symbolTable = this.symbolTableManager.openSymbolTable();
 
-             for (int i =  argIndex; i < functionNode.getChildCount(); i++){
-                 traverseParameter(functionNode.getChild(i));
-             }        	
+            if(functionNode.getChildCount() > 2) {
+                if (functionNode.getChild(2).getType() != mini_rustParser.PARAMETER){
+                    returnType = traverseType(functionNode.getChild(2));
+                    parameterStartIndex ++;
+                }
+
+                for (int i =  parameterStartIndex; i < functionNode.getChildCount(); i++){
+                    traverseParameter(functionNode.getChild(i));
+                }
+            }
+
+            this.symbolTableManager.closeSymbolTable();
+
+            FunctionSymbol functionSymbol = new FunctionSymbol(
+                    idf,
+                    Scope.LOCAL,
+                    returnType,
+                    symbolTable
+            );
+
+            if(this.symbolTableManager.getCurrentTable().symbolExists(functionSymbol, true)) {
+                throw new RedefiningFunctionException("Redefining function " + idf + ". Line : " + functionNode.getLine());
+            }
+
+            this.symbolTableManager.getCurrentTable().addSymbol(functionSymbol);
         }
-        this.symbolTableManager.closeSymbolTable();
+        else {
+            FunctionSymbol functionSymbol = this.symbolTableManager.getCurrentTable().getFunctionSymbol(idf, true);
+
+            this.symbolTableManager.openSymbolTable(functionSymbol.getSymbolTable());
+            this.traverseBloc(functionNode.getChild(1), false);
+            this.symbolTableManager.closeSymbolTable();
+        }
+    }
+
+    private void traverseStructure(Tree structureNode, boolean onlyDeclarations) throws SemanticException, UnknownNodeException {
+        String idf = this.getIDF(structureNode.getChild(0));
+
+        if(onlyDeclarations) {
+            SymbolTable symbolTable = this.symbolTableManager.openSymbolTable();
+            StructureSymbol structureSymbol = new StructureSymbol(
+                    idf,
+                    Scope.LOCAL,
+                    symbolTable
+            );
+
+            if(this.symbolTableManager.getCurrentTable().symbolExists(structureSymbol, true)) {
+                throw new RedefiningStructureException("Redefining structure " + idf + ". Line : " + structureNode.getLine());
+            }
+
+            this.symbolTableManager.closeSymbolTable();
+            this.symbolTableManager.getCurrentTable().addSymbol(structureSymbol);
+        }
+        else {
+            StructureSymbol structureSymbol = this.symbolTableManager.getCurrentTable().getStructureSymbol(idf, true);
+            this.symbolTableManager.openSymbolTable(structureSymbol.getSymbolTable());
+
+            for(int i = 1; i < structureNode.getChildCount(); i++) {
+                Tree child = structureNode.getChild(i);
+
+                switch (child.getType()) {
+                    case mini_rustParser.MEMBER:
+                        this.traverseStructureMember(child);
+                        break;
+                    default:
+                        throw new UnknownNodeException("");
+                }
+            }
+
+            this.symbolTableManager.closeSymbolTable();
+        }
+    }
+
+    private void traverseStructureMember(Tree structMemberNode) throws SemanticException {
+        String idf = this.getIDF(structMemberNode.getChild(0));
+        Type type = this.traverseType(structMemberNode.getChild(1));
+
+        VariableSymbol variableSymbol = new VariableSymbol(idf, type, Scope.LOCAL);
+
+        if(this.symbolTableManager.getCurrentTable().symbolExists(variableSymbol, false)) {
+            throw new RedefiningStructureElemException(variableSymbol.getName()+"is already defined in the structure" + structMemberNode.getAncestor(0).getChild(0).getText() + ". Line :" + structMemberNode.getLine());
+        }
+        else {
+            this.symbolTableManager.getCurrentTable().addSymbol(variableSymbol);
+        }
     }
 
     private Type traverseFunctionCall(Tree functioncallNode) throws SemanticException, UnknownNodeException {
@@ -68,7 +149,7 @@ public class TreeTraversal {
             throw new UndefinedFunctionException("The function "+ idf + "is not defined. Line :" + functioncallNode.getLine());
         }
 
-        int size = functionSymbol.getArguments().size();
+        int size = functionSymbol.getParameters().size();
         int realSize = functioncallNode.getChildCount()-1;
 
         if (size != realSize){
@@ -78,7 +159,7 @@ public class TreeTraversal {
 
         for (int i = 1; i < realSize; i++){
             Tree param = functioncallNode.getChild(i);
-            Type realType = functionSymbol.getArguments().get(i-1).getType();
+            Type realType = functionSymbol.getParameters().get(i-1).getType();
             Type type = traverseExpr(param);
 
             if(!type.equals(realType)){
@@ -87,27 +168,6 @@ public class TreeTraversal {
         }
         return functionSymbol.getReturnType();
 
-    }
-
-    private void traverseStructure(Tree structureNode) throws SemanticException, UnknownNodeException {
-        String idf = this.getIDF(structureNode.getChild(0));
-        this.symbolTableManager.openSymbolTable();
-
-        for(int i = 1; i < structureNode.getChildCount(); i++) {
-            Tree child = structureNode.getChild(i);
-
-            switch (child.getType()) {
-                case mini_rustParser.MEMBER:
-                    this.traverseStructMember(child);
-                    break;
-                case mini_rustParser.OBJ:
-                    this.traverseStructObj(child);
-                default:
-                    throw new UnknownNodeException("");
-            }
-        }
-
-        this.symbolTableManager.closeSymbolTable();
     }
 
     private void traverseBloc(Tree blocNode) throws SemanticException, UnknownNodeException {
@@ -149,41 +209,69 @@ public class TreeTraversal {
         }
     }
 
-    private Type traverseType(Tree typeNode) throws SemanticException {
-        switch (typeNode.getType()){
-            case mini_rustParser.IDF :
-                //TODO IDF
-                break;
-            case mini_rustParser.VEC_TYPE :
-                traverseType(typeNode.getChild(0));
-                break;
-            case mini_rustParser.REF:
-                //TODO amps
-                break;
-            case mini_rustParser.CSTE_ENT :
-                //TODO int
-                break;
-            case mini_rustParser.TRUE :
-            case mini_rustParser.FALSE :
-                //TODO bool
-                break;
+    private Type traverseType(Tree typeNode) throws UnknownTypeException {
+        Tree currentNode = typeNode;
+        Type type;
+        int vec = 0;
+        int pointer = 0;
+        int ref = 0;
+        String stringType;
+        boolean isStructure = false;
+        boolean b = true;
+
+        while(b) {
+            switch (currentNode.getType()) {
+                case mini_rustParser.VEC_TYPE:
+                    vec++;
+                    break;
+                case mini_rustParser.POINTER:
+                    pointer++;
+                    break;
+                case mini_rustParser.REF:
+                    ref++;
+                    break;
+                default:
+                    b = false;
+                    break;
+            }
+
+            if(b) {
+                currentNode = currentNode.getChild(0);
+            }
         }
 
-        return null;
-    }
+        stringType = currentNode.getText();
 
-    private void traverseStructMember(Tree structMemberNode) throws SemanticException {
-    	String idf = this.getIDF(structMemberNode.getChild(0));
-    	Type type = this.traverseType(structMemberNode.getChild(1));
+        if(!Type.isDefaultType(stringType)) {
+            StructureSymbol structureSymbol = this.symbolTableManager
+                    .getCurrentTable()
+                    .getStructureSymbol(stringType, true);
 
-    	VariableSymbol variableSymbol = new VariableSymbol(idf, type, Scope.LOCAL);
+            if(structureSymbol == null) {
+                throw new UnknownTypeException("Unknown type : " + stringType + ". Line : " + typeNode.getLine());
+            }
 
-    	if(this.symbolTableManager.getCurrentTable().symbolExists(variableSymbol, false)) {
-    	    throw new RedefiningStructElemException(variableSymbol.getName()+"is already defined in the structure" + structMemberNode.getAncestor(0).getChild(0).getText() + ". Line :" + structMemberNode.getLine());
+            isStructure = true;
+        }
+
+        if(isStructure) {
+            type = new Type(
+                    stringType,
+                    vec,
+                    ref,
+                    pointer
+            );
         }
         else {
-            this.symbolTableManager.getCurrentTable().addSymbol(variableSymbol);
+            type = new Type(
+                    Type.getDefaultType(stringType),
+                    vec,
+                    ref,
+                    pointer
+            );
         }
+
+        return type;
     }
 
     private void traverseStructObj(Tree traverseStructObj) throws SemanticException, UnknownNodeException {
@@ -301,6 +389,7 @@ public class TreeTraversal {
             leftExpr = this.traverseExpr(exprNode.getChild(0));
             if(!leftExpr.isRef()){
                 throw new DifferentTypeException("");
+            }
     		break;
     	case mini_rustParser.INDEX :
             leftExpr = this.traverseExpr(exprNode.getChild(0));
@@ -338,7 +427,7 @@ public class TreeTraversal {
     		type = new Type(EnumType.BOOL);
     		break;
     	case mini_rustParser.IDF :
-    	    type = exprNode.getType();
+    	    type = null;
     		break;
     	case mini_rustParser.LEN :
     	    type = new Type(EnumType.I32);
@@ -381,8 +470,8 @@ public class TreeTraversal {
     }
 
     private void traverseObject(Tree objectNode) throws SemanticException, UnknownNodeException {
-        String idf = this.getIDF(objectNode);
-        StructureSymbol structureSymbol = this.symbolTableManager.getCurrentTable().getStructureSymbol(idf,false);
+        String idf = this.getIDF(objectNode.getChild(0));
+        StructureSymbol structureSymbol = this.symbolTableManager.getCurrentTable().getStructureSymbol(idf,true);
 
 
         if (structureSymbol == null){
@@ -396,7 +485,8 @@ public class TreeTraversal {
         }
 
         traverseExpr(objectNode.getChild(0));
-        traverseObject(objectNode.getChild(1));
+        // recursion infinie
+        //traverseObject(objectNode.getChild(1));
 
 
     }
@@ -416,7 +506,7 @@ public class TreeTraversal {
     }
 
 
-    public String getIDF(Tree node) throws SemanticException {
+    public String getIDF(Tree node) {
         if(node.getType() == mini_rustParser.IDF) {
             return node.getText();
         }

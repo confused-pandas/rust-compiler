@@ -20,7 +20,7 @@ public class Main {
             mini_rustParser.fichier_return ret = g.fichier();
             Tree root = (Tree)ret.getTree();
             TreeTraversal treeTraversal = new TreeTraversal(root);
-            treeTraversal.traverse();
+            treeTraversal.buildSymbolTable();
         } catch (RecognitionException e) {
             e.printStackTrace();
         } catch (SemanticException e) {
