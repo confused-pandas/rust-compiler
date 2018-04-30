@@ -5,6 +5,7 @@ import exception.semantic.*;
 import grammar.mini_rustParser;
 import org.antlr.runtime.tree.Tree;
 import symbolTable.symbols.FunctionSymbol;
+import symbolTable.symbols.StructureSymbol;
 import symbolTable.symbols.VariableSymbol;
 
 public class TreeTraversal {
@@ -50,6 +51,7 @@ public class TreeTraversal {
             if (functionNode.getChild(2).getType() != mini_rustParser.PARAMETER){
                 traverseType(functionNode.getChild(2));
                 argIndex ++;
+                //returntype ?
              }
 
              for (int i =  argIndex; i < functionNode.getChildCount(); i++){
@@ -61,13 +63,13 @@ public class TreeTraversal {
 
     private void traverseFunctionCall(Tree functioncallNode) throws SemanticException, UnknownNodeException {
         String idf = this.getIDF(functioncallNode.getChild(0));
-        FunctionSymbol functionSymbol =  new FunctionSymbol(idf, Scope.GLOBAL, this.symbolTableManager.getCurrentTable());
+        FunctionSymbol functionSymbol = this.symbolTableManager.getCurrentTable().getFunctionSymbol(idf,false);
         if (functionSymbol == null){
             throw new UndefinedFunctionException("The function "+ idf + "is not defined. Line :" + functioncallNode.getLine());
         }
 
         int size = functionSymbol.getArguments().size();
-        int realSize = functioncallNode.getChildCount();
+        int realSize = functioncallNode.getChildCount()-1;
 
         if (size != realSize){
 
@@ -97,6 +99,8 @@ public class TreeTraversal {
                 case mini_rustParser.MEMBER:
                     this.traverseStructMember(child);
                     break;
+                case mini_rustParser.OBJ:
+                    this.traverseStructObj(child);
                 default:
                     throw new UnknownNodeException("");
             }
@@ -335,28 +339,36 @@ public class TreeTraversal {
     private void traverseLet(Tree letNode, boolean isMutable) throws SemanticException, UnknownNodeException {
         String idf = this.getIDF(letNode.getChild(0));
         Type type = this.traverseExpr(letNode.getChild(0));
-        int compteur = 0;
-
         VariableSymbol variableSymbol = new VariableSymbol(idf, type, Scope.LOCAL);
+        traverseExpr(letNode.getChild(0));
 
-        if (letNode.getChildCount() == 2){
-            compteur ++;
-
-        }
-
-        traverseExpr(letNode.getChild(compteur));
-
-        if (letNode.getChildCount() >= 2 + compteur) {
-            traverseStructure(letNode.getChild(2+compteur));
+        if (letNode.getChildCount() >= 1) {
+            traverseStructure(letNode.getChild(1));
         }
 
     }
 
     private void traverseObject(Tree objectNode) throws SemanticException, UnknownNodeException {
+        String idf = this.getIDF(objectNode);
+        StructureSymbol structureSymbol = this.symbolTableManager.getCurrentTable().getStructureSymbol(idf,false);
+
+
+        if (structureSymbol == null){
+            throw new UndefinedSymbolException(idf + "is not defined. Line :" + objectNode.getLine());
+        }
+
+        int size = objectNode.getChildCount()-1;
+        int realSize = structureSymbol.getSymbolTable().getSymbols().size();
+        if(size != realSize){
+            throw new WrongNumberCalledElementException(idf + "is called with the wrong number of elements (" + size + " instead of " + realSize + "). Line :" + objectNode.getLine());
+        }
+
         traverseExpr(objectNode.getChild(0));
         traverseObject(objectNode.getChild(1));
 
+
     }
+
     
     private void traverseVec(Tree vecNode) throws SemanticException, UnknownNodeException {
     	Type type = null;
@@ -369,6 +381,7 @@ public class TreeTraversal {
     		}
     	}
     }
+
 
     public String getIDF(Tree node) throws SemanticException {
         if(node.getType() == mini_rustParser.IDF) {
