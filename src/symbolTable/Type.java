@@ -137,6 +137,10 @@ public class Type {
             str = this.type.getToken();
         }
 
+        for(int i = 0; i < this.getVec(); i++) {
+            str = "Vec<" + str + ">";
+        }
+
         return str;
     }
 }

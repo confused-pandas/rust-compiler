@@ -21,8 +21,10 @@ public class FunctionSymbol extends SymbolTableComposedSymbol {
 	public LinkedList<VariableSymbol> getParameters() {
 		LinkedList<VariableSymbol> parameters = new LinkedList<>();
 
-		for(Symbol symbol: this.getSymbolTable().getSymbols().values()) {
-		    if(symbol instanceof VariableSymbol) {
+		for(String key: this.getSymbolTable().getSymbols().keySet()) {
+		    Symbol symbol = this.getSymbolTable().getSymbols().get(key);
+
+			if(symbol instanceof VariableSymbol) {
 		        VariableSymbol variableSymbol = (VariableSymbol)symbol;
 
 		        if(variableSymbol.getOffset() < 0) {

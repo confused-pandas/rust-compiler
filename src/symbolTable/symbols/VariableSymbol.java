@@ -7,9 +7,10 @@ public class VariableSymbol extends Symbol {
 	public Type type;
 	public boolean isMutable;
 
-	public VariableSymbol(String name, Type type, Scope scope) {
+	public VariableSymbol(String name, Scope scope, Type type, boolean isMutable) {
 		super(EnumSymbolType.VARIABLE, name, scope);
 		this.type = type;
+		this.isMutable = isMutable;
 	}
 
 	public boolean isMutable(){

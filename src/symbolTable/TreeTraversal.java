@@ -3,10 +3,13 @@ package symbolTable;
 import exception.UnknownNodeException;
 import exception.semantic.*;
 import grammar.mini_rustParser;
+import javafx.util.Pair;
 import org.antlr.runtime.tree.Tree;
 import symbolTable.symbols.FunctionSymbol;
 import symbolTable.symbols.StructureSymbol;
 import symbolTable.symbols.VariableSymbol;
+
+import java.util.Stack;
 
 public class TreeTraversal {
     private final SymbolTableManager symbolTableManager;
@@ -132,7 +135,7 @@ public class TreeTraversal {
         String idf = this.getIDF(structMemberNode.getChild(0));
         Type type = this.traverseType(structMemberNode.getChild(1));
 
-        VariableSymbol variableSymbol = new VariableSymbol(idf, type, Scope.LOCAL);
+        VariableSymbol variableSymbol = new VariableSymbol(idf, Scope.LOCAL, type, false);
 
         if(this.symbolTableManager.getCurrentTable().symbolExists(variableSymbol, false)) {
             throw new RedefiningStructureElemException(variableSymbol.getName()+"is already defined in the structure" + structMemberNode.getAncestor(0).getChild(0).getText() + ". Line :" + structMemberNode.getLine());
@@ -142,39 +145,39 @@ public class TreeTraversal {
         }
     }
 
-    private Type traverseFunctionCall(Tree functioncallNode) throws SemanticException, UnknownNodeException {
-        String idf = this.getIDF(functioncallNode.getChild(0));
-        FunctionSymbol functionSymbol = this.symbolTableManager.getCurrentTable().getFunctionSymbol(idf,false);
+    private Type traverseFunctionCall(Tree functionCallNode) throws SemanticException, UnknownNodeException {
+        String idf = this.getIDF(functionCallNode.getChild(0));
+        FunctionSymbol functionSymbol = this.symbolTableManager.getCurrentTable().getFunctionSymbol(idf,true);
+
         if (functionSymbol == null){
-            throw new UndefinedFunctionException("The function "+ idf + "is not defined. Line :" + functioncallNode.getLine());
+            throw new UndefinedFunctionException("The function "+ idf + " is not defined. Line :" + functionCallNode.getLine());
         }
 
         int size = functionSymbol.getParameters().size();
-        int realSize = functioncallNode.getChildCount()-1;
+        int realSize = functionCallNode.getChildCount()-1;
 
         if (size != realSize){
-
-            throw new WrongNbArgumentException("The function"+ idf + " has been called with wrong number of arguments (" + size + "instead of " + realSize + ". Line :" + functioncallNode.getLine());
+            throw new WrongNbArgumentException("The function "+ idf + " has been called with wrong number of arguments (" + size + " instead of " + realSize + "). Line :" + functionCallNode.getLine());
         }
 
-        for (int i = 1; i < realSize; i++){
-            Tree param = functioncallNode.getChild(i);
+        for (int i = 1; i < realSize + 1; i++){
+            Tree param = functionCallNode.getChild(i);
             Type realType = functionSymbol.getParameters().get(i-1).getType();
             Type type = traverseExpr(param);
 
             if(!type.equals(realType)){
-                throw new WrongTypeArgumentException("The argument "+ param.getText() + "is called with the wrong type (" + type + "instead of " + realType + ". Line :" + functioncallNode.getLine());
+                throw new WrongTypeArgumentException("The argument "+ param.getText() + " is called with the wrong type (" + type + " instead of " + realType + "). Line :" + functionCallNode.getLine());
             }
         }
+
         return functionSymbol.getReturnType();
-
     }
 
-    private void traverseBloc(Tree blocNode) throws SemanticException, UnknownNodeException {
-        this.traverseBloc(blocNode, true);
+    private Type traverseBloc(Tree blocNode) throws SemanticException, UnknownNodeException {
+        return this.traverseBloc(blocNode, true);
     }
 
-    private void traverseBloc(Tree blocNode, boolean createBloc) throws SemanticException, UnknownNodeException {
+    private Type traverseBloc(Tree blocNode, boolean createBloc) throws SemanticException, UnknownNodeException {
         if(createBloc) {
             this.symbolTableManager.openSymbolTable();
         }
@@ -207,6 +210,8 @@ public class TreeTraversal {
         if(createBloc) {
             this.symbolTableManager.closeSymbolTable();
         }
+
+        return null;
     }
 
     private Type traverseType(Tree typeNode) throws UnknownTypeException {
@@ -274,17 +279,10 @@ public class TreeTraversal {
         return type;
     }
 
-    private void traverseStructObj(Tree traverseStructObj) throws SemanticException, UnknownNodeException {
-    	this.getIDF(traverseStructObj.getChild(0));
-    	if (traverseStructObj.getType() == mini_rustParser.OBJ) {
-    		this.traverseObject(traverseStructObj);
-    	}
-    }
-
     private void traverseParameter(Tree paramNode) throws SemanticException{
         String idf = this.getIDF(paramNode.getChild(0));
         Type type = this.traverseType(paramNode.getChild(1));
-        VariableSymbol variableSymbol = new VariableSymbol(idf, type, Scope.FUNCTION);
+        VariableSymbol variableSymbol = new VariableSymbol(idf, Scope.FUNCTION, type, false);
         if(this.symbolTableManager.getCurrentTable().symbolExists(variableSymbol, false)){
             throw new RedefiningParamException(idf + " is already defined in the function " + paramNode.getAncestor(0).getChild(0).getText() + ". Line : " + paramNode.getLine());
         }
@@ -328,113 +326,265 @@ public class TreeTraversal {
     private Type traverseExpr(Tree exprNode) throws SemanticException, UnknownNodeException {
     	Type leftExpr;
     	Type rightExpr;
-    	Type type = new Type(EnumType.UNKNOWN);
+    	Type type;
     	
     	switch(exprNode.getType()){
-    	case mini_rustParser.BLOC :
-    		this.traverseBloc(exprNode);
-    		break;
-    	case mini_rustParser.OR :
-    	case mini_rustParser.AND :
-    		leftExpr = this.traverseExpr(exprNode.getChild(0));
-    		rightExpr = this.traverseExpr(exprNode.getChild(1));
-    		
-    		if(!leftExpr.isBool() && !rightExpr.isBool()) { //TODO: check type bool
-    			throw new IsNotWithoutBoolException("");
-    		}
-    		break;
-    	case mini_rustParser.LT :
-    	case mini_rustParser.LE :
-    	case mini_rustParser.GT :
-    	case mini_rustParser.GE :
-    	case mini_rustParser.EQ :
-    	case mini_rustParser.NE :
-    		leftExpr = this.traverseExpr(exprNode.getChild(0));
-    		rightExpr = this.traverseExpr(exprNode.getChild(1));
-
-    		if(!leftExpr.isInt() && !rightExpr.isInt()) { // check type int
-    			throw new OperationWithNoIntException("");
-    		}
-    		break;
-    	case mini_rustParser.PLUS :
-    	case mini_rustParser.MINUS :
-    	case mini_rustParser.MUL :
-    	case mini_rustParser.DIV :
-    		leftExpr = this.traverseExpr(exprNode.getChild(0));
-    		rightExpr = this.traverseExpr(exprNode.getChild(1));
-
-    		if(!leftExpr.isInt() && !rightExpr.isInt()) { // check type int
-    			throw new OperationWithNoIntException("");
-    		}
-    		break;
-    	case mini_rustParser.UNARY_MINUS :
-    		leftExpr = this.traverseExpr(exprNode.getChild(0));
-    		if(!leftExpr.isInt()){
-    			throw new OperationWithNoIntException("");
-    		}
-    		break;
-    	case mini_rustParser.NEG :
-    		leftExpr = this.traverseExpr(exprNode.getChild(0));
-    		if(!leftExpr.isBool()){
-    			throw new IsNotWithoutBoolException("");
-    		}
-    		break;
-    	case mini_rustParser.POINTER :
-    	    leftExpr = this.traverseExpr(exprNode.getChild(0));
-    	    if(!leftExpr.isPointer()){
-                throw new DifferentTypeException("");
-            }
-    		break;
-    	case mini_rustParser.REF :
-            leftExpr = this.traverseExpr(exprNode.getChild(0));
-            if(!leftExpr.isRef()){
-                throw new DifferentTypeException("");
-            }
-    		break;
-    	case mini_rustParser.INDEX :
-            leftExpr = this.traverseExpr(exprNode.getChild(0));
-            rightExpr = this.traverseExpr(exprNode.getChild(1));
-    		break;
-    	case mini_rustParser.DOT :
-            leftExpr = this.traverseExpr(exprNode.getChild(0));
-            rightExpr = this.traverseExpr(exprNode.getChild(1));
-    		break;
-    	case mini_rustParser.FUNCTION_CALL :
-    	    type = this.traverseFunctionCall(exprNode);
-    		break;
-    	case mini_rustParser.VEC_MACRO :
-    	    type = this.traverseVec(exprNode);
-    		break;
-    	case mini_rustParser.PRINT_MACRO :
+            case mini_rustParser.BLOC :
+                type = this.traverseBloc(exprNode);
+                break;
+            case mini_rustParser.OR :
+            case mini_rustParser.AND :
                 leftExpr = this.traverseExpr(exprNode.getChild(0));
+                rightExpr = this.traverseExpr(exprNode.getChild(1));
+
+                if(!leftExpr.isBool() && !rightExpr.isBool()) { //TODO: check type bool
+                    throw new IsNotWithoutBoolException("");
+                }
+
+                type = new Type(EnumType.BOOL);
+                break;
+            case mini_rustParser.LT :
+            case mini_rustParser.LE :
+            case mini_rustParser.GT :
+            case mini_rustParser.GE :
+            case mini_rustParser.EQ :
+            case mini_rustParser.NE :
+                leftExpr = this.traverseExpr(exprNode.getChild(0));
+                rightExpr = this.traverseExpr(exprNode.getChild(1));
+
+                if(!leftExpr.isInt() && !rightExpr.isInt()) { // check type int
+                    throw new OperationWithNoIntException("");
+                }
+
+                type = new Type(EnumType.BOOL);
+                break;
+            case mini_rustParser.PLUS :
+            case mini_rustParser.MINUS :
+            case mini_rustParser.MUL :
+            case mini_rustParser.DIV :
+                leftExpr = this.traverseExpr(exprNode.getChild(0));
+                rightExpr = this.traverseExpr(exprNode.getChild(1));
+
+                if(!leftExpr.isInt() && !rightExpr.isInt()) { // check type int
+                    throw new OperationWithNoIntException("");
+                }
+
+                type = new Type(EnumType.I32);
+                break;
+            case mini_rustParser.UNARY_MINUS :
+                leftExpr = this.traverseExpr(exprNode.getChild(0));
+
+                if(!leftExpr.isInt()){
+                    throw new OperationWithNoIntException("");
+                }
+
+                type = new Type(EnumType.I32);
+                break;
+            case mini_rustParser.NEG :
+                leftExpr = this.traverseExpr(exprNode.getChild(0));
+
+                if(!leftExpr.isBool()){
+                    throw new IsNotWithoutBoolException("");
+                }
+
+                type = new Type(EnumType.I32);
+                break;
+            case mini_rustParser.POINTER :
+            case mini_rustParser.REF :
+                type = this.traversePointerRefExpr(exprNode);
+                break;
+            case mini_rustParser.INDEX :
+            case mini_rustParser.DOT :
+                type = this.traverseIndexDotExpr(exprNode);
+                break;
+            case mini_rustParser.FUNCTION_CALL :
+                type = this.traverseFunctionCall(exprNode);
+                break;
+            case mini_rustParser.VEC_MACRO :
+                type = this.traverseVec(exprNode);
+                break;
+            case mini_rustParser.PRINT_MACRO :
+                // TODO : expr d'un certain type ?
                 type = new Type(EnumType.VOID);
-    		break;
-    	case mini_rustParser.CSTE_ENT :
-    	    type = new Type(EnumType.I32);
-    		break;
-    	case mini_rustParser.TRUE :
-    		leftExpr = this.traverseExpr(exprNode.getChild(0));
-    		if(!leftExpr.isBool()){
-    			throw new IsNotWithoutBoolException("");
-    		}
-    		type = new Type(EnumType.BOOL);
-    		break;
-    	case mini_rustParser.FALSE :
-    		leftExpr = this.traverseExpr(exprNode.getChild(0));
-    		if(!leftExpr.isBool()){
-    			throw new IsNotWithoutBoolException("");
-    		}
-    		type = new Type(EnumType.BOOL);
-    		break;
-    	case mini_rustParser.IDF :
-    	    type = null;
-    		break;
-    	case mini_rustParser.LEN :
-    	    type = new Type(EnumType.I32);
-    	    break;
+                break;
+            case mini_rustParser.CSTE_ENT :
+                type = new Type(EnumType.I32);
+                break;
+            case mini_rustParser.TRUE :
+            case mini_rustParser.FALSE :
+                leftExpr = this.traverseExpr(exprNode.getChild(0));
+
+                if(!leftExpr.isBool()){
+                    throw new IsNotWithoutBoolException("");
+                }
+
+                type = new Type(EnumType.BOOL);
+                break;
+            case mini_rustParser.IDF :
+                VariableSymbol variableSymbol = this.symbolTableManager
+                        .getCurrentTable()
+                        .getVariableSymbol(exprNode.getText(), true);
+
+                if(variableSymbol == null) {
+                    type = new Type(EnumType.UNKNOWN);
+                }
+                else {
+                    type = variableSymbol.getType();
+                }
+                break;
+            case mini_rustParser.LEN :
+                type = new Type(EnumType.I32);
+                break;
+            case mini_rustParser.OBJ:
+                type = new Type(
+                        exprNode.getChild(0).getText(),
+                        0,
+                        0,
+                        0
+                );
+                break;
+            default:
+                throw new UnknownTypeException("Unknown node : " + exprNode.getText());
     	}
 
-    		return type;
+    	return type;
+    }
+
+    private Type traverseIndexDotExpr(Tree indexDotNode) throws SemanticException {
+        Stack<Pair<String, Integer>> nodes = new Stack<>();
+        Tree currentNode = indexDotNode;
+        boolean b = true;
+        VariableSymbol variableSymbol;
+        Type type;
+
+        while(b) {
+            switch (currentNode.getType()) {
+                case mini_rustParser.INDEX:
+                case mini_rustParser.DOT:
+                    int typePair = currentNode.getType();
+
+                    if(currentNode.getChild(1).getType() == mini_rustParser.LEN) {
+                        typePair = mini_rustParser.LEN;
+                    }
+
+                    nodes.push(new Pair<>(currentNode.getChild(1).getText(), typePair));
+                    currentNode = currentNode.getChild(0);
+                    break;
+                default:
+                    nodes.push(new Pair<>(currentNode.getText(), 0));
+                    b = false;
+            }
+        }
+
+        variableSymbol = this.symbolTableManager
+                .getCurrentTable()
+                .getVariableSymbol(nodes.pop().getKey(), true);
+        type = variableSymbol.getType();
+
+        while(!nodes.isEmpty()) {
+            Pair<String, Integer> node = nodes.pop();
+
+            switch (node.getValue()) {
+                case mini_rustParser.INDEX:
+                    if(!type.isVec()) {
+                        throw new UsingIndexAccessorOnNotVecException("Using index accessor on not vec variable. Line : " + indexDotNode.getLine());
+                    }
+
+                    if(type.isStructure()) {
+                        type = new Type(
+                                type.getStructure(),
+                                type.getVec() - 1,
+                                type.getRef(),
+                                type.getPointer()
+                        );
+                    }
+                    else {
+                        type = new Type(
+                                type.getType().getToken(),
+                                type.getVec() - 1,
+                                type.getRef(),
+                                type.getPointer()
+                        );
+                    }
+
+                    break;
+                case mini_rustParser.LEN:
+                    if(!type.isVec()) {
+                        throw new UsingLenOnNotVecException("Using len on not vec variable. Line : " + indexDotNode.getLine());
+                    }
+
+                    type = new Type(EnumType.I32);
+                    break;
+                case mini_rustParser.DOT:
+                    if(!type.isStructure()) {
+                        throw new UsingStructureAccessorOnNotStructureException("Using structure accessor on not structure variable. Line : " + indexDotNode.getLine());
+                    }
+
+                    StructureSymbol structureSymbol = this.symbolTableManager
+                            .getCurrentTable()
+                            .getStructureSymbol(type.getStructure(), true);
+
+                    variableSymbol = structureSymbol.getSymbolTable()
+                            .getVariableSymbol(node.getKey(), false);
+
+                    if(variableSymbol == null) {
+                        throw new UndefinedCalledElementException("Accessing undefined structure member. Line : " + indexDotNode.getLine());
+                    }
+
+                    type = variableSymbol.getType();
+
+                    break;
+            }
+        }
+
+        return type;
+    }
+
+    private Type traversePointerRefExpr(Tree pointerRefNode) throws SemanticException, UnknownNodeException {
+        boolean b = true;
+        int pointer = 0;
+        int ref = 0;
+        Tree currentNode = pointerRefNode;
+        Type type;
+
+        while(b) {
+            switch (currentNode.getType()) {
+                case mini_rustParser.POINTER:
+                    pointer++;
+                    break;
+                case mini_rustParser.REF:
+                    ref++;
+                    break;
+                default:
+                    b = false;
+                    break;
+            }
+
+            if(b) {
+                currentNode = currentNode.getChild(0);
+            }
+        }
+
+        type = this.traverseExpr(currentNode);
+
+        if(type.isStructure()) {
+            type = new Type(
+                    type.getStructure(),
+                    type.getVec(),
+                    type.getRef() - ref,
+                    type.getPointer() - pointer
+            );
+        }
+        else {
+            type = new Type(
+                    type.getType().getToken(),
+                    type.getVec(),
+                    type.getRef() - ref,
+                    type.getPointer() - pointer
+            );
+        }
+
+        return type;
     }
 
     private void traverseReturn(Tree returnNode) throws SemanticException, UnknownNodeException {
@@ -445,28 +595,39 @@ public class TreeTraversal {
 
     private void traverseLet(Tree letNode, boolean isMutable) throws SemanticException, UnknownNodeException {
         String idf = this.getIDF(letNode.getChild(0));
-        Type type = null;
+        Type exprLeftType = this.traverseExpr(letNode.getChild(0));
+        Type exprRightType = null;
+        Type type;
 
         if (letNode.getChildCount() >= 1) {
+            exprRightType = this.traverseExpr(letNode.getChild(1));
+            // TODO: types match
+        }
 
-            switch(letNode.getChild(1).getType()) {
-                case mini_rustParser.OBJ :
-                    traverseObject(letNode.getChild(1));
-                    break;
-                default:
-                    type = this.traverseExpr(letNode.getChild(1));
-                    break;
+        if(exprRightType == null) {
+            type = exprLeftType;
+        }
+        else {
+            type = exprRightType;
+        }
+
+        if(exprLeftType.isUnknown()) {
+            VariableSymbol variableSymbol = new VariableSymbol(
+                    idf,
+                    Scope.LOCAL,
+                    type,
+                    isMutable
+            );
+
+            if(this.symbolTableManager.getCurrentTable().symbolExists(variableSymbol, true)) {
+                if (!variableSymbol.isMutable()) {
+                    throw new NonMutableException(idf + " is not a mutable variable and is already defined. Line : " + letNode.getLine());
+                }
+            }
+            else {
+                this.symbolTableManager.getCurrentTable().addSymbol(variableSymbol);
             }
         }
-        VariableSymbol variableSymbol = new VariableSymbol(idf, type, Scope.LOCAL);
-        if(this.symbolTableManager.getCurrentTable().symbolExists(variableSymbol, false)) {
-            if (!variableSymbol.isMutable()) {
-                throw new NonMutableException(idf + "is not a mutable variable and is already defined. Line : " + letNode.getLine());
-            }
-        }
-        this.symbolTableManager.getCurrentTable().addSymbol(variableSymbol);
-
-
     }
 
     private void traverseObject(Tree objectNode) throws SemanticException, UnknownNodeException {
@@ -494,6 +655,7 @@ public class TreeTraversal {
     
     private Type traverseVec(Tree vecNode) throws SemanticException, UnknownNodeException {
     	Type type = null;
+
     	for (int i = 0; i < vecNode.getChildCount(); i++) {
     		Tree child = vecNode.getChild(i);
     		if (type == null) {
@@ -502,6 +664,27 @@ public class TreeTraversal {
     			throw new DifferentTypeException("Expressions of same types expected in vector. Line : " + vecNode.getLine() + ".");
     		}
     	}
+
+    	// TODO : type == null -> vec![] erreur ?
+    	if(type != null) {
+            if(type.isStructure()) {
+                type = new Type(
+                        type.getStructure(),
+                        type.getVec() + 1,
+                        type.getRef(),
+                        type.getPointer()
+                );
+            }
+            else {
+                type = new Type(
+                        type.getType().getToken(),
+                        type.getVec() + 1,
+                        type.getRef(),
+                        type.getPointer()
+                );
+            }
+        }
+
     	return type;
     }
 
