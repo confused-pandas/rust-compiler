@@ -436,12 +436,7 @@ public class TreeTraversal {
                 type = new Type(EnumType.I32);
                 break;
             case mini_rustParser.OBJ:
-                type = new Type(
-                        exprNode.getChild(0).getText(),
-                        0,
-                        0,
-                        0
-                );
+                type = this.traverseObject(exprNode);
                 break;
             default:
                 throw new UnknownTypeException("Unknown node : " + exprNode.getText());
@@ -630,10 +625,9 @@ public class TreeTraversal {
         }
     }
 
-    private void traverseObject(Tree objectNode) throws SemanticException, UnknownNodeException {
+    private Type traverseObject(Tree objectNode) throws SemanticException, UnknownNodeException {
         String idf = this.getIDF(objectNode.getChild(0));
         StructureSymbol structureSymbol = this.symbolTableManager.getCurrentTable().getStructureSymbol(idf,true);
-
 
         if (structureSymbol == null){
             throw new UndefinedSymbolException(idf + "is not defined. Line :" + objectNode.getLine());
@@ -649,7 +643,12 @@ public class TreeTraversal {
         // recursion infinie
         //traverseObject(objectNode.getChild(1));
 
-
+        return new Type(
+                structureSymbol.getName(),
+                0,
+                0,
+                0
+        );
     }
 
     
