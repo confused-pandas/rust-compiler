@@ -1,11 +1,17 @@
 package symbolTable;
 
 import symbolTable.symbols.*;
+import utils.Utils;
 
-import java.util.HashMap;
+import java.util.*;
 
 public class SymbolTable {
 	private static int regionCounter = 0;
+
+	public static int NAME_COL_WIDTH = 20;
+	public static int OFFSET_COL_WIDTH = 6;
+	public static int SYMBOL_TYPE_COL_WIDTH = 15;
+	public static int TYPE_COL_WIDTH = 15;
 
     private final SymbolTable parent;
     private final HashMap<String,Symbol> symbols;
@@ -86,5 +92,46 @@ public class SymbolTable {
 
 	public int getRegionNum() {
 		return regionNum;
+	}
+
+	public String toTable() {
+		LinkedList<SymbolTable> toVisit = new LinkedList<>();
+		StringBuilder str = new StringBuilder();
+
+		List<Map.Entry<String, Symbol>> list = new ArrayList<>(this.symbols.entrySet());
+		Collections.sort(list, new Comparator<Map.Entry<String, Symbol>>() {
+            @Override
+            public int compare(Map.Entry<String, Symbol> o1, Map.Entry<String, Symbol> o2) {
+                return o1.getValue().getOffset() - o2.getValue().getOffset();
+            }
+        });
+
+		str.append("|").append(this.getRegionNum())
+				.append("|").append(this.getNestingLevel())
+				.append("|").append("\n");
+
+		str.append("|").append(Utils.padRight("NAME", SymbolTable.NAME_COL_WIDTH))
+				.append("|").append(Utils.padRight("OFFSET", SymbolTable.OFFSET_COL_WIDTH))
+				.append("|").append(Utils.padRight("SYMB", SymbolTable.SYMBOL_TYPE_COL_WIDTH))
+				.append("|").append(Utils.padRight("TYPE", SymbolTable.TYPE_COL_WIDTH))
+				.append("|").append("\n");
+
+		for(Map.Entry<String, Symbol> entry: list) {
+		    Symbol symbol = entry.getValue();
+
+			str.append(symbol.toTable());
+
+			if(symbol instanceof SymbolTableComposedSymbol) {
+				toVisit.offer(((SymbolTableComposedSymbol) symbol).getSymbolTable());
+			}
+		}
+
+		while(!toVisit.isEmpty()) {
+			SymbolTable symbolTable = toVisit.poll();
+			str.append("\n").append("\n")
+					.append(symbolTable.toTable());
+		}
+
+		return str.toString();
 	}
 }

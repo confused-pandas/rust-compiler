@@ -5,7 +5,6 @@ import exception.semantic.*;
 import grammar.mini_rustParser;
 import javafx.util.Pair;
 import org.antlr.runtime.tree.Tree;
-import sun.applet.Main;
 import symbolTable.symbols.FunctionSymbol;
 import symbolTable.symbols.StructureSymbol;
 import symbolTable.symbols.VariableSymbol;
@@ -25,6 +24,18 @@ public class TreeTraversal {
         SymbolTable symbolTable = this.symbolTableManager.openSymbolTable();
 
         this.traverseFile(root, true);
+
+        FunctionSymbol mainSymbol = this.symbolTableManager.getCurrentTable().getFunctionSymbol("main",false);
+        if (mainSymbol == null){
+            throw new NoMainFoundException("Your file doesn't contain a main function");
+        }
+        else if (mainSymbol.getParameters().size()>0){
+            throw new MainWithArgumentException("The main function shouldn't have any argument. Line : " + root.getLine());
+        }
+        else if (true){
+            //TODO : cas main avec type de retour
+        }
+
         this.traverseFile(root, false);
         this.symbolTableManager.closeSymbolTable();
 
@@ -36,29 +47,16 @@ public class TreeTraversal {
             throw new EmptyFileException("The file you want to load is empty");
         }
         else {
-            FunctionSymbol mainSymbol = this.symbolTableManager.getCurrentTable().getFunctionSymbol("main",false);
-            if (mainSymbol == null){
-                throw new NoMainFoundException("Your file doesn't contain a main function");
-            }
-            else if (mainSymbol.getParameters().size()>0){
-                throw new MainWithArgumentException("The main function shouldn't have any argument. Line : " + root.getLine());
-            }
-            else if (true){
-                //TODO : cas main avec type de retour
+            for(int i = 0; i < root.getChildCount() ; i ++) {
+                Tree child = root.getChild(i);
 
-            }
-            else {
-                for(int i = 0; i < root.getChildCount() ; i ++) {
-                    Tree child = root.getChild(i);
-
-                    switch (child.getType()) {
-                        case mini_rustParser.DECL_FUNC:
-                            this.traverseFunction(child, onlyDeclarations);
-                            break;
-                        case mini_rustParser.DECL_STRUCT:
-                            this.traverseStructure(child, onlyDeclarations);
-                            break;
-                    }
+                switch (child.getType()) {
+                    case mini_rustParser.DECL_FUNC:
+                        this.traverseFunction(child, onlyDeclarations);
+                        break;
+                    case mini_rustParser.DECL_STRUCT:
+                        this.traverseStructure(child, onlyDeclarations);
+                        break;
                 }
             }
         }
@@ -70,6 +68,7 @@ public class TreeTraversal {
         if(onlyDeclarations) {
             int parameterStartIndex = 2;
             Type returnType = new Type(EnumType.VOID);
+
             SymbolTable symbolTable = this.symbolTableManager.openSymbolTable();
 
             if(functionNode.getChildCount() > 2) {
@@ -192,6 +191,8 @@ public class TreeTraversal {
     }
 
     private Type traverseBloc(Tree blocNode, boolean createBloc) throws SemanticException, UnknownNodeException {
+        Type type = new Type(EnumType.VOID);
+
         if(createBloc) {
             this.symbolTableManager.openSymbolTable();
         }
@@ -202,21 +203,23 @@ public class TreeTraversal {
             switch (child.getType()) {
                 case mini_rustParser.LET:
                     this.traverseLet(child, false);
+                    type = new Type(EnumType.VOID);
                     break;
                 case mini_rustParser.LETMUT:
                     this.traverseLet(child, true);
+                    type = new Type(EnumType.VOID);
                     break;
                 case mini_rustParser.WHILE:
-                    this.traverseWhile(child);
+                    type = this.traverseWhile(child);
                     break;
                 case mini_rustParser.RETURN:
-                    this.traverseReturn(child);
+                    type = this.traverseReturn(child);
                     break;
                 case mini_rustParser.IF:
-                    this.traverseIf(child);
+                    type = this.traverseIf(child);
                     break;
                 default:
-                    this.traverseExpr(child);
+                    type = this.traverseExpr(child);
                     break;
             }
         }
@@ -225,17 +228,17 @@ public class TreeTraversal {
             this.symbolTableManager.closeSymbolTable();
         }
 
-        return null;
+        return type;
     }
 
     private Type traverseType(Tree typeNode) throws UnknownTypeException {
         Tree currentNode = typeNode;
-        Type type;
         int vec = 0;
         int pointer = 0;
         int ref = 0;
+        String structureType = null;
         String stringType;
-        boolean isStructure = false;
+        EnumType enumType = null;
         boolean b = true;
 
         while(b) {
@@ -270,27 +273,19 @@ public class TreeTraversal {
                 throw new UnknownTypeException("Unknown type : " + stringType + ". Line : " + typeNode.getLine());
             }
 
-            isStructure = true;
-        }
-
-        if(isStructure) {
-            type = new Type(
-                    stringType,
-                    vec,
-                    ref,
-                    pointer
-            );
+            structureType = stringType;
         }
         else {
-            type = new Type(
-                    Type.getDefaultType(stringType),
-                    vec,
-                    ref,
-                    pointer
-            );
+            enumType = Type.getDefaultType(stringType);
         }
 
-        return type;
+        return new Type(
+                enumType,
+                structureType,
+                vec,
+                ref,
+                pointer
+        );
     }
 
     private void traverseParameter(Tree paramNode) throws SemanticException{
@@ -306,35 +301,53 @@ public class TreeTraversal {
 
     }
 
-    private void traverseWhile(Tree whileNode) throws SemanticException, UnknownNodeException {
-    	this.traverseExpr(whileNode.getChild(0));
+    private Type traverseWhile(Tree whileNode) throws SemanticException, UnknownNodeException {
+    	Type type;
+
+        this.traverseExpr(whileNode.getChild(0));
+
     	if (!(this.traverseExpr(whileNode.getChild(0)).isBool())) {
     		throw new WhileWithoutBoolException("Boolean expected in while expression. Line : " + whileNode.getLine() + ".");
     	}
-    	this.traverseBloc(whileNode.getChild(1));
+
+    	type = this.traverseBloc(whileNode.getChild(1));
+
+    	return type;
     }
     
-    private void traverseIf(Tree ifNode) throws SemanticException, UnknownNodeException {
-		traverseExpr(ifNode.getChild(0));
+    private Type traverseIf(Tree ifNode) throws SemanticException, UnknownNodeException {
+		Type type;
+
+        traverseExpr(ifNode.getChild(0));
+
 		if (!(this.traverseExpr(ifNode.getChild(0)).isBool())) {
 			throw new IfWithoutBoolException("Boolean expected in if expression. Line : "+ ifNode.getLine()+ ".");
 		}
-		traverseBloc(ifNode.getChild(1));
+
+		type = traverseBloc(ifNode.getChild(1));
+
 		if(ifNode.getChildCount() > 2){
-				traverseElse(ifNode.getChild(2));
+		    type = traverseElse(ifNode.getChild(2));
 		}
-		
+
+		return type;
     }
 
-    private void traverseElse(Tree elseNode) throws SemanticException, UnknownNodeException {
-    	switch(elseNode.getChild(0).getType()){
+    private Type traverseElse(Tree elseNode) throws SemanticException, UnknownNodeException {
+    	Type type;
+
+        switch(elseNode.getChild(0).getType()){
     		case mini_rustParser.BLOC :
-    			traverseBloc(elseNode.getChild(0));
+    			type = traverseBloc(elseNode.getChild(0));
     			break;
     		case mini_rustParser.IF :
-    			traverseIf(elseNode.getChild(0));
+    			type = traverseIf(elseNode.getChild(0));
     			break;
+            default:
+                throw new UnknownNodeException("Unknown node : " + elseNode.getText());
     	}
+
+    	return type;
     }
 
     private Type traverseExpr(Tree exprNode) throws SemanticException, UnknownNodeException {
@@ -503,23 +516,13 @@ public class TreeTraversal {
                         throw new UsingIndexAccessorOnNotVecException("Using index accessor on not vec variable. Line : " + indexDotNode.getLine());
                     }
 
-                    if(type.isStructure()) {
-                        type = new Type(
-                                type.getStructure(),
-                                type.getVec() - 1,
-                                type.getRef(),
-                                type.getPointer()
-                        );
-                    }
-                    else {
-                        type = new Type(
-                                type.getType().getToken(),
-                                type.getVec() - 1,
-                                type.getRef(),
-                                type.getPointer()
-                        );
-                    }
-
+                    type = new Type(
+                            type.getType(),
+                            type.getStructure(),
+                            type.getVec() - 1,
+                            type.getPointer(),
+                            type.getRef()
+                    );
                     break;
                 case mini_rustParser.LEN:
                     if(!type.isVec()) {
@@ -580,31 +583,26 @@ public class TreeTraversal {
 
         type = this.traverseExpr(currentNode);
 
-        if(type.isStructure()) {
-            type = new Type(
-                    type.getStructure(),
-                    type.getVec(),
-                    type.getRef() - ref,
-                    type.getPointer() - pointer
-            );
-        }
-        else {
-            type = new Type(
-                    type.getType().getToken(),
-                    type.getVec(),
-                    type.getRef() - ref,
-                    type.getPointer() - pointer
-            );
+        return new Type(
+                type.getType(),
+                type.getStructure(),
+                type.getVec(),
+                type.getPointer() - pointer,
+                type.getRef() - ref
+        );
+    }
+
+    private Type traverseReturn(Tree returnNode) throws SemanticException, UnknownNodeException {
+    	Type type;
+
+        if(returnNode.getChildCount() == 1){
+            type = traverseExpr(returnNode.getChild(0));
+    	}
+    	else {
+            type = new Type(EnumType.VOID);
         }
 
         return type;
-    }
-
-    private void traverseReturn(Tree returnNode) throws SemanticException, UnknownNodeException {
-    	if(returnNode.getChildCount() == 1){
-            traverseExpr(returnNode.getChild(0));
-            //todo : verification du type de retour
-    	}
     }
 
     private void traverseLet(Tree letNode, boolean isMutable) throws SemanticException, UnknownNodeException {
@@ -666,6 +664,7 @@ public class TreeTraversal {
         //traverseObject(objectNode.getChild(1));
 
         return new Type(
+                null,
                 structureSymbol.getName(),
                 0,
                 0,
@@ -688,22 +687,13 @@ public class TreeTraversal {
 
     	// TODO : type == null -> vec![] erreur ?
     	if(type != null) {
-            if(type.isStructure()) {
-                type = new Type(
-                        type.getStructure(),
-                        type.getVec() + 1,
-                        type.getRef(),
-                        type.getPointer()
-                );
-            }
-            else {
-                type = new Type(
-                        type.getType().getToken(),
-                        type.getVec() + 1,
-                        type.getRef(),
-                        type.getPointer()
-                );
-            }
+    	    type = new Type(
+    	            type.getType(),
+                    type.getStructure(),
+                    type.getVec() + 1,
+                    type.getPointer(),
+                    type.getRef()
+            );
         }
 
     	return type;

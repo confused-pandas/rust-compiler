@@ -1,7 +1,9 @@
 package symbolTable.symbols;
 
 import symbolTable.Scope;
+import symbolTable.SymbolTable;
 import symbolTable.Type;
+import utils.Utils;
 
 public class VariableSymbol extends Symbol {
 	public Type type;
@@ -19,5 +21,16 @@ public class VariableSymbol extends Symbol {
 
 	public Type getType(){
 		return this.type;
+	}
+
+	@Override
+	public String toTable() {
+		String str = super.toTable();
+
+		str += "|" + Utils.padRight("VAR", SymbolTable.SYMBOL_TYPE_COL_WIDTH);
+		str += "|" + Utils.padRight(String.valueOf(this.getType()), SymbolTable.TYPE_COL_WIDTH);
+		str += "\n";
+
+		return str;
 	}
 }

@@ -1,6 +1,8 @@
 package symbolTable.symbols;
 
 import symbolTable.Scope;
+import symbolTable.SymbolTable;
+import utils.Utils;
 
 public abstract class Symbol {
 	private final EnumSymbolType symbolType;
@@ -41,4 +43,13 @@ public abstract class Symbol {
 	public String getHashName() {
 	    return this.getName() + this.getSymbolType().getSuffix();
     }
+
+	public String toTable() {
+		String str = "";
+
+		str += "|" + Utils.padRight(this.getName(), SymbolTable.NAME_COL_WIDTH);
+		str += "|" + Utils.padRight(String.valueOf(this.getOffset()), SymbolTable.OFFSET_COL_WIDTH);
+
+		return str;
+	}
 }

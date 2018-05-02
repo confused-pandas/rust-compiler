@@ -3,6 +3,7 @@ package symbolTable.symbols;
 import symbolTable.Scope;
 import symbolTable.SymbolTable;
 import symbolTable.Type;
+import utils.Utils;
 
 import java.util.LinkedList;
 
@@ -34,5 +35,16 @@ public class FunctionSymbol extends SymbolTableComposedSymbol {
         }
 
         return parameters;
+	}
+
+	@Override
+	public String toTable() {
+		String str = super.toTable();
+
+		str += "|" + Utils.padRight("FUNC(" + this.getSymbolTable().getRegionNum() + ")", SymbolTable.SYMBOL_TYPE_COL_WIDTH);
+		str += "|" + Utils.padRight(String.valueOf(this.getReturnType()), SymbolTable.TYPE_COL_WIDTH);
+		str += "\n";
+
+		return str;
 	}
 }

@@ -4,8 +4,8 @@ public class Type {
 	private final EnumType type;
 	private final String structure;
 	private final int vec;
+    private final int pointer;
 	private final int ref;
-	private final int pointer;
 
     public static boolean isDefaultType(String type) {
         switch (type) {
@@ -34,29 +34,17 @@ public class Type {
         return enumType;
     }
 
-    private Type(EnumType type, String structure, int vec, int ref, int pointer) {
+    public Type(EnumType type, String structure, int vec, int pointer, int ref) {
         this.type = type;
         this.structure = structure;
         this.vec = vec;
-        this.ref = ref;
         this.pointer = pointer;
+        this.ref = ref;
     }
 
-	public Type(EnumType type, int vec, int ref, int pointer) {
-		this(type, null, vec, ref, pointer);
-	}
-
-    public Type(String structure, int vec, int ref, int pointer) {
-        this(null, structure, vec, ref, pointer);
+    public Type(EnumType type) {
+        this(type, null, 0, 0, 0);
     }
-
-	public Type(EnumType type) {
-		this(type, null, 0, 0, 0);
-	}
-
-	public Type() {
-		this(EnumType.VOID, null, 0, 0, 0);
-	}
 
     public boolean isStructure() {
         return this.structure != null;
