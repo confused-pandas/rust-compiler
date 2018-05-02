@@ -5,6 +5,7 @@ import exception.semantic.*;
 import grammar.mini_rustParser;
 import javafx.util.Pair;
 import org.antlr.runtime.tree.Tree;
+import sun.applet.Main;
 import symbolTable.symbols.FunctionSymbol;
 import symbolTable.symbols.StructureSymbol;
 import symbolTable.symbols.VariableSymbol;
@@ -32,19 +33,32 @@ public class TreeTraversal {
 
     private void traverseFile(Tree root, boolean onlyDeclarations) throws SemanticException, UnknownNodeException {
         if (root.getChildCount() <= 0 ){
-            throw new EmptyFileException("");
+            throw new EmptyFileException("The file you want to load is empty");
         }
         else {
-            for(int i = 0; i < root.getChildCount() ; i ++){
-                Tree child = root.getChild(i);
+            FunctionSymbol mainSymbol = this.symbolTableManager.getCurrentTable().getFunctionSymbol("main",false);
+            if (mainSymbol == null){
+                throw new NoMainFoundException("Your file doesn't contain a main function");
+            }
+            else if (mainSymbol.getParameters().size()>0){
+                throw new MainWithArgumentException("The main function shouldn't have any argument. Line : " + root.getLine());
+            }
+            else if (true){
+                //TODO : cas main avec type de retour
 
-                switch (child.getType()){
-                    case mini_rustParser.DECL_FUNC :
-                        this.traverseFunction(child, onlyDeclarations);
-                        break;
-                    case mini_rustParser.DECL_STRUCT :
-                        this.traverseStructure(child, onlyDeclarations);
-                        break;
+            }
+            else {
+                for(int i = 0; i < root.getChildCount() ; i ++) {
+                    Tree child = root.getChild(i);
+
+                    switch (child.getType()) {
+                        case mini_rustParser.DECL_FUNC:
+                            this.traverseFunction(child, onlyDeclarations);
+                            break;
+                        case mini_rustParser.DECL_STRUCT:
+                            this.traverseStructure(child, onlyDeclarations);
+                            break;
+                    }
                 }
             }
         }
@@ -338,7 +352,7 @@ public class TreeTraversal {
                 rightExpr = this.traverseExpr(exprNode.getChild(1));
 
                 if(!leftExpr.isBool() && !rightExpr.isBool()) { //TODO: check type bool
-                    throw new IsNotWithoutBoolException("");
+                    throw new AndOrWithoutBooleanException("The logical connectives AND and OR should be used with two booleans. Line : " + exprNode.getLine());
                 }
 
                 type = new Type(EnumType.BOOL);
@@ -353,7 +367,7 @@ public class TreeTraversal {
                 rightExpr = this.traverseExpr(exprNode.getChild(1));
 
                 if(!leftExpr.isInt() && !rightExpr.isInt()) { // check type int
-                    throw new OperationWithNoIntException("");
+                    throw new OperationWithNoIntException("Mathematical inequalities or comparisons should be done between two integers. Line : "+ exprNode.getLine());
                 }
 
                 type = new Type(EnumType.BOOL);
@@ -366,7 +380,7 @@ public class TreeTraversal {
                 rightExpr = this.traverseExpr(exprNode.getChild(1));
 
                 if(!leftExpr.isInt() && !rightExpr.isInt()) { // check type int
-                    throw new OperationWithNoIntException("");
+                    throw new OperationWithNoIntException("Mathematical operations should be done between two integers. Line : " + exprNode.getLine());
                 }
 
                 type = new Type(EnumType.I32);
@@ -375,7 +389,7 @@ public class TreeTraversal {
                 leftExpr = this.traverseExpr(exprNode.getChild(0));
 
                 if(!leftExpr.isInt()){
-                    throw new OperationWithNoIntException("");
+                    throw new OperationWithNoIntException("Unary operation should be done with an integer, " + exprNode.getChild(0).getText() + "is not one. Line : " + exprNode.getLine());
                 }
 
                 type = new Type(EnumType.I32);
@@ -384,7 +398,7 @@ public class TreeTraversal {
                 leftExpr = this.traverseExpr(exprNode.getChild(0));
 
                 if(!leftExpr.isBool()){
-                    throw new IsNotWithoutBoolException("");
+                    throw new IsNotWithoutBoolException("The logical connective 'not' should be used before a boolean, " + exprNode.getChild(0).getText() + "is not one. Line : " + exprNode.getLine());
                 }
 
                 type = new Type(EnumType.I32);
@@ -433,8 +447,12 @@ public class TreeTraversal {
                 }
                 break;
             case mini_rustParser.LEN :
-                type = new Type(EnumType.I32);
-                break;
+                if (exprNode.getChildCount() >0){
+                    throw new LenNotAtEndException("The expression len should be after a vector. Line : " + exprNode.getLine());
+                }else {
+                    type = new Type(EnumType.I32);
+                    break;
+                }
             case mini_rustParser.OBJ:
                 type = this.traverseObject(exprNode);
                 break;
@@ -585,6 +603,7 @@ public class TreeTraversal {
     private void traverseReturn(Tree returnNode) throws SemanticException, UnknownNodeException {
     	if(returnNode.getChildCount() == 1){
             traverseExpr(returnNode.getChild(0));
+            //todo : verification du type de retour
     	}
     }
 
@@ -618,6 +637,7 @@ public class TreeTraversal {
                 if (!variableSymbol.isMutable()) {
                     throw new NonMutableException(idf + " is not a mutable variable and is already defined. Line : " + letNode.getLine());
                 }
+                //TODO : modification table symbole
             }
             else {
                 this.symbolTableManager.getCurrentTable().addSymbol(variableSymbol);
@@ -638,6 +658,8 @@ public class TreeTraversal {
         if(size != realSize){
             throw new WrongNumberCalledElementException(idf + "is called with the wrong number of elements (" + size + " instead of " + realSize + "). Line :" + objectNode.getLine());
         }
+
+        //todo: mauvais type pour lélément appelé
 
         traverseExpr(objectNode.getChild(0));
         // recursion infinie
