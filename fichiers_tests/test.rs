@@ -1,8 +1,8 @@
-fn didier(i : i32, y : i32) {
+fn test(y:i32, y:i32){
+    let u = 1;
+    let u = 1;
 }
-
-fn main() {
-	let didiiiiiiier = didier(1);
-	}
+fn main(){
+}
 
 

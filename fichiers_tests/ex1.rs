@@ -1,4 +1,4 @@
-fn main() {
+fn maini() {
     let mut total = 0;
     let mut i = 0;
     let n = 10;
@@ -11,7 +11,7 @@ fn main() {
 
         if i == 5
         {
-            print!(5)
+            print!(i)
         }
 
         let test = i <= n;

@@ -26,22 +26,21 @@ public class TreeTraversal {
         SymbolTable symbolTable = this.symbolTableManager.openSymbolTable();
 
         this.traverseFile(root, true);
-
-        FunctionSymbol mainSymbol = this.symbolTableManager.getCurrentTable().getFunctionSymbol("main",false);
+        FunctionSymbol mainSymbol = this.symbolTableManager.getCurrentTable().getFunctionSymbol("main", true);
+        BlocType blocType = this.traverseBloc(root.getChild(0), false);
         if (mainSymbol == null){
             throw new NoMainFoundException("Your file doesn't contain a main function");
         }
-        else if (mainSymbol.getParameters().size()>0){
+
+        else if (mainSymbol.getParameters().size()!=0){
             throw new MainWithArgumentException("The main function shouldn't have any argument. Line : " + root.getLine());
         }
-        else if (mainSymbol.getReturnType().equals(EnumType.VOID)){
+        else if (!blocType.equals(EnumType.VOID)){
             throw new MainWithReturnTypeException("The main function should have a void type.");
-
-
         }
-
         this.traverseFile(root, false);
         this.symbolTableManager.closeSymbolTable();
+
 
         return symbolTable;
     }
@@ -50,6 +49,7 @@ public class TreeTraversal {
         if (root.getChildCount() <= 0 ){
             throw new EmptyFileException("The file you want to load is empty");
         }
+
         else {
             for(int i = 0; i < root.getChildCount() ; i ++) {
                 Tree child = root.getChild(i);
@@ -346,7 +346,7 @@ public class TreeTraversal {
 
     	return type;
     }
-    
+
     private BlocType traverseIf(Tree ifNode) throws SemanticException, UnknownNodeException {
         BlocType type;
 
@@ -386,7 +386,7 @@ public class TreeTraversal {
     	Type leftExpr;
     	Type rightExpr;
     	Type type;
-    	
+
     	switch(exprNode.getType()){
             case mini_rustParser.BLOC :
                 type = this.traverseBloc(exprNode);
@@ -465,7 +465,7 @@ public class TreeTraversal {
             case mini_rustParser.PRINT_MACRO :
                 VariableSymbol variableSymbolPrint = this.symbolTableManager.getCurrentTable().getVariableSymbol(exprNode.getChild(0).getText(), false);
                 if (variableSymbolPrint == null){
-                    throw new PrintUndefinedSymbolException(exprNode.getChild(0)+"is not defined. Line : " + exprNode.getLine());
+                    throw new PrintUndefinedSymbolException(exprNode.getChild(0)+" is not defined. Line : " + exprNode.getLine());
                 }
                 Type typePrint = this.traverseExpr(exprNode.getChild(0));
                 if (typePrint.equals(EnumType.VOID)){
@@ -712,8 +712,7 @@ public class TreeTraversal {
         }
 
         traverseExpr(objectNode.getChild(0));
-        // recursion infinie
-        //traverseObject(objectNode.getChild(1));
+        traverseObjectMember(objectNode.getChild(1));
 
         return new Type(
                 null,
@@ -724,7 +723,19 @@ public class TreeTraversal {
         );
     }
 
-    
+    private void traverseObjectMember(Tree objMem) throws SemanticException, UnknownNodeException {
+        String idf = getIDF(objMem.getChild(0));
+        switch (objMem.getChild(1).getType()) {
+            case mini_rustParser.OBJ:
+                this.traverseObject(objMem.getChild(1));
+                break;
+            default:
+                this.traverseExpr(objMem.getChild(1));
+                break;
+        }
+    }
+
+
     private Type traverseVec(Tree vecNode) throws SemanticException, UnknownNodeException {
     	Type type = null;
 
