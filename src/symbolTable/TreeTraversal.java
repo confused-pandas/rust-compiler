@@ -683,7 +683,9 @@ public class TreeTraversal {
             throw new WrongNumberCalledElementException(idf + "is called with the wrong number of elements (" + size + " instead of " + realSize + "). Line :" + objectNode.getLine());
         }
 
-        //todo: mauvais type pour lélément appelé
+        if (this.traverseExpr(objectNode.getChild(0)).equals(structureSymbol.getSymbolType())) {
+        	throw new WrongTypeCalledElementException(idf + "is called with the wrong types of elements. Line : "+ objectNode.getLine() +".");
+        }
 
         traverseExpr(objectNode.getChild(0));
         // recursion infinie
