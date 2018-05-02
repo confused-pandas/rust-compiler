@@ -101,10 +101,12 @@ public class TreeTraversal {
             FunctionSymbol functionSymbol = this.symbolTableManager.getCurrentTable().getFunctionSymbol(idf, true);
 
             this.symbolTableManager.openSymbolTable(functionSymbol.getSymbolTable());
-            this.traverseBloc(functionNode.getChild(1), false);
-            if (!(this.traverseBloc(functionNode.getChild(1), false).equals(functionSymbol.getReturnType()))) {
-            	throw new WrongTypeReturnException("Type returned in function " + idf + " differs from type defined in declaration. Line : "+ functionNode.getLine() +".");
+            BlocType blocType = this.traverseBloc(functionNode.getChild(1), false);
+
+            if (blocType.isDeterminedByReturn() && !blocType.equals(functionSymbol.getReturnType())) {
+            	throw new WrongTypeReturnException("Type returned in function " + idf + " differs from type defined in declaration. Line : "+ blocType.getLastNode().getLine() +".");
             }
+
             this.symbolTableManager.closeSymbolTable();
         }
     }
@@ -194,7 +196,7 @@ public class TreeTraversal {
     }
 
     private BlocType traverseBloc(Tree blocNode, boolean createBloc) throws SemanticException, UnknownNodeException {
-        BlocType type = new BlocType(EnumType.VOID, false);
+        BlocType type = new BlocType(EnumType.VOID, false, blocNode);
 
         if(createBloc) {
             this.symbolTableManager.openSymbolTable();
@@ -209,14 +211,14 @@ public class TreeTraversal {
                     this.traverseLet(child, false);
 
                     if(!type.isDeterminedByReturn()) {
-                        type = new BlocType(EnumType.VOID, false);
+                        type = new BlocType(EnumType.VOID, false, child);
                     }
                     break;
                 case mini_rustParser.LETMUT:
                     this.traverseLet(child, true);
 
                     if(!type.isDeterminedByReturn()) {
-                        type = new BlocType(EnumType.VOID, false);
+                        type = new BlocType(EnumType.VOID, false, child);
                     }
                     break;
                 case mini_rustParser.WHILE:
@@ -244,7 +246,7 @@ public class TreeTraversal {
                     Type exprType = this.traverseExpr(child);
 
                     if(!type.isDeterminedByReturn()) {
-                        type = new BlocType(exprType.getType(), false);
+                        type = new BlocType(exprType.getType(), false, child);
                     }
                     break;
             }
@@ -485,13 +487,6 @@ public class TreeTraversal {
                     type = variableSymbol.getType();
                 }
                 break;
-            case mini_rustParser.LEN :
-                if (exprNode.getChildCount() >0){
-                    throw new LenNotAtEndException("The expression len should be after a vector. Line : " + exprNode.getLine());
-                }else {
-                    type = new Type(EnumType.I32);
-                    break;
-                }
             case mini_rustParser.OBJ:
                 type = this.traverseObject(exprNode);
                 break;
@@ -553,6 +548,10 @@ public class TreeTraversal {
                 case mini_rustParser.LEN:
                     if(!type.isVec()) {
                         throw new UsingLenOnNotVecException("Using len on not vec variable. Line : " + indexDotNode.getLine());
+                    }
+
+                    if(!nodes.empty()) {
+                        throw new LenNotAtEndException("Len must be the last expression operation. Line : " + indexDotNode.getLine());
                     }
 
                     type = new Type(EnumType.I32);
@@ -628,7 +627,7 @@ public class TreeTraversal {
             type = new Type(EnumType.VOID);
         }
 
-        return new BlocType(type, true);
+        return new BlocType(type, true, returnNode);
     }
 
     private void traverseLet(Tree letNode, boolean isMutable) throws SemanticException, UnknownNodeException {
