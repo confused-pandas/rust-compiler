@@ -102,6 +102,9 @@ public class TreeTraversal {
 
             this.symbolTableManager.openSymbolTable(functionSymbol.getSymbolTable());
             this.traverseBloc(functionNode.getChild(1), false);
+            if (!(this.traverseBloc(functionNode.getChild(1), false).equals(functionSymbol.getReturnType()))) {
+            	throw new WrongTypeReturnException("Type returned in function " + idf + " differs from type defined in declaration. Line : "+ functionNode.getLine() +".");
+            }
             this.symbolTableManager.closeSymbolTable();
         }
     }
