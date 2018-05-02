@@ -23,6 +23,10 @@ public class VariableSymbol extends Symbol {
 		return this.type;
 	}
 
+	public void setType(Type type){
+		this.type = type;
+	}
+
 	@Override
 	public String toTable() {
 		String str = super.toTable();

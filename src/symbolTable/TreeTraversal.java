@@ -5,6 +5,8 @@ import exception.semantic.*;
 import grammar.mini_rustParser;
 import javafx.util.Pair;
 import org.antlr.runtime.tree.Tree;
+import org.omg.IOP.ENCODING_CDR_ENCAPS;
+import sun.applet.Main;
 import symbolTable.symbols.FunctionSymbol;
 import symbolTable.symbols.StructureSymbol;
 import symbolTable.symbols.VariableSymbol;
@@ -32,8 +34,10 @@ public class TreeTraversal {
         else if (mainSymbol.getParameters().size()>0){
             throw new MainWithArgumentException("The main function shouldn't have any argument. Line : " + root.getLine());
         }
-        else if (true){
-            //TODO : cas main avec type de retour
+        else if (mainSymbol.getReturnType().equals(EnumType.VOID)){
+            throw new MainWithReturnTypeException("The main function should have a void type.");
+
+
         }
 
         this.traverseFile(root, false);
@@ -149,7 +153,7 @@ public class TreeTraversal {
         }
     }
 
-    private void traverseStructureMember(Tree structMemberNode) throws SemanticException {
+    private void traverseStructureMember(Tree structMemberNode) throws SemanticException, UnknownNodeException {
         String idf = this.getIDF(structMemberNode.getChild(0));
         Type type = this.traverseType(structMemberNode.getChild(1));
 
@@ -316,7 +320,7 @@ public class TreeTraversal {
         );
     }
 
-    private void traverseParameter(Tree paramNode) throws SemanticException{
+    private void traverseParameter(Tree paramNode) throws SemanticException, UnknownNodeException {
         String idf = this.getIDF(paramNode.getChild(0));
         Type type = this.traverseType(paramNode.getChild(1));
         VariableSymbol variableSymbol = new VariableSymbol(idf, Scope.FUNCTION, type, false);
@@ -459,7 +463,14 @@ public class TreeTraversal {
                 type = this.traverseVec(exprNode);
                 break;
             case mini_rustParser.PRINT_MACRO :
-                // TODO : expr d'un certain type ?
+                VariableSymbol variableSymbolPrint = this.symbolTableManager.getCurrentTable().getVariableSymbol(exprNode.getChild(0).getText(), false);
+                if (variableSymbolPrint == null){
+                    throw new PrintUndefinedSymbolException(exprNode.getChild(0)+"is not defined. Line : " + exprNode.getLine());
+                }
+                Type typePrint = this.traverseExpr(exprNode.getChild(0));
+                if (typePrint.equals(EnumType.VOID)){
+                    throw new PrintVoidException(exprNode.getChild(0).getText()+" has a void type and can't be printed. Line : " + exprNode.getLine());
+                }
                 type = new Type(EnumType.VOID);
                 break;
             case mini_rustParser.CSTE_ENT :
@@ -648,6 +659,8 @@ public class TreeTraversal {
             type = exprRightType;
         }
 
+
+
         if(exprLeftType.isUnknown()) {
             VariableSymbol variableSymbol = new VariableSymbol(
                     idf,
@@ -656,11 +669,23 @@ public class TreeTraversal {
                     isMutable
             );
 
+            if(exprRightType == null && variableSymbol.isMutable() == false){
+                throw new UnsuableVariableException(letNode.getChild(0).getText() + "is not usable because it is not mutable. Line : " + letNode.getLine());
+            }
+
             if(this.symbolTableManager.getCurrentTable().symbolExists(variableSymbol, true)) {
                 if (!variableSymbol.isMutable()) {
                     throw new NonMutableException(idf + " is not a mutable variable and is already defined. Line : " + letNode.getLine());
                 }
-                //TODO : modification table symbole
+                else{
+                    Type realType = this.symbolTableManager.getCurrentTable().getVariableSymbol(variableSymbol.getName(),true).getType();
+                    if (realType.equals(EnumType.VOID)){
+                        this.symbolTableManager.getCurrentTable().getVariableSymbol(variableSymbol.getName(),true).setType(variableSymbol.getType());;
+                    }
+                    else if (!variableSymbol.getType().equals(realType)&& !realType.equals(EnumType.VOID)){
+                        throw new RedefiningVariableTypeException(letNode.getChild(0).getText()+"is already defined with the type " + realType + ". It can't change its type. Line : " + letNode.getLine());
+                    }
+                }
             }
             else {
                 this.symbolTableManager.getCurrentTable().addSymbol(variableSymbol);
@@ -712,7 +737,6 @@ public class TreeTraversal {
     		}
     	}
 
-    	// TODO : type == null -> vec![] erreur ?
     	if(type != null) {
     	    type = new Type(
     	            type.getType(),
@@ -722,17 +746,21 @@ public class TreeTraversal {
                     type.getRef()
             );
         }
+        else {
+    	    throw new EmptyVectorException(vecNode.getText() + "shouldn't be empty. Line : " + vecNode.getLine());
+        }
 
     	return type;
     }
 
 
-    public String getIDF(Tree node) {
+    public String getIDF(Tree node) throws UnknownNodeException {
         if(node.getType() == mini_rustParser.IDF) {
             return node.getText();
         }
 
-        // TODO : unknown node
-        return null;
+        else{
+            throw new UnknownNodeException(node.getText()+"is an unknown node. Line : " + node.getLine());
+        }
     }
 }
