@@ -189,12 +189,12 @@ public class TreeTraversal {
         return functionSymbol.getReturnType();
     }
 
-    private Type traverseBloc(Tree blocNode) throws SemanticException, UnknownNodeException {
+    private BlocType traverseBloc(Tree blocNode) throws SemanticException, UnknownNodeException {
         return this.traverseBloc(blocNode, true);
     }
 
-    private Type traverseBloc(Tree blocNode, boolean createBloc) throws SemanticException, UnknownNodeException {
-        Type type = new Type(EnumType.VOID);
+    private BlocType traverseBloc(Tree blocNode, boolean createBloc) throws SemanticException, UnknownNodeException {
+        BlocType type = new BlocType(EnumType.VOID, false);
 
         if(createBloc) {
             this.symbolTableManager.openSymbolTable();
@@ -202,27 +202,50 @@ public class TreeTraversal {
 
         for(int i = 0; i < blocNode.getChildCount(); i++) {
             Tree child = blocNode.getChild(i);
+            BlocType tempType;
 
             switch (child.getType()) {
                 case mini_rustParser.LET:
                     this.traverseLet(child, false);
-                    type = new Type(EnumType.VOID);
+
+                    if(!type.isDeterminedByReturn()) {
+                        type = new BlocType(EnumType.VOID, false);
+                    }
                     break;
                 case mini_rustParser.LETMUT:
                     this.traverseLet(child, true);
-                    type = new Type(EnumType.VOID);
+
+                    if(!type.isDeterminedByReturn()) {
+                        type = new BlocType(EnumType.VOID, false);
+                    }
                     break;
                 case mini_rustParser.WHILE:
-                    type = this.traverseWhile(child);
+                    tempType = this.traverseWhile(child);
+
+                    if(!type.isDeterminedByReturn()) {
+                        type = tempType;
+                    }
                     break;
                 case mini_rustParser.RETURN:
-                    type = this.traverseReturn(child);
+                    tempType = this.traverseReturn(child);
+
+                    if(!type.isDeterminedByReturn()) {
+                        type = tempType;
+                    }
                     break;
                 case mini_rustParser.IF:
-                    type = this.traverseIf(child);
+                    tempType = this.traverseIf(child);
+
+                    if(!type.isDeterminedByReturn()) {
+                        type = tempType;
+                    }
                     break;
                 default:
-                    type = this.traverseExpr(child);
+                    Type exprType = this.traverseExpr(child);
+
+                    if(!type.isDeterminedByReturn()) {
+                        type = new BlocType(exprType.getType(), false);
+                    }
                     break;
             }
         }
@@ -304,8 +327,8 @@ public class TreeTraversal {
 
     }
 
-    private Type traverseWhile(Tree whileNode) throws SemanticException, UnknownNodeException {
-    	Type type;
+    private BlocType traverseWhile(Tree whileNode) throws SemanticException, UnknownNodeException {
+        BlocType type;
 
         this.traverseExpr(whileNode.getChild(0));
 
@@ -318,8 +341,8 @@ public class TreeTraversal {
     	return type;
     }
     
-    private Type traverseIf(Tree ifNode) throws SemanticException, UnknownNodeException {
-		Type type;
+    private BlocType traverseIf(Tree ifNode) throws SemanticException, UnknownNodeException {
+        BlocType type;
 
         traverseExpr(ifNode.getChild(0));
 
@@ -336,8 +359,8 @@ public class TreeTraversal {
 		return type;
     }
 
-    private Type traverseElse(Tree elseNode) throws SemanticException, UnknownNodeException {
-    	Type type;
+    private BlocType traverseElse(Tree elseNode) throws SemanticException, UnknownNodeException {
+        BlocType type;
 
         switch(elseNode.getChild(0).getType()){
     		case mini_rustParser.BLOC :
@@ -595,7 +618,7 @@ public class TreeTraversal {
         );
     }
 
-    private Type traverseReturn(Tree returnNode) throws SemanticException, UnknownNodeException {
+    private BlocType traverseReturn(Tree returnNode) throws SemanticException, UnknownNodeException {
     	Type type;
 
         if(returnNode.getChildCount() == 1){
@@ -605,7 +628,7 @@ public class TreeTraversal {
             type = new Type(EnumType.VOID);
         }
 
-        return type;
+        return new BlocType(type, true);
     }
 
     private void traverseLet(Tree letNode, boolean isMutable) throws SemanticException, UnknownNodeException {
