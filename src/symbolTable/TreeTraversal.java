@@ -27,7 +27,6 @@ public class TreeTraversal {
 
         this.traverseFile(root, true);
         FunctionSymbol mainSymbol = this.symbolTableManager.getCurrentTable().getFunctionSymbol("main", true);
-        BlocType blocType = this.traverseBloc(root.getChild(0), false);
         if (mainSymbol == null){
             throw new NoMainFoundException("Your file doesn't contain a main function");
         }
@@ -35,7 +34,7 @@ public class TreeTraversal {
         else if (mainSymbol.getParameters().size()!=0){
             throw new MainWithArgumentException("The main function shouldn't have any argument. Line : " + root.getLine());
         }
-        else if (!blocType.equals(EnumType.VOID)){
+        else if (mainSymbol.getReturnType().equals(EnumType.VOID)){
             throw new MainWithReturnTypeException("The main function should have a void type.");
         }
         this.traverseFile(root, false);
