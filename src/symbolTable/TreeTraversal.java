@@ -34,9 +34,9 @@ public class TreeTraversal {
             throw new MainWithArgumentException("The main function shouldn't have any argument. Line : " + root.getLine());
         }
         //todo : check return type main ?
-        //else if (false){
-        //    throw new MainWithReturnTypeException("The main function should have a void type.");
-        //}
+        else if (!mainSymbol.getReturnType().isVoid()){
+            throw new MainWithReturnTypeException("The main function should have a void type.");
+        }
         this.traverseFile(root, false);
         this.symbolTableManager.closeSymbolTable();
 
@@ -462,10 +462,9 @@ public class TreeTraversal {
             case mini_rustParser.PRINT_MACRO :
 
                 VariableSymbol variableSymbolPrint = this.symbolTableManager.getCurrentTable().getVariableSymbol(exprNode.getChild(0).getText(), true);
-                //todo : print des constantes, des chaines de caractères non attribuées à une variable (ex : print(5))
-                //if (variableSymbolPrint == null){
-                //    throw new PrintUndefinedSymbolException(exprNode.getChild(0)+" is not defined. Line : " + exprNode.getLine());
-                //}
+                if (variableSymbolPrint == null && exprNode.getChild(0).getType()!=64 && exprNode.getChild(0).getType()!=63){
+                    throw new PrintUndefinedSymbolException(exprNode.getChild(0)+" is not defined. Line : " + exprNode.getLine());
+                }
                 Type typePrint = this.traverseExpr(exprNode.getChild(0));
                 if (typePrint.equals(EnumType.VOID)){
                     throw new PrintVoidException(exprNode.getChild(0).getText()+" has a void type and can't be printed. Line : " + exprNode.getLine());
@@ -646,7 +645,7 @@ public class TreeTraversal {
         Type exprRightType = null;
         Type type;
 
-        if (letNode.getChildCount() >= 1) {
+        if (letNode.getChildCount() >= 2) {
             exprRightType = this.traverseExpr(letNode.getChild(1));
             // TODO: types match
         }
@@ -658,8 +657,6 @@ public class TreeTraversal {
             type = exprRightType;
         }
 
-
-
         if(exprLeftType.isUnknown()) {
             VariableSymbol variableSymbol = new VariableSymbol(
                     idf,
@@ -669,9 +666,8 @@ public class TreeTraversal {
             );
 
             if(exprRightType == null && variableSymbol.isMutable() == false){
-                throw new UnsuableVariableException(letNode.getChild(0).getText() + "is not usable because it is not mutable. Line : " + letNode.getLine());
+                throw new UnsuableVariableException(letNode.getChild(0).getText() + " is not usable because it is not mutable. Line : " + letNode.getLine());
             }
-
             if(this.symbolTableManager.getCurrentTable().symbolExists(variableSymbol, true)) {
                 if (!variableSymbol.isMutable()) {
                     throw new NonMutableException(idf + " is not a mutable variable and is already defined. Line : " + letNode.getLine());
@@ -681,8 +677,8 @@ public class TreeTraversal {
                     if (realType.equals(EnumType.VOID)){
                         this.symbolTableManager.getCurrentTable().getVariableSymbol(variableSymbol.getName(),true).setType(variableSymbol.getType());;
                     }
-                    else if (!variableSymbol.getType().equals(realType)&& !realType.equals(EnumType.VOID)){
-                        throw new RedefiningVariableTypeException(letNode.getChild(0).getText()+"is already defined with the type " + realType + ". It can't change its type. Line : " + letNode.getLine());
+                    else if (!variableSymbol.getType().equals(realType) && !realType.isBool()){
+                        throw new RedefiningVariableTypeException(letNode.getChild(0).getText()+" is already defined with the type " + realType + ". It can't change its type. Line : " + letNode.getLine());
                     }
                 }
             }
@@ -731,6 +727,9 @@ public class TreeTraversal {
             default:
                 this.traverseExpr(objMem.getChild(1));
                VariableSymbol varSymbol = structSymbol.getSymbolTable().getVariableSymbol(idf, true);
+               if(varSymbol==null){
+                   throw new UndefinedCalledElementException(objMem.getChild(0).getText()+" is not defined on the structure. Line : " + objMem.getLine());
+               }
                if(!varSymbol.getType().equals(type)) {
                    throw new WrongTypeCalledElementException(idf + "is called with the wrong types of elements. Line : "+ objMem.getLine() +".");
                 }
