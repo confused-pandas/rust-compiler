@@ -463,7 +463,7 @@ public class TreeTraversal {
                 type = this.traverseVec(exprNode);
                 break;
             case mini_rustParser.PRINT_MACRO :
-                VariableSymbol variableSymbolPrint = this.symbolTableManager.getCurrentTable().getVariableSymbol(exprNode.getChild(0).getText(), false);
+                VariableSymbol variableSymbolPrint = this.symbolTableManager.getCurrentTable().getVariableSymbol(exprNode.getChild(0).getText(), true);
                 if (variableSymbolPrint == null){
                     throw new PrintUndefinedSymbolException(exprNode.getChild(0)+" is not defined. Line : " + exprNode.getLine());
                 }

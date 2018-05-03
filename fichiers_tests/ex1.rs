@@ -1,4 +1,4 @@
-fn maini() {
+fn main() {
     let mut total = 0;
     let mut i = 0;
     let n = 10;
