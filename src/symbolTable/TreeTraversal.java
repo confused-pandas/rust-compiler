@@ -24,7 +24,6 @@ public class TreeTraversal {
 
     public SymbolTable buildSymbolTable() throws SemanticException, UnknownNodeException {
         SymbolTable symbolTable = this.symbolTableManager.openSymbolTable();
-
         this.traverseFile(root, true);
         FunctionSymbol mainSymbol = this.symbolTableManager.getCurrentTable().getFunctionSymbol("main", true);
         if (mainSymbol == null){
@@ -34,9 +33,10 @@ public class TreeTraversal {
         else if (mainSymbol.getParameters().size()!=0){
             throw new MainWithArgumentException("The main function shouldn't have any argument. Line : " + root.getLine());
         }
-        else if (mainSymbol.getReturnType().equals(EnumType.VOID)){
-            throw new MainWithReturnTypeException("The main function should have a void type.");
-        }
+        //todo : check return type main ?
+        //else if (false){
+        //    throw new MainWithReturnTypeException("The main function should have a void type.");
+        //}
         this.traverseFile(root, false);
         this.symbolTableManager.closeSymbolTable();
 
@@ -158,7 +158,7 @@ public class TreeTraversal {
         VariableSymbol variableSymbol = new VariableSymbol(idf, Scope.LOCAL, type, false);
 
         if(this.symbolTableManager.getCurrentTable().symbolExists(variableSymbol, false)) {
-            throw new RedefiningStructureElemException(variableSymbol.getName()+"is already defined in the structure" + structMemberNode.getAncestor(0).getChild(0).getText() + ". Line :" + structMemberNode.getLine());
+            throw new RedefiningStructureElemException("The element " + variableSymbol.getName()+" is already defined in the structure. Line : " + structMemberNode.getLine());
         }
         else {
             this.symbolTableManager.getCurrentTable().addSymbol(variableSymbol);
@@ -321,13 +321,12 @@ public class TreeTraversal {
     private void traverseParameter(Tree paramNode) throws SemanticException, UnknownNodeException {
         String idf = this.getIDF(paramNode.getChild(0));
         Type type = this.traverseType(paramNode.getChild(1));
-        VariableSymbol variableSymbol = new VariableSymbol(idf, Scope.FUNCTION, type, false);
-        if(this.symbolTableManager.getCurrentTable().symbolExists(variableSymbol, false)){
-            throw new RedefiningParamException(idf + " is already defined in the function " + paramNode.getAncestor(0).getChild(0).getText() + ". Line : " + paramNode.getLine());
+        VariableSymbol variableSymbol = new VariableSymbol(idf, Scope.FUNCTION, type, true);
+        if(this.symbolTableManager.getCurrentTable().symbolExists(variableSymbol, true)){
+            throw new RedefiningParamException("The paramater " + idf + " is already defined in the function. Line : " + paramNode.getLine());
         }
-        else {
-            this.symbolTableManager.getCurrentTable().addSymbol(variableSymbol);
-        }
+        this.symbolTableManager.getCurrentTable().addSymbol(variableSymbol);
+
 
     }
 
@@ -461,10 +460,12 @@ public class TreeTraversal {
                 type = this.traverseVec(exprNode);
                 break;
             case mini_rustParser.PRINT_MACRO :
+
                 VariableSymbol variableSymbolPrint = this.symbolTableManager.getCurrentTable().getVariableSymbol(exprNode.getChild(0).getText(), true);
-                if (variableSymbolPrint == null){
-                    throw new PrintUndefinedSymbolException(exprNode.getChild(0)+" is not defined. Line : " + exprNode.getLine());
-                }
+                //todo : print des constantes, des chaines de caractères non attribuées à une variable (ex : print(5))
+                //if (variableSymbolPrint == null){
+                //    throw new PrintUndefinedSymbolException(exprNode.getChild(0)+" is not defined. Line : " + exprNode.getLine());
+                //}
                 Type typePrint = this.traverseExpr(exprNode.getChild(0));
                 if (typePrint.equals(EnumType.VOID)){
                     throw new PrintVoidException(exprNode.getChild(0).getText()+" has a void type and can't be printed. Line : " + exprNode.getLine());
@@ -696,7 +697,7 @@ public class TreeTraversal {
         StructureSymbol structureSymbol = this.symbolTableManager.getCurrentTable().getStructureSymbol(idf,true);
 
         if (structureSymbol == null){
-            throw new UndefinedSymbolException(idf + "is not defined. Line :" + objectNode.getLine());
+            throw new UndefinedSymbolException(idf + " is not defined. Line :" + objectNode.getLine());
         }
 
         int size = objectNode.getChildCount()-1;
@@ -722,18 +723,16 @@ public class TreeTraversal {
         
         Type type = this.traverseExpr(objMem.getChild(1));
         String structName = objMem.getParent().getChild(0).getText();
-        StructureSymbol structSymbol = this.buildSymbolTable().getStructureSymbol(structName, true);
-
-        
+        StructureSymbol structSymbol = this.symbolTableManager.getCurrentTable().getStructureSymbol(structName, true);
         switch (objMem.getChild(1).getType()) {
             case mini_rustParser.OBJ:
                 this.traverseObject(objMem.getChild(1));
                 break;
             default:
                 this.traverseExpr(objMem.getChild(1));
-                VariableSymbol varSymbol = structSymbol.getSymbolTable().getVariableSymbol(idf, true);
-                if(!varSymbol.getType().equals(type)) {
-                	throw new WrongTypeCalledElementException(idf + "is called with the wrong types of elements. Line : "+ objMem.getLine() +".");
+               VariableSymbol varSymbol = structSymbol.getSymbolTable().getVariableSymbol(idf, true);
+               if(!varSymbol.getType().equals(type)) {
+                   throw new WrongTypeCalledElementException(idf + "is called with the wrong types of elements. Line : "+ objMem.getLine() +".");
                 }
 
                 break;
@@ -774,9 +773,10 @@ public class TreeTraversal {
         if(node.getType() == mini_rustParser.IDF) {
             return node.getText();
         }
-
-        else{
-            throw new UnknownNodeException(node.getText()+"is an unknown node. Line : " + node.getLine());
-        }
+        //todo : unknown node ?
+        return null;
+        //else{
+        //    throw new UnknownNodeException(node.getText()+" is an unknown node. Line : " + node.getLine());
+        //}
     }
 }
