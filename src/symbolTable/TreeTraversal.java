@@ -105,7 +105,6 @@ public class TreeTraversal {
 
             this.symbolTableManager.openSymbolTable(functionSymbol.getSymbolTable());
             BlocType blocType = this.traverseBloc(functionNode.getChild(1), false);
-
             if (blocType.isDeterminedByReturn() && !blocType.equals(functionSymbol.getReturnType())) {
             	throw new WrongTypeReturnException("Type returned in function " + idf + " differs from type defined in declaration. Line : "+ blocType.getLastNode().getLine() +".");
             }
@@ -705,11 +704,7 @@ public class TreeTraversal {
         if(size != realSize){
             throw new WrongNumberCalledElementException(idf + "is called with the wrong number of elements (" + size + " instead of " + realSize + "). Line :" + objectNode.getLine());
         }
-
-        if (this.traverseExpr(objectNode.getChild(0)).equals(structureSymbol.getSymbolType())) {
-        	throw new WrongTypeCalledElementException(idf + "is called with the wrong types of elements. Line : "+ objectNode.getLine() +".");
-        }
-
+        
         traverseExpr(objectNode.getChild(0));
         traverseObjectMember(objectNode.getChild(1));
 
@@ -724,12 +719,23 @@ public class TreeTraversal {
 
     private void traverseObjectMember(Tree objMem) throws SemanticException, UnknownNodeException {
         String idf = getIDF(objMem.getChild(0));
+        
+        Type type = this.traverseExpr(objMem.getChild(1));
+        String structName = objMem.getParent().getChild(0).getText();
+        StructureSymbol structSymbol = this.buildSymbolTable().getStructureSymbol(structName, true);
+
+        
         switch (objMem.getChild(1).getType()) {
             case mini_rustParser.OBJ:
                 this.traverseObject(objMem.getChild(1));
                 break;
             default:
                 this.traverseExpr(objMem.getChild(1));
+                VariableSymbol varSymbol = structSymbol.getSymbolTable().getVariableSymbol(idf, true);
+                if(!varSymbol.getType().equals(type)) {
+                	throw new WrongTypeCalledElementException(idf + "is called with the wrong types of elements. Line : "+ objMem.getLine() +".");
+                }
+
                 break;
         }
     }

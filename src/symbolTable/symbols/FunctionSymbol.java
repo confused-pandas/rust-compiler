@@ -1,5 +1,6 @@
 package symbolTable.symbols;
 
+import symbolTable.EnumType;
 import symbolTable.Scope;
 import symbolTable.SymbolTable;
 import symbolTable.Type;
@@ -18,7 +19,9 @@ public class FunctionSymbol extends SymbolTableComposedSymbol {
 	public Type getReturnType(){
 		return this.returnType;
 	}
+	
 
+	
 	public LinkedList<VariableSymbol> getParameters() {
 		LinkedList<VariableSymbol> parameters = new LinkedList<>();
 
