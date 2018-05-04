@@ -5,8 +5,6 @@ import exception.semantic.*;
 import grammar.mini_rustParser;
 import javafx.util.Pair;
 import org.antlr.runtime.tree.Tree;
-import org.omg.IOP.ENCODING_CDR_ENCAPS;
-import sun.applet.Main;
 import symbolTable.symbols.FunctionSymbol;
 import symbolTable.symbols.StructureSymbol;
 import symbolTable.symbols.VariableSymbol;
@@ -645,7 +643,6 @@ public class TreeTraversal {
         Type exprRightType = null;
         Type type;
 
-        System.out.println();
         if (letNode.getChildCount() >= 2) {
             exprRightType = this.traverseExpr(letNode.getChild(1));
             // TODO: types match
@@ -666,7 +663,7 @@ public class TreeTraversal {
         );
 
         if(exprRightType == null && variableSymbol.isMutable() == false){
-            throw new UnsuableVariableException(letNode.getChild(0).getText() + " is not usable because it is not mutable. Line : " + letNode.getLine());
+            throw new UnusableVariableException(letNode.getChild(0).getText() + " is not usable because it is not mutable. Line : " + letNode.getLine());
         }
 
         if(this.symbolTableManager.getCurrentTable().symbolExists(variableSymbol, true)) {
@@ -677,7 +674,7 @@ public class TreeTraversal {
             }
             else{
                 Type realType = this.symbolTableManager.getCurrentTable().getVariableSymbol(variableSymbol.getName(),true).getType();
-                if (realType.equals(EnumType.VOID)){
+                if (realType.isUnknown()){
                     this.symbolTableManager.getCurrentTable().getVariableSymbol(variableSymbol.getName(),true).setType(variableSymbol.getType());;
                 }
                 else if (!variableSymbol.getType().equals(realType) && !realType.isBool()){
