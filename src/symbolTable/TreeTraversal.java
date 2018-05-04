@@ -458,15 +458,9 @@ public class TreeTraversal {
                 type = this.traverseVec(exprNode);
                 break;
             case mini_rustParser.PRINT_MACRO :
-                VariableSymbol variableSymbolPrint = this.symbolTableManager.getCurrentTable().getVariableSymbol(exprNode.getChild(0).getText(), true);
-
-
-                if (variableSymbolPrint == null && exprNode.getChild(0).getType()!=64 && exprNode.getChild(0).getType()!=63 && exprNode.getChild(0).getType()!=11){
-                    throw new PrintUndefinedSymbolException(exprNode.getChild(0)+" is not defined. Line : " + exprNode.getLine());
-                }
                 Type typePrint = this.traverseExpr(exprNode.getChild(0));
 
-                if (typePrint.equals(EnumType.VOID)){
+                if (typePrint.getType().equals(EnumType.VOID)){
                     throw new PrintVoidException(exprNode.getChild(0).getText()+" has a void type and can't be printed. Line : " + exprNode.getLine());
                 }
 
@@ -679,7 +673,7 @@ public class TreeTraversal {
                 Type realType = this.symbolTableManager.getCurrentTable().getVariableSymbol(variableSymbol.getName(),true).getType();
 
                 if (realType.getType().equals(EnumType.UNKNOWN)){
-                    this.symbolTableManager.getCurrentTable().getVariableSymbol(variableSymbol.getName(),true).setType(variableSymbol.getType());;
+                    this.symbolTableManager.getCurrentTable().getVariableSymbol(variableSymbol.getName(),true).setType(type);;
                 }
                 else if (!variableSymbol.getType().equals(realType) && !realType.isBool()){
                     throw new RedefiningVariableTypeException(letNode.getChild(0).getText()+" is already defined with the type " + realType + ". It can't change its type. Line : " + letNode.getLine());

@@ -1,4 +1,4 @@
-// $ANTLR 3.2 Sep 23, 2009 12:02:23 D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g 2018-04-19 15:50:12
+// $ANTLR 3.2 Sep 23, 2009 12:02:23 D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g 2018-05-04 16:02:52
 
 	package grammar;
 
@@ -29,8 +29,8 @@ public class mini_rustLexer extends Lexer {
     public static final int INDEX=10;
     public static final int RSQBRACKET=25;
     public static final int RPAREN=21;
-    public static final int UPPERCASE=66;
-    public static final int COMMENTS=68;
+    public static final int UPPERCASE=65;
+    public static final int COMMENTS=67;
     public static final int COMMA=58;
     public static final int OBJ=13;
     public static final int PARAMETER=8;
@@ -38,7 +38,7 @@ public class mini_rustLexer extends Lexer {
     public static final int RETURN=50;
     public static final int PLUS=34;
     public static final int LETMUT=15;
-    public static final int DIGIT=67;
+    public static final int DIGIT=66;
     public static final int RBRACKET=23;
     public static final int EQ=30;
     public static final int DOT=40;
@@ -58,11 +58,10 @@ public class mini_rustLexer extends Lexer {
     public static final int MUL=16;
     public static final int TRUE=56;
     public static final int REF=19;
-    public static final int CSTE_STR=64;
     public static final int COLON=60;
     public static final int VEC_MACRO=51;
-    public static final int WS=69;
-    public static final int LOWERCASE=65;
+    public static final int WS=68;
+    public static final int LOWERCASE=64;
     public static final int VEC_TYPE=53;
     public static final int OR=33;
     public static final int NEG=17;
@@ -958,8 +957,8 @@ public class mini_rustLexer extends Lexer {
         try {
             int _type = IDF;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:253:5: ( ( LOWERCASE | UPPERCASE | '_' ) ( LOWERCASE | UPPERCASE | DIGIT | '_' )* )
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:253:7: ( LOWERCASE | UPPERCASE | '_' ) ( LOWERCASE | UPPERCASE | DIGIT | '_' )*
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:252:5: ( ( LOWERCASE | UPPERCASE | '_' ) ( LOWERCASE | UPPERCASE | DIGIT | '_' )* )
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:252:7: ( LOWERCASE | UPPERCASE | '_' ) ( LOWERCASE | UPPERCASE | DIGIT | '_' )*
             {
             if ( (input.LA(1)>='A' && input.LA(1)<='Z')||input.LA(1)=='_'||(input.LA(1)>='a' && input.LA(1)<='z') ) {
                 input.consume();
@@ -970,7 +969,7 @@ public class mini_rustLexer extends Lexer {
                 recover(mse);
                 throw mse;}
 
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:253:37: ( LOWERCASE | UPPERCASE | DIGIT | '_' )*
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:252:37: ( LOWERCASE | UPPERCASE | DIGIT | '_' )*
             loop1:
             do {
                 int alt1=2;
@@ -1019,10 +1018,10 @@ public class mini_rustLexer extends Lexer {
         try {
             int _type = CSTE_ENT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:254:10: ( ( DIGIT )+ )
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:254:12: ( DIGIT )+
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:253:10: ( ( DIGIT )+ )
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:253:12: ( DIGIT )+
             {
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:254:12: ( DIGIT )+
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:253:12: ( DIGIT )+
             int cnt2=0;
             loop2:
             do {
@@ -1036,7 +1035,7 @@ public class mini_rustLexer extends Lexer {
 
                 switch (alt2) {
             	case 1 :
-            	    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:254:12: DIGIT
+            	    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:253:12: DIGIT
             	    {
             	    mDIGIT(); 
 
@@ -1063,32 +1062,42 @@ public class mini_rustLexer extends Lexer {
     }
     // $ANTLR end "CSTE_ENT"
 
-    // $ANTLR start "CSTE_STR"
-    public final void mCSTE_STR() throws RecognitionException {
+    // $ANTLR start "COMMENTS"
+    public final void mCOMMENTS() throws RecognitionException {
         try {
-            int _type = CSTE_STR;
+            int _type = COMMENTS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:255:10: ( '\"' ( . )* '\"' )
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:255:12: '\"' ( . )* '\"'
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:254:10: ( '/*' ( . )* '*/' )
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:254:12: '/*' ( . )* '*/'
             {
-            match('\"'); 
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:255:16: ( . )*
+            match("/*"); 
+
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:254:17: ( . )*
             loop3:
             do {
                 int alt3=2;
                 int LA3_0 = input.LA(1);
 
-                if ( (LA3_0=='\"') ) {
-                    alt3=2;
+                if ( (LA3_0=='*') ) {
+                    int LA3_1 = input.LA(2);
+
+                    if ( (LA3_1=='/') ) {
+                        alt3=2;
+                    }
+                    else if ( ((LA3_1>='\u0000' && LA3_1<='.')||(LA3_1>='0' && LA3_1<='\uFFFF')) ) {
+                        alt3=1;
+                    }
+
+
                 }
-                else if ( ((LA3_0>='\u0000' && LA3_0<='!')||(LA3_0>='#' && LA3_0<='\uFFFF')) ) {
+                else if ( ((LA3_0>='\u0000' && LA3_0<=')')||(LA3_0>='+' && LA3_0<='\uFFFF')) ) {
                     alt3=1;
                 }
 
 
                 switch (alt3) {
             	case 1 :
-            	    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:255:16: .
+            	    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:254:17: .
             	    {
             	    matchAny(); 
 
@@ -1097,65 +1106,6 @@ public class mini_rustLexer extends Lexer {
 
             	default :
             	    break loop3;
-                }
-            } while (true);
-
-            match('\"'); 
-
-            }
-
-            state.type = _type;
-            state.channel = _channel;
-        }
-        finally {
-        }
-    }
-    // $ANTLR end "CSTE_STR"
-
-    // $ANTLR start "COMMENTS"
-    public final void mCOMMENTS() throws RecognitionException {
-        try {
-            int _type = COMMENTS;
-            int _channel = DEFAULT_TOKEN_CHANNEL;
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:256:10: ( '/*' ( . )* '*/' )
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:256:12: '/*' ( . )* '*/'
-            {
-            match("/*"); 
-
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:256:17: ( . )*
-            loop4:
-            do {
-                int alt4=2;
-                int LA4_0 = input.LA(1);
-
-                if ( (LA4_0=='*') ) {
-                    int LA4_1 = input.LA(2);
-
-                    if ( (LA4_1=='/') ) {
-                        alt4=2;
-                    }
-                    else if ( ((LA4_1>='\u0000' && LA4_1<='.')||(LA4_1>='0' && LA4_1<='\uFFFF')) ) {
-                        alt4=1;
-                    }
-
-
-                }
-                else if ( ((LA4_0>='\u0000' && LA4_0<=')')||(LA4_0>='+' && LA4_0<='\uFFFF')) ) {
-                    alt4=1;
-                }
-
-
-                switch (alt4) {
-            	case 1 :
-            	    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:256:17: .
-            	    {
-            	    matchAny(); 
-
-            	    }
-            	    break;
-
-            	default :
-            	    break loop4;
                 }
             } while (true);
 
@@ -1178,8 +1128,8 @@ public class mini_rustLexer extends Lexer {
         try {
             int _type = WS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:257:4: ( ( ' ' | '\\r' | '\\n' | '\\t' ) )
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:257:6: ( ' ' | '\\r' | '\\n' | '\\t' )
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:255:4: ( ( ' ' | '\\r' | '\\n' | '\\t' ) )
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:255:6: ( ' ' | '\\r' | '\\n' | '\\t' )
             {
             if ( (input.LA(1)>='\t' && input.LA(1)<='\n')||input.LA(1)=='\r'||input.LA(1)==' ' ) {
                 input.consume();
@@ -1205,8 +1155,8 @@ public class mini_rustLexer extends Lexer {
     // $ANTLR start "LOWERCASE"
     public final void mLOWERCASE() throws RecognitionException {
         try {
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:259:20: ( 'a' .. 'z' )
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:259:22: 'a' .. 'z'
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:257:20: ( 'a' .. 'z' )
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:257:22: 'a' .. 'z'
             {
             matchRange('a','z'); 
 
@@ -1221,8 +1171,8 @@ public class mini_rustLexer extends Lexer {
     // $ANTLR start "UPPERCASE"
     public final void mUPPERCASE() throws RecognitionException {
         try {
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:260:20: ( 'A' .. 'Z' )
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:260:22: 'A' .. 'Z'
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:258:20: ( 'A' .. 'Z' )
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:258:22: 'A' .. 'Z'
             {
             matchRange('A','Z'); 
 
@@ -1237,8 +1187,8 @@ public class mini_rustLexer extends Lexer {
     // $ANTLR start "DIGIT"
     public final void mDIGIT() throws RecognitionException {
         try {
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:261:16: ( '0' .. '9' )
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:261:18: '0' .. '9'
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:259:16: ( '0' .. '9' )
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:259:18: '0' .. '9'
             {
             matchRange('0','9'); 
 
@@ -1251,10 +1201,10 @@ public class mini_rustLexer extends Lexer {
     // $ANTLR end "DIGIT"
 
     public void mTokens() throws RecognitionException {
-        // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:1:8: ( LPAREN | RPAREN | LBRACKET | RBRACKET | LSQBRACKET | RSQBRACKET | GT | GE | LT | LE | EQ | NE | AND | OR | PLUS | MINUS | DIV | STAR | EXCL | ASSIGN | DOT | AMPS | LEN | LET | MUT | FN | STRUCT | WHILE | IF | ELSE | RETURN | VEC_MACRO | PRINT_MACRO | VEC_TYPE | INT32_TYPE | BOOL_TYPE | TRUE | FALSE | COMMA | SEMICOLON | COLON | ARROW | IDF | CSTE_ENT | CSTE_STR | COMMENTS | WS )
-        int alt5=47;
-        alt5 = dfa5.predict(input);
-        switch (alt5) {
+        // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:1:8: ( LPAREN | RPAREN | LBRACKET | RBRACKET | LSQBRACKET | RSQBRACKET | GT | GE | LT | LE | EQ | NE | AND | OR | PLUS | MINUS | DIV | STAR | EXCL | ASSIGN | DOT | AMPS | LEN | LET | MUT | FN | STRUCT | WHILE | IF | ELSE | RETURN | VEC_MACRO | PRINT_MACRO | VEC_TYPE | INT32_TYPE | BOOL_TYPE | TRUE | FALSE | COMMA | SEMICOLON | COLON | ARROW | IDF | CSTE_ENT | COMMENTS | WS )
+        int alt4=46;
+        alt4 = dfa4.predict(input);
+        switch (alt4) {
             case 1 :
                 // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:1:10: LPAREN
                 {
@@ -1564,21 +1514,14 @@ public class mini_rustLexer extends Lexer {
                 }
                 break;
             case 45 :
-                // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:1:277: CSTE_STR
-                {
-                mCSTE_STR(); 
-
-                }
-                break;
-            case 46 :
-                // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:1:286: COMMENTS
+                // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:1:277: COMMENTS
                 {
                 mCOMMENTS(); 
 
                 }
                 break;
-            case 47 :
-                // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:1:295: WS
+            case 46 :
+                // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:1:286: WS
                 {
                 mWS(); 
 
@@ -1590,42 +1533,42 @@ public class mini_rustLexer extends Lexer {
     }
 
 
-    protected DFA5 dfa5 = new DFA5(this);
-    static final String DFA5_eotS =
-        "\7\uffff\1\47\1\51\1\53\1\55\1\57\2\uffff\1\61\1\63\2\uffff\15"+
-        "\42\25\uffff\2\42\1\106\3\42\1\112\10\42\1\123\1\124\1\125\1\uffff"+
-        "\3\42\1\uffff\3\42\1\134\1\42\1\136\2\42\3\uffff\4\42\1\145\1\42"+
-        "\1\uffff\1\42\1\uffff\1\150\1\151\1\152\1\42\1\154\1\155\1\uffff"+
-        "\1\42\1\157\3\uffff\1\160\2\uffff\1\161\3\uffff";
-    static final String DFA5_eofS =
-        "\162\uffff";
-    static final String DFA5_minS =
+    protected DFA4 dfa4 = new DFA4(this);
+    static final String DFA4_eotS =
+        "\7\uffff\1\46\1\50\1\52\1\54\1\56\2\uffff\1\60\1\62\2\uffff\15"+
+        "\42\24\uffff\2\42\1\105\3\42\1\111\10\42\1\122\1\123\1\124\1\uffff"+
+        "\3\42\1\uffff\3\42\1\133\1\42\1\135\2\42\3\uffff\4\42\1\144\1\42"+
+        "\1\uffff\1\42\1\uffff\1\147\1\150\1\151\1\42\1\153\1\154\1\uffff"+
+        "\1\42\1\156\3\uffff\1\157\2\uffff\1\160\3\uffff";
+    static final String DFA4_eofS =
+        "\161\uffff";
+    static final String DFA4_minS =
         "\1\11\6\uffff\4\75\1\46\2\uffff\1\76\1\52\2\uffff\1\145\1\165\1"+
-        "\141\1\164\1\150\1\146\1\154\2\145\1\162\1\145\1\157\1\162\25\uffff"+
+        "\141\1\164\1\150\1\146\1\154\2\145\1\162\1\145\1\157\1\162\24\uffff"+
         "\1\156\1\164\1\60\1\154\1\162\1\151\1\60\1\164\1\163\1\164\1\143"+
         "\1\151\1\143\1\157\1\165\3\60\1\uffff\1\163\1\165\1\154\1\uffff"+
         "\1\63\1\145\1\165\1\60\1\156\1\60\1\154\1\145\3\uffff\1\145\1\143"+
         "\1\145\1\62\1\60\1\162\1\uffff\1\164\1\uffff\3\60\1\164\2\60\1\uffff"+
         "\1\156\1\60\3\uffff\1\60\2\uffff\1\60\3\uffff";
-    static final String DFA5_maxS =
+    static final String DFA4_maxS =
         "\1\175\6\uffff\4\75\1\46\2\uffff\1\76\1\52\2\uffff\1\145\1\165"+
-        "\1\156\1\164\1\150\1\156\1\154\2\145\1\162\1\145\1\157\1\162\25"+
+        "\1\156\1\164\1\150\1\156\1\154\2\145\1\162\1\145\1\157\1\162\24"+
         "\uffff\2\164\1\172\1\154\1\162\1\151\1\172\1\164\1\163\1\164\1\143"+
         "\1\151\1\143\1\157\1\165\3\172\1\uffff\1\163\1\165\1\154\1\uffff"+
         "\1\63\1\145\1\165\1\172\1\156\1\172\1\154\1\145\3\uffff\1\145\1"+
         "\143\1\145\1\62\1\172\1\162\1\uffff\1\164\1\uffff\3\172\1\164\2"+
         "\172\1\uffff\1\156\1\172\3\uffff\1\172\2\uffff\1\172\3\uffff";
-    static final String DFA5_acceptS =
+    static final String DFA4_acceptS =
         "\1\uffff\1\1\1\2\1\3\1\4\1\5\1\6\5\uffff\1\16\1\17\2\uffff\1\22"+
-        "\1\25\15\uffff\1\47\1\50\1\51\1\53\1\54\1\55\1\57\1\10\1\7\1\12"+
-        "\1\11\1\13\1\24\1\14\1\23\1\15\1\26\1\52\1\20\1\56\1\21\22\uffff"+
-        "\1\32\3\uffff\1\35\10\uffff\1\27\1\30\1\31\6\uffff\1\40\1\uffff"+
-        "\1\42\6\uffff\1\36\2\uffff\1\44\1\45\1\46\1\uffff\1\34\1\43\1\uffff"+
-        "\1\41\1\33\1\37";
-    static final String DFA5_specialS =
-        "\162\uffff}>";
-    static final String[] DFA5_transitionS = {
-            "\2\45\2\uffff\1\45\22\uffff\1\45\1\12\1\44\3\uffff\1\13\1\uffff"+
+        "\1\25\15\uffff\1\47\1\50\1\51\1\53\1\54\1\56\1\10\1\7\1\12\1\11"+
+        "\1\13\1\24\1\14\1\23\1\15\1\26\1\52\1\20\1\55\1\21\22\uffff\1\32"+
+        "\3\uffff\1\35\10\uffff\1\27\1\30\1\31\6\uffff\1\40\1\uffff\1\42"+
+        "\6\uffff\1\36\2\uffff\1\44\1\45\1\46\1\uffff\1\34\1\43\1\uffff\1"+
+        "\41\1\33\1\37";
+    static final String DFA4_specialS =
+        "\161\uffff}>";
+    static final String[] DFA4_transitionS = {
+            "\2\44\2\uffff\1\44\22\uffff\1\44\1\12\4\uffff\1\13\1\uffff"+
             "\1\1\1\2\1\20\1\15\1\37\1\16\1\21\1\17\12\43\1\41\1\40\1\10"+
             "\1\11\1\7\2\uffff\25\42\1\34\4\42\1\5\1\uffff\1\6\1\uffff\1"+
             "\42\1\uffff\1\42\1\35\2\42\1\30\1\24\2\42\1\27\2\42\1\22\1\23"+
@@ -1637,30 +1580,30 @@ public class mini_rustLexer extends Lexer {
             "",
             "",
             "",
-            "\1\46",
-            "\1\50",
-            "\1\52",
-            "\1\54",
-            "\1\56",
+            "\1\45",
+            "\1\47",
+            "\1\51",
+            "\1\53",
+            "\1\55",
             "",
             "",
-            "\1\60",
-            "\1\62",
+            "\1\57",
+            "\1\61",
             "",
             "",
+            "\1\63",
             "\1\64",
-            "\1\65",
-            "\1\67\14\uffff\1\66",
+            "\1\66\14\uffff\1\65",
+            "\1\67",
             "\1\70",
-            "\1\71",
-            "\1\72\7\uffff\1\73",
+            "\1\71\7\uffff\1\72",
+            "\1\73",
             "\1\74",
             "\1\75",
             "\1\76",
             "\1\77",
             "\1\100",
             "\1\101",
-            "\1\102",
             "",
             "",
             "",
@@ -1681,14 +1624,14 @@ public class mini_rustLexer extends Lexer {
             "",
             "",
             "",
-            "",
-            "\1\103\5\uffff\1\104",
-            "\1\105",
+            "\1\102\5\uffff\1\103",
+            "\1\104",
             "\12\42\7\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "\1\106",
             "\1\107",
             "\1\110",
-            "\1\111",
             "\12\42\7\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "\1\112",
             "\1\113",
             "\1\114",
             "\1\115",
@@ -1696,43 +1639,42 @@ public class mini_rustLexer extends Lexer {
             "\1\117",
             "\1\120",
             "\1\121",
-            "\1\122",
             "\12\42\7\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
             "\12\42\7\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
             "\12\42\7\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
             "",
+            "\1\125",
             "\1\126",
             "\1\127",
-            "\1\130",
             "",
+            "\1\130",
             "\1\131",
             "\1\132",
-            "\1\133",
             "\12\42\7\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
-            "\1\135",
+            "\1\134",
             "\12\42\7\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "\1\136",
             "\1\137",
+            "",
+            "",
+            "",
             "\1\140",
-            "",
-            "",
-            "",
             "\1\141",
             "\1\142",
             "\1\143",
-            "\1\144",
             "\12\42\7\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
+            "\1\145",
+            "",
             "\1\146",
             "",
-            "\1\147",
-            "",
             "\12\42\7\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
             "\12\42\7\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
             "\12\42\7\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
-            "\1\153",
+            "\1\152",
             "\12\42\7\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
             "\12\42\7\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
             "",
-            "\1\156",
+            "\1\155",
             "\12\42\7\uffff\32\42\4\uffff\1\42\1\uffff\32\42",
             "",
             "",
@@ -1746,37 +1688,37 @@ public class mini_rustLexer extends Lexer {
             ""
     };
 
-    static final short[] DFA5_eot = DFA.unpackEncodedString(DFA5_eotS);
-    static final short[] DFA5_eof = DFA.unpackEncodedString(DFA5_eofS);
-    static final char[] DFA5_min = DFA.unpackEncodedStringToUnsignedChars(DFA5_minS);
-    static final char[] DFA5_max = DFA.unpackEncodedStringToUnsignedChars(DFA5_maxS);
-    static final short[] DFA5_accept = DFA.unpackEncodedString(DFA5_acceptS);
-    static final short[] DFA5_special = DFA.unpackEncodedString(DFA5_specialS);
-    static final short[][] DFA5_transition;
+    static final short[] DFA4_eot = DFA.unpackEncodedString(DFA4_eotS);
+    static final short[] DFA4_eof = DFA.unpackEncodedString(DFA4_eofS);
+    static final char[] DFA4_min = DFA.unpackEncodedStringToUnsignedChars(DFA4_minS);
+    static final char[] DFA4_max = DFA.unpackEncodedStringToUnsignedChars(DFA4_maxS);
+    static final short[] DFA4_accept = DFA.unpackEncodedString(DFA4_acceptS);
+    static final short[] DFA4_special = DFA.unpackEncodedString(DFA4_specialS);
+    static final short[][] DFA4_transition;
 
     static {
-        int numStates = DFA5_transitionS.length;
-        DFA5_transition = new short[numStates][];
+        int numStates = DFA4_transitionS.length;
+        DFA4_transition = new short[numStates][];
         for (int i=0; i<numStates; i++) {
-            DFA5_transition[i] = DFA.unpackEncodedString(DFA5_transitionS[i]);
+            DFA4_transition[i] = DFA.unpackEncodedString(DFA4_transitionS[i]);
         }
     }
 
-    class DFA5 extends DFA {
+    class DFA4 extends DFA {
 
-        public DFA5(BaseRecognizer recognizer) {
+        public DFA4(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
-            this.decisionNumber = 5;
-            this.eot = DFA5_eot;
-            this.eof = DFA5_eof;
-            this.min = DFA5_min;
-            this.max = DFA5_max;
-            this.accept = DFA5_accept;
-            this.special = DFA5_special;
-            this.transition = DFA5_transition;
+            this.decisionNumber = 4;
+            this.eot = DFA4_eot;
+            this.eof = DFA4_eof;
+            this.min = DFA4_min;
+            this.max = DFA4_max;
+            this.accept = DFA4_accept;
+            this.special = DFA4_special;
+            this.transition = DFA4_transition;
         }
         public String getDescription() {
-            return "1:1: Tokens : ( LPAREN | RPAREN | LBRACKET | RBRACKET | LSQBRACKET | RSQBRACKET | GT | GE | LT | LE | EQ | NE | AND | OR | PLUS | MINUS | DIV | STAR | EXCL | ASSIGN | DOT | AMPS | LEN | LET | MUT | FN | STRUCT | WHILE | IF | ELSE | RETURN | VEC_MACRO | PRINT_MACRO | VEC_TYPE | INT32_TYPE | BOOL_TYPE | TRUE | FALSE | COMMA | SEMICOLON | COLON | ARROW | IDF | CSTE_ENT | CSTE_STR | COMMENTS | WS );";
+            return "1:1: Tokens : ( LPAREN | RPAREN | LBRACKET | RBRACKET | LSQBRACKET | RSQBRACKET | GT | GE | LT | LE | EQ | NE | AND | OR | PLUS | MINUS | DIV | STAR | EXCL | ASSIGN | DOT | AMPS | LEN | LET | MUT | FN | STRUCT | WHILE | IF | ELSE | RETURN | VEC_MACRO | PRINT_MACRO | VEC_TYPE | INT32_TYPE | BOOL_TYPE | TRUE | FALSE | COMMA | SEMICOLON | COLON | ARROW | IDF | CSTE_ENT | COMMENTS | WS );";
         }
     }
  
