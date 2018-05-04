@@ -104,7 +104,7 @@ public class TreeTraversal {
             this.symbolTableManager.openSymbolTable(functionSymbol.getSymbolTable());
             BlocType blocType = this.traverseBloc(functionNode.getChild(1), false);
             if (blocType.isDeterminedByReturn() && !blocType.equals(functionSymbol.getReturnType())) {
-            	throw new WrongTypeReturnException("Type returned in function " + idf + " differs from type defined in declaration. Line : "+ blocType.getLastNode().getLine() +".");
+            	throw new WrongTypeReturnException("Type returned in function " + idf + " differs from type defined in declaration. (" + blocType + " instead of " + functionSymbol.getReturnType() + "). Line : "+ blocType.getLastNode().getLine() +".");
             }
 
             this.symbolTableManager.closeSymbolTable();
@@ -460,8 +460,8 @@ public class TreeTraversal {
             case mini_rustParser.PRINT_MACRO :
                 VariableSymbol variableSymbolPrint = this.symbolTableManager.getCurrentTable().getVariableSymbol(exprNode.getChild(0).getText(), true);
 
-                /*
-                if (variableSymbolPrint == null && exprNode.getChild(0).getType()!=64 && exprNode.getChild(0).getType()!=63){
+
+                if (variableSymbolPrint == null && exprNode.getChild(0).getType()!=64 && exprNode.getChild(0).getType()!=63 && exprNode.getChild(0).getType()!=11){
                     throw new PrintUndefinedSymbolException(exprNode.getChild(0)+" is not defined. Line : " + exprNode.getLine());
                 }
                 Type typePrint = this.traverseExpr(exprNode.getChild(0));
@@ -469,7 +469,7 @@ public class TreeTraversal {
                 if (typePrint.equals(EnumType.VOID)){
                     throw new PrintVoidException(exprNode.getChild(0).getText()+" has a void type and can't be printed. Line : " + exprNode.getLine());
                 }
-                */
+
                 type = new Type(EnumType.VOID);
                 break;
             case mini_rustParser.CSTE_ENT :
