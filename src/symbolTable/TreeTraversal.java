@@ -645,6 +645,7 @@ public class TreeTraversal {
         Type exprRightType = null;
         Type type;
 
+        System.out.println();
         if (letNode.getChildCount() >= 2) {
             exprRightType = this.traverseExpr(letNode.getChild(1));
             // TODO: types match
@@ -657,34 +658,35 @@ public class TreeTraversal {
             type = exprRightType;
         }
 
-        if(exprLeftType.isUnknown()) {
-            VariableSymbol variableSymbol = new VariableSymbol(
-                    idf,
-                    Scope.LOCAL,
-                    type,
-                    isMutable
-            );
+        VariableSymbol variableSymbol = new VariableSymbol(
+                idf,
+                Scope.LOCAL,
+                type,
+                isMutable
+        );
 
-            if(exprRightType == null && variableSymbol.isMutable() == false){
-                throw new UnsuableVariableException(letNode.getChild(0).getText() + " is not usable because it is not mutable. Line : " + letNode.getLine());
+        if(exprRightType == null && variableSymbol.isMutable() == false){
+            throw new UnsuableVariableException(letNode.getChild(0).getText() + " is not usable because it is not mutable. Line : " + letNode.getLine());
+        }
+
+        if(this.symbolTableManager.getCurrentTable().symbolExists(variableSymbol, true)) {
+            variableSymbol = this.symbolTableManager.getCurrentTable().getVariableSymbol(idf, true);
+
+            if (!variableSymbol.isMutable()) {
+                throw new NonMutableException(idf + " is not a mutable variable and is already defined. Line : " + letNode.getLine());
             }
-            if(this.symbolTableManager.getCurrentTable().symbolExists(variableSymbol, true)) {
-                if (!variableSymbol.isMutable()) {
-                    throw new NonMutableException(idf + " is not a mutable variable and is already defined. Line : " + letNode.getLine());
+            else{
+                Type realType = this.symbolTableManager.getCurrentTable().getVariableSymbol(variableSymbol.getName(),true).getType();
+                if (realType.equals(EnumType.VOID)){
+                    this.symbolTableManager.getCurrentTable().getVariableSymbol(variableSymbol.getName(),true).setType(variableSymbol.getType());;
                 }
-                else{
-                    Type realType = this.symbolTableManager.getCurrentTable().getVariableSymbol(variableSymbol.getName(),true).getType();
-                    if (realType.equals(EnumType.VOID)){
-                        this.symbolTableManager.getCurrentTable().getVariableSymbol(variableSymbol.getName(),true).setType(variableSymbol.getType());;
-                    }
-                    else if (!variableSymbol.getType().equals(realType) && !realType.isBool()){
-                        throw new RedefiningVariableTypeException(letNode.getChild(0).getText()+" is already defined with the type " + realType + ". It can't change its type. Line : " + letNode.getLine());
-                    }
+                else if (!variableSymbol.getType().equals(realType) && !realType.isBool()){
+                    throw new RedefiningVariableTypeException(letNode.getChild(0).getText()+" is already defined with the type " + realType + ". It can't change its type. Line : " + letNode.getLine());
                 }
             }
-            else {
-                this.symbolTableManager.getCurrentTable().addSymbol(variableSymbol);
-            }
+        }
+        else {
+            this.symbolTableManager.getCurrentTable().addSymbol(variableSymbol);
         }
     }
 
