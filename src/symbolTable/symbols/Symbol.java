@@ -1,5 +1,6 @@
 package symbolTable.symbols;
 
+import org.antlr.runtime.tree.Tree;
 import symbolTable.Scope;
 import symbolTable.SymbolTable;
 import utils.Utils;
@@ -9,12 +10,14 @@ public abstract class Symbol {
 	private final String name;
 	private int offset;
 	private final Scope scope;
+	private final Tree node;
 
-	protected Symbol(EnumSymbolType symbolType, String name) {
-	    this(symbolType, name, Scope.LOCAL);
+	protected Symbol(Tree node, EnumSymbolType symbolType, String name) {
+	    this(node, symbolType, name, Scope.LOCAL);
     }
 
-	protected Symbol(EnumSymbolType symbolType, String name, Scope scope) {
+	protected Symbol(Tree node, EnumSymbolType symbolType, String name, Scope scope) {
+	    this.node = node;
 		this.symbolType = symbolType;
 		this.name = name;
 		this.scope = scope;
@@ -42,6 +45,10 @@ public abstract class Symbol {
 
 	public String getHashName() {
 	    return this.getName() + this.getSymbolType().getSuffix();
+    }
+
+    public Tree getNode() {
+	    return this.node;
     }
 
 	public String toTable() {

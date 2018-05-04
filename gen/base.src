@@ -1,0 +1,44 @@
+sp          equ r15
+wr          equ r14
+bp          equ r13
+
+SP          equ r15
+WR          equ r14
+BP          equ r13
+
+EXIT_EXC   EQU   64    // n° d'exception de EXIT
+READ_EXC   EQU   65    // n° d'exception de READ  (lit 1 ligne)
+WRITE_EXC  EQU   66    // n° d'exception de WRITE (affiche texte)
+
+NUL         equ  0     // caractère NUL qui doit terminer une chaîne de caractères
+NULL        equ  0     // pointeur nul
+NIL         equ  0     // fin de liste chaînée
+
+STACK_ADRS  equ 0x1000 // adresse de base de pile
+LOAD_ADRS   equ 0xFE00 // adresse de chargement du programme
+
+            org LOAD_ADRS
+            start main_
+
+// PROGRAMME MAIN supposé généré automatiquement par le compilateur
+
+// void main(void)
+// initialise pointeur de pile sp et pointeur de base d'environnement bp
+main_
+ldw sp, #STACK_ADRS // pile sera au dessus de STACK_ADRS
+ldw bp, #NIL        // bp initial (fin de liste chaînée d'environnements)    
+stw bp, -(sp)
+ldw bp, sp
+
+//ldw r2, #3
+//ldw r3, #2
+//add r2, r3, r1
+
+ldw r1, #2
+stw r1, (bp)-2
+ldw r0, (bp)-2
+
+ldw sp, bp
+ldw bp, (sp)+
+trp #EXIT_EXC
+jea @main_ 

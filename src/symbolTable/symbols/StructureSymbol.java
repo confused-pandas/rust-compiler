@@ -1,12 +1,13 @@
 package symbolTable.symbols;
 
+import org.antlr.runtime.tree.Tree;
 import symbolTable.Scope;
 import symbolTable.SymbolTable;
 import utils.Utils;
 
 public class StructureSymbol extends SymbolTableComposedSymbol {
-	public StructureSymbol(String name, Scope scope, SymbolTable symbolTable) {
-		super(EnumSymbolType.STRUCTURE, name, scope, symbolTable);
+	public StructureSymbol(Tree node, String name, Scope scope, SymbolTable symbolTable) {
+		super(node, EnumSymbolType.STRUCTURE, name, scope, symbolTable);
 	}
 
 	@Override

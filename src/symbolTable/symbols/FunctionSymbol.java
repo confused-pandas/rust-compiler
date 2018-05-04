@@ -1,5 +1,6 @@
 package symbolTable.symbols;
 
+import org.antlr.runtime.tree.Tree;
 import symbolTable.EnumType;
 import symbolTable.Scope;
 import symbolTable.SymbolTable;
@@ -11,8 +12,8 @@ import java.util.LinkedList;
 public class FunctionSymbol extends SymbolTableComposedSymbol {
 	private Type returnType;
 
-	public FunctionSymbol(String name, Scope scope, Type returnType, SymbolTable symbolTable) {
-		super(EnumSymbolType.FUNCTION, name, scope, symbolTable);
+	public FunctionSymbol(Tree node, String name, Scope scope, Type returnType, SymbolTable symbolTable) {
+		super(node, EnumSymbolType.FUNCTION, name, scope, symbolTable);
 		this.returnType = returnType;
 	}
 

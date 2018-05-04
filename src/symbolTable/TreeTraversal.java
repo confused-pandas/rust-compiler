@@ -8,7 +8,6 @@ import org.antlr.runtime.tree.Tree;
 import symbolTable.symbols.FunctionSymbol;
 import symbolTable.symbols.StructureSymbol;
 import symbolTable.symbols.VariableSymbol;
-
 import java.util.Stack;
 
 public class TreeTraversal {
@@ -86,6 +85,7 @@ public class TreeTraversal {
             this.symbolTableManager.closeSymbolTable();
 
             FunctionSymbol functionSymbol = new FunctionSymbol(
+                    functionNode,
                     idf,
                     Scope.LOCAL,
                     returnType,
@@ -117,6 +117,7 @@ public class TreeTraversal {
         if(onlyDeclarations) {
             SymbolTable symbolTable = this.symbolTableManager.openSymbolTable();
             StructureSymbol structureSymbol = new StructureSymbol(
+                    structureNode,
                     idf,
                     Scope.LOCAL,
                     symbolTable
@@ -153,7 +154,7 @@ public class TreeTraversal {
         String idf = this.getIDF(structMemberNode.getChild(0));
         Type type = this.traverseType(structMemberNode.getChild(1));
 
-        VariableSymbol variableSymbol = new VariableSymbol(idf, Scope.LOCAL, type, false);
+        VariableSymbol variableSymbol = new VariableSymbol(structMemberNode, idf, Scope.LOCAL, type, false);
 
         if(this.symbolTableManager.getCurrentTable().symbolExists(variableSymbol, false)) {
             throw new RedefiningStructureElemException("The element " + variableSymbol.getName()+" is already defined in the structure. Line : " + structMemberNode.getLine());
@@ -319,13 +320,13 @@ public class TreeTraversal {
     private void traverseParameter(Tree paramNode) throws SemanticException, UnknownNodeException {
         String idf = this.getIDF(paramNode.getChild(0));
         Type type = this.traverseType(paramNode.getChild(1));
-        VariableSymbol variableSymbol = new VariableSymbol(idf, Scope.FUNCTION, type, true);
+        VariableSymbol variableSymbol = new VariableSymbol(paramNode, idf, Scope.FUNCTION, type, true);
+
         if(this.symbolTableManager.getCurrentTable().symbolExists(variableSymbol, true)){
-            throw new RedefiningParamException("The paramater " + idf + " is already defined in the function. Line : " + paramNode.getLine());
+            throw new RedefiningParamException("The parameter " + idf + " is already defined in the function. Line : " + paramNode.getLine());
         }
+
         this.symbolTableManager.getCurrentTable().addSymbol(variableSymbol);
-
-
     }
 
     private BlocType traverseWhile(Tree whileNode) throws SemanticException, UnknownNodeException {
@@ -659,6 +660,7 @@ public class TreeTraversal {
         }
 
         VariableSymbol variableSymbol = new VariableSymbol(
+                letNode,
                 idf,
                 Scope.LOCAL,
                 type,

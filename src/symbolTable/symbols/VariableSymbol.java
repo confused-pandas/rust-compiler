@@ -1,5 +1,6 @@
 package symbolTable.symbols;
 
+import org.antlr.runtime.tree.Tree;
 import symbolTable.Scope;
 import symbolTable.SymbolTable;
 import symbolTable.Type;
@@ -9,8 +10,8 @@ public class VariableSymbol extends Symbol {
 	public Type type;
 	public boolean isMutable;
 
-	public VariableSymbol(String name, Scope scope, Type type, boolean isMutable) {
-		super(EnumSymbolType.VARIABLE, name, scope);
+	public VariableSymbol(Tree node, String name, Scope scope, Type type, boolean isMutable) {
+		super(node, EnumSymbolType.VARIABLE, name, scope);
 		this.type = type;
 		this.isMutable = isMutable;
 	}
