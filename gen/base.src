@@ -26,19 +26,18 @@ LOAD_ADRS   equ 0xFE00 // adresse de chargement du programme
 // initialise pointeur de pile sp et pointeur de base d'environnement bp
 main_
 ldw sp, #STACK_ADRS // pile sera au dessus de STACK_ADRS
-ldw bp, #NIL        // bp initial (fin de liste chaînée d'environnements)    
+ldw bp, #NIL        // bp initial (fin de liste chaînée d'environnements)
+
+// overture d'environnement
 stw bp, -(sp)
 ldw bp, sp
 
-//ldw r2, #3
-//ldw r3, #2
-//add r2, r3, r1
+// code à tester
 
-ldw r1, #2
-stw r1, (bp)-2
-ldw r0, (bp)-2
-
+// fermeture environnement
 ldw sp, bp
 ldw bp, (sp)+
+
+// fin programme
 trp #EXIT_EXC
 jea @main_ 
