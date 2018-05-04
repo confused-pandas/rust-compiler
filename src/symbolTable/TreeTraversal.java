@@ -103,7 +103,7 @@ public class TreeTraversal {
 
             this.symbolTableManager.openSymbolTable(functionSymbol.getSymbolTable());
             BlocType blocType = this.traverseBloc(functionNode.getChild(1), false);
-            if (blocType.isDeterminedByReturn() && !blocType.equals(functionSymbol.getReturnType())) {
+            if (!blocType.equals(functionSymbol.getReturnType())) {
             	throw new WrongTypeReturnException("Type returned in function " + idf + " differs from type defined in declaration. (" + blocType + " instead of " + functionSymbol.getReturnType() + "). Line : "+ blocType.getLastNode().getLine() +".");
             }
 
@@ -343,7 +343,7 @@ public class TreeTraversal {
     }
 
     private BlocType traverseIf(Tree ifNode) throws SemanticException, UnknownNodeException {
-        BlocType type;
+        BlocType ifType;
 
         traverseExpr(ifNode.getChild(0));
 
@@ -351,13 +351,19 @@ public class TreeTraversal {
 			throw new IfWithoutBoolException("Boolean expected in if expression. Line : "+ ifNode.getLine()+ ".");
 		}
 
-		type = traverseBloc(ifNode.getChild(1));
+		ifType = traverseBloc(ifNode.getChild(1));
 
 		if(ifNode.getChildCount() > 2){
-		    type = traverseElse(ifNode.getChild(2));
+		    BlocType elseType = traverseElse(ifNode.getChild(2));
+
+		    if(!elseType.equals(ifType)) {
+		        throw new DifferentTypeException("Different block types : " + ifType.toString() + " : " + elseType.toString());
+            }
+
+            ifType = elseType;
 		}
 
-		return type;
+		return ifType;
     }
 
     private BlocType traverseElse(Tree elseNode) throws SemanticException, UnknownNodeException {
