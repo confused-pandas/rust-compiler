@@ -7,13 +7,14 @@ import symbolTable.symbols.FunctionSymbol;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class Generator {
     /**
      * Gère le fichier de génération
      */
-    private final CodeManager codeManager;
+    private final BufferedStringBuilder code;
 
     /**
      * Table des symboles générale
@@ -21,7 +22,11 @@ public class Generator {
     private final SymbolTable symbolTable;
 
     public Generator(File genFile, SymbolTable symbolTable) throws FileNotFoundException {
-        this.codeManager = new CodeManager(genFile);
+        if(genFile.exists() && genFile.length() > 0) {
+            genFile.delete();
+        }
+
+        this.code = new BufferedStringBuilder(new FileOutputStream(genFile));
         this.symbolTable = symbolTable;
     }
 
@@ -41,7 +46,7 @@ public class Generator {
          * début de la pile, début du programme et démarrage
          * à main
          */
-        this.codeManager
+        this.code
                 .append("// Registres usuels\n")
                 .append("SP EQU R15\n")
                 .append("WR EQU R14\n")
@@ -73,18 +78,18 @@ public class Generator {
         );
 
         // Code fin du programme
-        this.codeManager
+        this.code
                 .append("TRP #EXIT_EXC\n")
                 .append("JEA @main_\n");
 
         // Dump le buffer restant dans le fichier
-        this.codeManager.end();
+        this.code.close();
     }
 
     private void generateFunction(Tree functionNode, FunctionSymbol functionSymbol) throws IOException {
         String functionLabel = functionSymbol.getName() + "_";
 
-        this.codeManager
+        this.code
                 .append(functionLabel).append("\n");
 
         this.generateBloc(
@@ -95,7 +100,7 @@ public class Generator {
 
     private void generateBloc(Tree blocNode, SymbolTable currentSymbolTable) throws IOException {
         // Ouverture de l'environnement
-        this.codeManager
+        this.code
                 .append("// Ouverture de l'environnement\n")
                 .append("STW BP, -(SP)\n")
                 .append("LDW BP, SP\n");
@@ -103,7 +108,7 @@ public class Generator {
         int environmentSize = currentSymbolTable.getEnvironmentSize();
 
         // Réservation mémoire pour les variables de l'environnement
-        this.codeManager
+        this.code
                 .append("// Reservation sur la pile des variables")
                 .append("LDQ ").append(environmentSize).append(", R1\n")
                 .append("SUB SP, R1, SP\n");
@@ -121,7 +126,7 @@ public class Generator {
         }
 
         // Fermeture de l'environnement
-        this.codeManager
+        this.code
                 .append("// Fermeture de l'environnement\n")
                 .append("LDW SP, BP\n")
                 .append("LDW BP, (SP)+\n");
