@@ -1,0 +1,39 @@
+//Addition
+LDW R0, (SP)+
+LDW R1, (SP)+
+ADD R0, R1, R0 //R0 pour les retours de fonctions
+STW R0, -(SP)
+
+//Multiplication
+LDW R0, (SP)+
+LDW R1, (SP)+
+MUL R0, R1, R0
+STW R0, -(SP)
+
+//Division
+LDW R0, (SP)+
+LDW R1, (SP)+
+DIV R0, R1, R0
+STW R0, -(SP)
+
+//Soustraction
+LDW R0, (SP)+
+LDW R1, (SP)+
+SUB R0, R1, R0
+STW R0, -(SP)
+
+// >
+LDW R0, (SP)+
+LDW R1, (SP)+
+CMP R0, R1
+BLE 4
+LDW R0, #0 // cette ligne sert seulement à tester
+STW R0, -(SP)
+
+//<
+LDW R0, (SP)+
+LDW R1, (SP)+
+CMP R0, R1
+BGE 4
+LDW R0, #0
+STW R0, -(SP)
