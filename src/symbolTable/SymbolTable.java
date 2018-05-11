@@ -40,20 +40,83 @@ public class SymbolTable {
 
 	public void addSymbol(Symbol symbol){
 		this.symbols.put(symbol.getHashName(), symbol);
-		if (symbol instanceof VariableSymbol && symbol.getScope()== Scope.FUNCTION){
-			this.offsetCount --;
-			symbol.setOffset(this.offsetCount);
-		}
-		else{
-			if (this.offsetCount <0){
-				this.offsetCount = 0;
-			}
-			symbol.setOffset(this.offsetCount);
-			this.offsetCount ++;
-		}
+		if (symbol instanceof VariableSymbol) {
+		    if(symbol.getScope()== Scope.FUNCTION) {
+                if(this.offsetCount == 0) {
+                    this.offsetCount -= 4;
+                }
 
+                symbol.setOffset(this.offsetCount);
 
+                this.offsetCount -= this.getVariableSize((VariableSymbol) symbol);
+            }
+            else{
+                if (this.offsetCount <= 0){
+                    this.offsetCount = 2;
+                }
+
+                symbol.setOffset(this.offsetCount);
+                this.offsetCount += this.getVariableSize((VariableSymbol) symbol);
+            }
+        }
 	}
+
+    public int getEnvironmentSize() {
+        int size = 0;
+
+        for(Symbol symbol: this.getSymbols().values()) {
+            if(symbol instanceof VariableSymbol) {
+                size += this.getVariableSize((VariableSymbol) symbol);
+            }
+            else if(symbol instanceof StructureSymbol) {
+                size += this.getStructureSize((StructureSymbol) symbol);
+            }
+        }
+
+        return size;
+    }
+
+    public int getVariableSize(VariableSymbol variableSymbol) {
+        int size = 0;
+        Type type = variableSymbol.getType();
+
+        if(type.isPointer()) {
+            size = 2;
+        }
+        else if (type.isRef()) {
+            size = 2;
+        }
+        else if(type.isBool()) {
+            size = 1;
+        }
+        else if(type.isInt()) {
+            size = 2;
+        }
+        else if(type.isStructure()) {
+            size = this.getStructureSize(this.getStructureSymbol(type.getStructure(), true));
+        }
+
+        if(type.isVec()) {
+            size *= type.getVec();
+        }
+
+        return size;
+    }
+
+    public int getStructureSize(StructureSymbol structureSymbol) {
+        int size = 0;
+
+        for(Symbol symbol: structureSymbol.getSymbolTable().getSymbols().values()) {
+            if(symbol instanceof VariableSymbol) {
+                size = this.getVariableSize((VariableSymbol) symbol);
+            }
+            else if(symbol instanceof StructureSymbol) {
+                size = this.getStructureSize((StructureSymbol) symbol);
+            }
+        }
+
+        return size;
+    }
 	
 	private Symbol getSymbol(String key, boolean checkParent){
 	    Symbol symbol = symbols.get(key);

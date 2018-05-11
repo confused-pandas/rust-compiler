@@ -157,7 +157,7 @@ public class TreeTraversal {
         VariableSymbol variableSymbol = new VariableSymbol(structMemberNode, idf, Scope.LOCAL, type, false);
 
         if(this.symbolTableManager.getCurrentTable().symbolExists(variableSymbol, false)) {
-            throw new RedefiningStructureElemException("The element " + variableSymbol.getName()+" is already defined in the structure. Line : " + structMemberNode.getLine());
+            throw new RedefiningStructureElementException("The element " + variableSymbol.getName()+" is already defined in the structure. Line : " + structMemberNode.getLine());
         }
         else {
             this.symbolTableManager.getCurrentTable().addSymbol(variableSymbol);
@@ -398,7 +398,7 @@ public class TreeTraversal {
                 leftExpr = this.traverseExpr(exprNode.getChild(0));
                 rightExpr = this.traverseExpr(exprNode.getChild(1));
 
-                if(!leftExpr.isBool() && !rightExpr.isBool()) { //TODO: check type bool
+                if(!leftExpr.isBool() || !rightExpr.isBool()) { //TODO: check type bool
                     throw new AndOrWithoutBooleanException("The logical connectives AND and OR should be used with two booleans. Line : " + exprNode.getLine());
                 }
 
@@ -413,7 +413,7 @@ public class TreeTraversal {
                 leftExpr = this.traverseExpr(exprNode.getChild(0));
                 rightExpr = this.traverseExpr(exprNode.getChild(1));
 
-                if(!leftExpr.isInt() && !rightExpr.isInt()) { // check type int
+                if(!leftExpr.isInt() || !rightExpr.isInt()) { // check type int
                     throw new OperationWithNoIntException("Mathematical inequalities or comparisons should be done between two integers. Line : "+ exprNode.getLine());
                 }
 
@@ -426,7 +426,7 @@ public class TreeTraversal {
                 leftExpr = this.traverseExpr(exprNode.getChild(0));
                 rightExpr = this.traverseExpr(exprNode.getChild(1));
 
-                if(!leftExpr.isInt() && !rightExpr.isInt()) { // check type int
+                if(!leftExpr.isInt() || !rightExpr.isInt()) { // check type int
                     throw new OperationWithNoIntException("Mathematical operations should be done between two integers. Line : " + exprNode.getLine());
                 }
 
