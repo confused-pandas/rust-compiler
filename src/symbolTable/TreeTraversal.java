@@ -22,7 +22,9 @@ public class TreeTraversal {
     public SymbolTable buildSymbolTable() throws SemanticException, UnknownNodeException {
         SymbolTable symbolTable = this.symbolTableManager.openSymbolTable();
         this.traverseFile(root, true);
+
         FunctionSymbol mainSymbol = this.symbolTableManager.getCurrentTable().getFunctionSymbol("main", true);
+
         if (mainSymbol == null){
             throw new NoMainFoundException("Your file doesn't contain a main function");
         }
@@ -30,10 +32,10 @@ public class TreeTraversal {
         else if (mainSymbol.getParameters().size()!=0){
             throw new MainWithArgumentException("The main function shouldn't have any argument. Line : " + root.getLine());
         }
-        //todo : check return type main ?
         else if (!mainSymbol.getReturnType().isVoid()){
             throw new MainWithReturnTypeException("The main function should have a void type.");
         }
+
         this.traverseFile(root, false);
         this.symbolTableManager.closeSymbolTable();
 
@@ -398,7 +400,7 @@ public class TreeTraversal {
                 leftExpr = this.traverseExpr(exprNode.getChild(0));
                 rightExpr = this.traverseExpr(exprNode.getChild(1));
 
-                if(!leftExpr.isBool() || !rightExpr.isBool()) { //TODO: check type bool
+                if(!leftExpr.isBool() || !rightExpr.isBool()) {
                     throw new AndOrWithoutBooleanException("The logical connectives AND and OR should be used with two booleans. Line : " + exprNode.getLine());
                 }
 
@@ -413,7 +415,7 @@ public class TreeTraversal {
                 leftExpr = this.traverseExpr(exprNode.getChild(0));
                 rightExpr = this.traverseExpr(exprNode.getChild(1));
 
-                if(!leftExpr.isInt() || !rightExpr.isInt()) { // check type int
+                if(!leftExpr.isInt() || !rightExpr.isInt()) {
                     throw new OperationWithNoIntException("Mathematical inequalities or comparisons should be done between two integers. Line : "+ exprNode.getLine());
                 }
 
@@ -649,7 +651,6 @@ public class TreeTraversal {
 
         if (letNode.getChildCount() >= 2) {
             exprRightType = this.traverseExpr(letNode.getChild(1));
-            // TODO: types match
         }
 
         if(exprRightType == null) {
