@@ -26,38 +26,48 @@ STW R0, -(SP)
 LDW R0, (SP)+
 LDW R1, (SP)+
 CMP R0, R1
-BLE 4
-LDW R0, #0 // cette ligne sert seulement à tester
+BLE 6
+LDW R0, #0
+BMP 2
+LDW R0, #1
 STW R0, -(SP)
 
-//<
+//<  
 LDW R0, (SP)+
 LDW R1, (SP)+
 CMP R0, R1
-BGE 4
+BGE 6
 LDW R0, #0
+BMP 2
+LDW R0, #1
 STW R0, -(SP)
 
 // >=
 LDW R0, (SP)+
 LDW R1, (SP)+
 CMP R0, R1
-BLW 4
+BLW 6
 LDW R0, #0
+BMP 2
+LDW R0, #1
 STW R0, -(SP)
 
 // <=
 LDW R0, (SP)+
 LDW R1, (SP)+
 CMP R0, R1
-BGT 4
+BGT 6
 LDW R0, #0
+BMP 2
+LDW R0, #1
 STW R0, -(SP)
 
 // = 
 LDW R0, (SP)+
 LDW R1, (SP)+
 CMP R0, R1
-BNE 4
+BNE 6
 LDW R0, #0
+BMP 2
+LDW R0, #1
 STW R0, -(SP)
