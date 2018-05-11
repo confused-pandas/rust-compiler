@@ -37,3 +37,19 @@ CMP R0, R1
 BGE 4
 LDW R0, #0
 STW R0, -(SP)
+
+// >=
+LDW R0, (SP)+
+LDW R1, (SP)+
+CMP R0, R1
+BLW 4
+LDW R0, #0
+STW R0, -(SP)
+
+// <=
+LDW R0, (SP)+
+LDW R1, (SP)+
+CMP R0, R1
+BGT 4
+LDW R0, #0
+STW R0, -(SP)
