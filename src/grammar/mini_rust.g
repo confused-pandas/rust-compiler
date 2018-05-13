@@ -134,6 +134,7 @@ instruction
 	| WHILE expr bloc -> ^(WHILE expr bloc)
 	| RETURN (expr)? SEMICOLON -> ^(RETURN expr?)
 	| if_expr
+	| bloc
 	;
 
 instruction_let
@@ -169,7 +170,6 @@ else_expr
 expr
 	:
 	  expr_ou
-	| bloc
 	;
 
 dot_factorisation

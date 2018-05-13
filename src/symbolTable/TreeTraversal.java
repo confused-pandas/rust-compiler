@@ -103,8 +103,9 @@ public class TreeTraversal {
         else {
             FunctionSymbol functionSymbol = this.symbolTableManager.getCurrentTable().getFunctionSymbol(idf, true);
 
+            functionSymbol.getSymbolTable().setSymbolTableType(EnumSymbolTableType.FUNCTION);
             this.symbolTableManager.openSymbolTable(functionSymbol.getSymbolTable());
-            BlocType blocType = this.traverseBloc(functionNode.getChild(1), false);
+            BlocType blocType = this.traverseBloc(functionNode.getChild(1), EnumSymbolTableType.FUNCTION, false);
             if (!(blocType.equals(functionSymbol.getReturnType()) || (!blocType.isDeterminedByReturn() && functionSymbol.getReturnType().isVoid()))) {
             	throw new WrongTypeReturnException("Type returned in function " + idf + " differs from type defined in declaration. (" + blocType + " instead of " + functionSymbol.getReturnType() + "). Line : "+ blocType.getLastNode().getLine() +".");
             }
@@ -194,11 +195,11 @@ public class TreeTraversal {
         return functionSymbol.getReturnType();
     }
 
-    private BlocType traverseBloc(Tree blocNode) throws SemanticException, UnknownNodeException {
-        return this.traverseBloc(blocNode, true);
+    private BlocType traverseBloc(Tree blocNode, EnumSymbolTableType symbolTableType) throws SemanticException, UnknownNodeException {
+        return this.traverseBloc(blocNode, symbolTableType, true);
     }
 
-    private BlocType traverseBloc(Tree blocNode, boolean createBloc) throws SemanticException, UnknownNodeException {
+    private BlocType traverseBloc(Tree blocNode, EnumSymbolTableType symbolTableType, boolean createBloc) throws SemanticException, UnknownNodeException {
         BlocType type = new BlocType(EnumType.VOID, false, blocNode);
 
         if(createBloc) {
@@ -256,7 +257,9 @@ public class TreeTraversal {
         }
 
         if(createBloc) {
-            this.symbolTableManager.closeSymbolTable();
+            SymbolTable blocSymbolTable = this.symbolTableManager.closeSymbolTable();
+            blocSymbolTable.setSymbolTableType(symbolTableType);
+            this.symbolTableManager.getCurrentTable().addBloc(blocNode.hashCode(), blocSymbolTable);
         }
 
         return type;
@@ -340,7 +343,7 @@ public class TreeTraversal {
     		throw new WhileWithoutBoolException("Boolean expected in while expression. Line : " + whileNode.getLine() + ".");
     	}
 
-    	type = this.traverseBloc(whileNode.getChild(1));
+    	type = this.traverseBloc(whileNode.getChild(1), EnumSymbolTableType.WHILE);
 
     	return type;
     }
@@ -354,7 +357,7 @@ public class TreeTraversal {
 			throw new IfWithoutBoolException("Boolean expected in if expression. Line : "+ ifNode.getLine()+ ".");
 		}
 
-		ifType = traverseBloc(ifNode.getChild(1));
+		ifType = traverseBloc(ifNode.getChild(1), EnumSymbolTableType.IF);
 
 		if(ifNode.getChildCount() > 2){
 		    BlocType elseType = traverseElse(ifNode.getChild(2));
@@ -374,7 +377,7 @@ public class TreeTraversal {
 
         switch(elseNode.getChild(0).getType()){
     		case mini_rustParser.BLOC :
-    			type = traverseBloc(elseNode.getChild(0));
+    			type = traverseBloc(elseNode.getChild(0), EnumSymbolTableType.ELSE);
     			break;
     		case mini_rustParser.IF :
     			type = traverseIf(elseNode.getChild(0));
@@ -393,7 +396,7 @@ public class TreeTraversal {
 
     	switch(exprNode.getType()){
             case mini_rustParser.BLOC :
-                type = this.traverseBloc(exprNode);
+                type = this.traverseBloc(exprNode, EnumSymbolTableType.ANONYMOUS);
                 break;
             case mini_rustParser.OR :
             case mini_rustParser.AND :
@@ -536,9 +539,15 @@ public class TreeTraversal {
             }
         }
 
+        String idf = nodes.pop().getKey();
+
         variableSymbol = this.symbolTableManager
                 .getCurrentTable()
-                .getVariableSymbol(nodes.pop().getKey(), true);
+                .getVariableSymbol(idf, true);
+        if(variableSymbol == null) {
+            throw new UndefinedSymbolException("Undefined symbol : " + idf + " line : " + indexDotNode.getLine());
+        }
+
         type = variableSymbol.getType();
 
         while(!nodes.isEmpty()) {
@@ -681,10 +690,10 @@ public class TreeTraversal {
             else{
                 Type realType = this.symbolTableManager.getCurrentTable().getVariableSymbol(variableSymbol.getName(),true).getType();
 
-                if (realType.getType().equals(EnumType.UNKNOWN)){
+                if (realType.isUnknown()){
                     this.symbolTableManager.getCurrentTable().getVariableSymbol(variableSymbol.getName(),true).setType(type);;
                 }
-                else if (!variableSymbol.getType().equals(realType) && !realType.isBool()){
+                else if (!variableSymbol.getType().equals(realType)) {
                     throw new RedefiningVariableTypeException(letNode.getChild(0).getText()+" is already defined with the type " + realType + ". It can't change its type. Line : " + letNode.getLine());
                 }
             }

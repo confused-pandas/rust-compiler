@@ -1,4 +1,4 @@
-// $ANTLR 3.2 Sep 23, 2009 12:02:23 D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g 2018-05-04 16:02:51
+// $ANTLR 3.2 Sep 23, 2009 12:02:23 D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g 2018-05-13 17:31:04
 
 	package grammar;
 
@@ -446,7 +446,7 @@ public class mini_rustParser extends Parser {
 
 
             // AST REWRITE
-            // elements: parameter, IDF, type, bloc
+            // elements: type, IDF, parameter, bloc
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -642,7 +642,7 @@ public class mini_rustParser extends Parser {
 
 
             // AST REWRITE
-            // elements: i, t, idf
+            // elements: t, i, idf
             // token labels: idf
             // rule labels: retval
             // token list labels: i
@@ -663,7 +663,7 @@ public class mini_rustParser extends Parser {
 
                 adaptor.addChild(root_1, stream_idf.nextNode());
                 // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:103:111: ( ^( MEMBER $i $t) )*
-                while ( stream_i.hasNext()||stream_t.hasNext() ) {
+                while ( stream_t.hasNext()||stream_i.hasNext() ) {
                     // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:103:111: ^( MEMBER $i $t)
                     {
                     Object root_2 = (Object)adaptor.nil();
@@ -676,8 +676,8 @@ public class mini_rustParser extends Parser {
                     }
 
                 }
-                stream_i.reset();
                 stream_t.reset();
+                stream_i.reset();
 
                 adaptor.addChild(root_0, root_1);
                 }
@@ -812,7 +812,7 @@ public class mini_rustParser extends Parser {
 
 
                     // AST REWRITE
-                    // elements: type, VEC_TYPE
+                    // elements: VEC_TYPE, type
                     // token labels: 
                     // rule labels: retval
                     // token list labels: 
@@ -1137,10 +1137,10 @@ public class mini_rustParser extends Parser {
             int alt11=2;
             int LA11_0 = input.LA(1);
 
-            if ( (LA11_0==LET||(LA11_0>=WHILE && LA11_0<=IF)||LA11_0==RETURN) ) {
+            if ( (LA11_0==LBRACKET||LA11_0==LET||(LA11_0>=WHILE && LA11_0<=IF)||LA11_0==RETURN) ) {
                 alt11=1;
             }
-            else if ( (LA11_0==LPAREN||(LA11_0>=LBRACKET && LA11_0<=RBRACKET)||LA11_0==MINUS||(LA11_0>=STAR && LA11_0<=EXCL)||LA11_0==AMPS||(LA11_0>=VEC_MACRO && LA11_0<=PRINT_MACRO)||(LA11_0>=TRUE && LA11_0<=FALSE)||LA11_0==SEMICOLON||(LA11_0>=IDF && LA11_0<=CSTE_ENT)) ) {
+            else if ( (LA11_0==LPAREN||LA11_0==RBRACKET||LA11_0==MINUS||(LA11_0>=STAR && LA11_0<=EXCL)||LA11_0==AMPS||(LA11_0>=VEC_MACRO && LA11_0<=PRINT_MACRO)||(LA11_0>=TRUE && LA11_0<=FALSE)||LA11_0==SEMICOLON||(LA11_0>=IDF && LA11_0<=CSTE_ENT)) ) {
                 alt11=2;
             }
             else {
@@ -1177,7 +1177,7 @@ public class mini_rustParser extends Parser {
                     int alt9=2;
                     int LA9_0 = input.LA(1);
 
-                    if ( (LA9_0==LPAREN||LA9_0==LBRACKET||LA9_0==MINUS||(LA9_0>=STAR && LA9_0<=EXCL)||LA9_0==AMPS||(LA9_0>=VEC_MACRO && LA9_0<=PRINT_MACRO)||(LA9_0>=TRUE && LA9_0<=FALSE)||(LA9_0>=IDF && LA9_0<=CSTE_ENT)) ) {
+                    if ( (LA9_0==LPAREN||LA9_0==MINUS||(LA9_0>=STAR && LA9_0<=EXCL)||LA9_0==AMPS||(LA9_0>=VEC_MACRO && LA9_0<=PRINT_MACRO)||(LA9_0>=TRUE && LA9_0<=FALSE)||(LA9_0>=IDF && LA9_0<=CSTE_ENT)) ) {
                         alt9=1;
                     }
                     switch (alt9) {
@@ -1281,7 +1281,7 @@ public class mini_rustParser extends Parser {
     };
 
     // $ANTLR start "instruction"
-    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:131:1: instruction : ( LET instruction_let SEMICOLON -> instruction_let | WHILE expr bloc -> ^( WHILE expr bloc ) | RETURN ( expr )? SEMICOLON -> ^( RETURN ( expr )? ) | if_expr );
+    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:131:1: instruction : ( LET instruction_let SEMICOLON -> instruction_let | WHILE expr bloc -> ^( WHILE expr bloc ) | RETURN ( expr )? SEMICOLON -> ^( RETURN ( expr )? ) | if_expr | bloc );
     public final mini_rustParser.instruction_return instruction() throws RecognitionException {
         mini_rustParser.instruction_return retval = new mini_rustParser.instruction_return();
         retval.start = input.LT(1);
@@ -1303,6 +1303,8 @@ public class mini_rustParser extends Parser {
 
         mini_rustParser.if_expr_return if_expr49 = null;
 
+        mini_rustParser.bloc_return bloc50 = null;
+
 
         Object LET40_tree=null;
         Object SEMICOLON42_tree=null;
@@ -1317,8 +1319,8 @@ public class mini_rustParser extends Parser {
         RewriteRuleSubtreeStream stream_expr=new RewriteRuleSubtreeStream(adaptor,"rule expr");
         RewriteRuleSubtreeStream stream_instruction_let=new RewriteRuleSubtreeStream(adaptor,"rule instruction_let");
         try {
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:132:2: ( LET instruction_let SEMICOLON -> instruction_let | WHILE expr bloc -> ^( WHILE expr bloc ) | RETURN ( expr )? SEMICOLON -> ^( RETURN ( expr )? ) | if_expr )
-            int alt13=4;
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:132:2: ( LET instruction_let SEMICOLON -> instruction_let | WHILE expr bloc -> ^( WHILE expr bloc ) | RETURN ( expr )? SEMICOLON -> ^( RETURN ( expr )? ) | if_expr | bloc )
+            int alt13=5;
             switch ( input.LA(1) ) {
             case LET:
                 {
@@ -1338,6 +1340,11 @@ public class mini_rustParser extends Parser {
             case IF:
                 {
                 alt13=4;
+                }
+                break;
+            case LBRACKET:
+                {
+                alt13=5;
                 }
                 break;
             default:
@@ -1406,7 +1413,7 @@ public class mini_rustParser extends Parser {
 
 
                     // AST REWRITE
-                    // elements: WHILE, expr, bloc
+                    // elements: bloc, expr, WHILE
                     // token labels: 
                     // rule labels: retval
                     // token list labels: 
@@ -1444,7 +1451,7 @@ public class mini_rustParser extends Parser {
                     int alt12=2;
                     int LA12_0 = input.LA(1);
 
-                    if ( (LA12_0==LPAREN||LA12_0==LBRACKET||LA12_0==MINUS||(LA12_0>=STAR && LA12_0<=EXCL)||LA12_0==AMPS||(LA12_0>=VEC_MACRO && LA12_0<=PRINT_MACRO)||(LA12_0>=TRUE && LA12_0<=FALSE)||(LA12_0>=IDF && LA12_0<=CSTE_ENT)) ) {
+                    if ( (LA12_0==LPAREN||LA12_0==MINUS||(LA12_0>=STAR && LA12_0<=EXCL)||LA12_0==AMPS||(LA12_0>=VEC_MACRO && LA12_0<=PRINT_MACRO)||(LA12_0>=TRUE && LA12_0<=FALSE)||(LA12_0>=IDF && LA12_0<=CSTE_ENT)) ) {
                         alt12=1;
                     }
                     switch (alt12) {
@@ -1515,6 +1522,20 @@ public class mini_rustParser extends Parser {
 
                     }
                     break;
+                case 5 :
+                    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:137:4: bloc
+                    {
+                    root_0 = (Object)adaptor.nil();
+
+                    pushFollow(FOLLOW_bloc_in_instruction846);
+                    bloc50=bloc();
+
+                    state._fsp--;
+
+                    adaptor.addChild(root_0, bloc50.getTree());
+
+                    }
+                    break;
 
             }
             retval.stop = input.LT(-1);
@@ -1541,41 +1562,41 @@ public class mini_rustParser extends Parser {
     };
 
     // $ANTLR start "instruction_let"
-    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:139:1: instruction_let : ( MUT expr ( ASSIGN structure_initialisation_expr )? -> ^( LETMUT expr ( structure_initialisation_expr )? ) | expr ( ASSIGN structure_initialisation_expr )? -> ^( LET expr ( structure_initialisation_expr )? ) );
+    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:140:1: instruction_let : ( MUT expr ( ASSIGN structure_initialisation_expr )? -> ^( LETMUT expr ( structure_initialisation_expr )? ) | expr ( ASSIGN structure_initialisation_expr )? -> ^( LET expr ( structure_initialisation_expr )? ) );
     public final mini_rustParser.instruction_let_return instruction_let() throws RecognitionException {
         mini_rustParser.instruction_let_return retval = new mini_rustParser.instruction_let_return();
         retval.start = input.LT(1);
 
         Object root_0 = null;
 
-        Token MUT50=null;
-        Token ASSIGN52=null;
-        Token ASSIGN55=null;
-        mini_rustParser.expr_return expr51 = null;
+        Token MUT51=null;
+        Token ASSIGN53=null;
+        Token ASSIGN56=null;
+        mini_rustParser.expr_return expr52 = null;
 
-        mini_rustParser.structure_initialisation_expr_return structure_initialisation_expr53 = null;
+        mini_rustParser.structure_initialisation_expr_return structure_initialisation_expr54 = null;
 
-        mini_rustParser.expr_return expr54 = null;
+        mini_rustParser.expr_return expr55 = null;
 
-        mini_rustParser.structure_initialisation_expr_return structure_initialisation_expr56 = null;
+        mini_rustParser.structure_initialisation_expr_return structure_initialisation_expr57 = null;
 
 
-        Object MUT50_tree=null;
-        Object ASSIGN52_tree=null;
-        Object ASSIGN55_tree=null;
+        Object MUT51_tree=null;
+        Object ASSIGN53_tree=null;
+        Object ASSIGN56_tree=null;
         RewriteRuleTokenStream stream_MUT=new RewriteRuleTokenStream(adaptor,"token MUT");
         RewriteRuleTokenStream stream_ASSIGN=new RewriteRuleTokenStream(adaptor,"token ASSIGN");
         RewriteRuleSubtreeStream stream_structure_initialisation_expr=new RewriteRuleSubtreeStream(adaptor,"rule structure_initialisation_expr");
         RewriteRuleSubtreeStream stream_expr=new RewriteRuleSubtreeStream(adaptor,"rule expr");
         try {
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:140:2: ( MUT expr ( ASSIGN structure_initialisation_expr )? -> ^( LETMUT expr ( structure_initialisation_expr )? ) | expr ( ASSIGN structure_initialisation_expr )? -> ^( LET expr ( structure_initialisation_expr )? ) )
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:141:2: ( MUT expr ( ASSIGN structure_initialisation_expr )? -> ^( LETMUT expr ( structure_initialisation_expr )? ) | expr ( ASSIGN structure_initialisation_expr )? -> ^( LET expr ( structure_initialisation_expr )? ) )
             int alt16=2;
             int LA16_0 = input.LA(1);
 
             if ( (LA16_0==MUT) ) {
                 alt16=1;
             }
-            else if ( (LA16_0==LPAREN||LA16_0==LBRACKET||LA16_0==MINUS||(LA16_0>=STAR && LA16_0<=EXCL)||LA16_0==AMPS||(LA16_0>=VEC_MACRO && LA16_0<=PRINT_MACRO)||(LA16_0>=TRUE && LA16_0<=FALSE)||(LA16_0>=IDF && LA16_0<=CSTE_ENT)) ) {
+            else if ( (LA16_0==LPAREN||LA16_0==MINUS||(LA16_0>=STAR && LA16_0<=EXCL)||LA16_0==AMPS||(LA16_0>=VEC_MACRO && LA16_0<=PRINT_MACRO)||(LA16_0>=TRUE && LA16_0<=FALSE)||(LA16_0>=IDF && LA16_0<=CSTE_ENT)) ) {
                 alt16=2;
             }
             else {
@@ -1586,18 +1607,18 @@ public class mini_rustParser extends Parser {
             }
             switch (alt16) {
                 case 1 :
-                    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:141:4: MUT expr ( ASSIGN structure_initialisation_expr )?
+                    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:142:4: MUT expr ( ASSIGN structure_initialisation_expr )?
                     {
-                    MUT50=(Token)match(input,MUT,FOLLOW_MUT_in_instruction_let855);  
-                    stream_MUT.add(MUT50);
+                    MUT51=(Token)match(input,MUT,FOLLOW_MUT_in_instruction_let860);  
+                    stream_MUT.add(MUT51);
 
-                    pushFollow(FOLLOW_expr_in_instruction_let857);
-                    expr51=expr();
+                    pushFollow(FOLLOW_expr_in_instruction_let862);
+                    expr52=expr();
 
                     state._fsp--;
 
-                    stream_expr.add(expr51.getTree());
-                    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:141:13: ( ASSIGN structure_initialisation_expr )?
+                    stream_expr.add(expr52.getTree());
+                    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:142:13: ( ASSIGN structure_initialisation_expr )?
                     int alt14=2;
                     int LA14_0 = input.LA(1);
 
@@ -1606,17 +1627,17 @@ public class mini_rustParser extends Parser {
                     }
                     switch (alt14) {
                         case 1 :
-                            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:141:14: ASSIGN structure_initialisation_expr
+                            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:142:14: ASSIGN structure_initialisation_expr
                             {
-                            ASSIGN52=(Token)match(input,ASSIGN,FOLLOW_ASSIGN_in_instruction_let860);  
-                            stream_ASSIGN.add(ASSIGN52);
+                            ASSIGN53=(Token)match(input,ASSIGN,FOLLOW_ASSIGN_in_instruction_let865);  
+                            stream_ASSIGN.add(ASSIGN53);
 
-                            pushFollow(FOLLOW_structure_initialisation_expr_in_instruction_let862);
-                            structure_initialisation_expr53=structure_initialisation_expr();
+                            pushFollow(FOLLOW_structure_initialisation_expr_in_instruction_let867);
+                            structure_initialisation_expr54=structure_initialisation_expr();
 
                             state._fsp--;
 
-                            stream_structure_initialisation_expr.add(structure_initialisation_expr53.getTree());
+                            stream_structure_initialisation_expr.add(structure_initialisation_expr54.getTree());
 
                             }
                             break;
@@ -1626,7 +1647,7 @@ public class mini_rustParser extends Parser {
 
 
                     // AST REWRITE
-                    // elements: expr, structure_initialisation_expr
+                    // elements: structure_initialisation_expr, expr
                     // token labels: 
                     // rule labels: retval
                     // token list labels: 
@@ -1636,15 +1657,15 @@ public class mini_rustParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 141:53: -> ^( LETMUT expr ( structure_initialisation_expr )? )
+                    // 142:53: -> ^( LETMUT expr ( structure_initialisation_expr )? )
                     {
-                        // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:141:56: ^( LETMUT expr ( structure_initialisation_expr )? )
+                        // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:142:56: ^( LETMUT expr ( structure_initialisation_expr )? )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(LETMUT, "LETMUT"), root_1);
 
                         adaptor.addChild(root_1, stream_expr.nextTree());
-                        // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:141:70: ( structure_initialisation_expr )?
+                        // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:142:70: ( structure_initialisation_expr )?
                         if ( stream_structure_initialisation_expr.hasNext() ) {
                             adaptor.addChild(root_1, stream_structure_initialisation_expr.nextTree());
 
@@ -1660,15 +1681,15 @@ public class mini_rustParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:142:4: expr ( ASSIGN structure_initialisation_expr )?
+                    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:143:4: expr ( ASSIGN structure_initialisation_expr )?
                     {
-                    pushFollow(FOLLOW_expr_in_instruction_let882);
-                    expr54=expr();
+                    pushFollow(FOLLOW_expr_in_instruction_let887);
+                    expr55=expr();
 
                     state._fsp--;
 
-                    stream_expr.add(expr54.getTree());
-                    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:142:9: ( ASSIGN structure_initialisation_expr )?
+                    stream_expr.add(expr55.getTree());
+                    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:143:9: ( ASSIGN structure_initialisation_expr )?
                     int alt15=2;
                     int LA15_0 = input.LA(1);
 
@@ -1677,17 +1698,17 @@ public class mini_rustParser extends Parser {
                     }
                     switch (alt15) {
                         case 1 :
-                            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:142:10: ASSIGN structure_initialisation_expr
+                            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:143:10: ASSIGN structure_initialisation_expr
                             {
-                            ASSIGN55=(Token)match(input,ASSIGN,FOLLOW_ASSIGN_in_instruction_let885);  
-                            stream_ASSIGN.add(ASSIGN55);
+                            ASSIGN56=(Token)match(input,ASSIGN,FOLLOW_ASSIGN_in_instruction_let890);  
+                            stream_ASSIGN.add(ASSIGN56);
 
-                            pushFollow(FOLLOW_structure_initialisation_expr_in_instruction_let887);
-                            structure_initialisation_expr56=structure_initialisation_expr();
+                            pushFollow(FOLLOW_structure_initialisation_expr_in_instruction_let892);
+                            structure_initialisation_expr57=structure_initialisation_expr();
 
                             state._fsp--;
 
-                            stream_structure_initialisation_expr.add(structure_initialisation_expr56.getTree());
+                            stream_structure_initialisation_expr.add(structure_initialisation_expr57.getTree());
 
                             }
                             break;
@@ -1697,7 +1718,7 @@ public class mini_rustParser extends Parser {
 
 
                     // AST REWRITE
-                    // elements: expr, structure_initialisation_expr
+                    // elements: structure_initialisation_expr, expr
                     // token labels: 
                     // rule labels: retval
                     // token list labels: 
@@ -1707,15 +1728,15 @@ public class mini_rustParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 142:49: -> ^( LET expr ( structure_initialisation_expr )? )
+                    // 143:49: -> ^( LET expr ( structure_initialisation_expr )? )
                     {
-                        // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:142:52: ^( LET expr ( structure_initialisation_expr )? )
+                        // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:143:52: ^( LET expr ( structure_initialisation_expr )? )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(LET, "LET"), root_1);
 
                         adaptor.addChild(root_1, stream_expr.nextTree());
-                        // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:142:63: ( structure_initialisation_expr )?
+                        // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:143:63: ( structure_initialisation_expr )?
                         if ( stream_structure_initialisation_expr.hasNext() ) {
                             adaptor.addChild(root_1, stream_structure_initialisation_expr.nextTree());
 
@@ -1756,27 +1777,27 @@ public class mini_rustParser extends Parser {
     };
 
     // $ANTLR start "structure_initialisation"
-    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:145:1: structure_initialisation : LBRACKET (i+= IDF COLON o+= structure_initialisation_expr ( COMMA i+= IDF COLON o+= structure_initialisation_expr )* )? RBRACKET -> ( ^( MEMBER $i $o) )* ;
+    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:146:1: structure_initialisation : LBRACKET (i+= IDF COLON o+= structure_initialisation_expr ( COMMA i+= IDF COLON o+= structure_initialisation_expr )* )? RBRACKET -> ( ^( MEMBER $i $o) )* ;
     public final mini_rustParser.structure_initialisation_return structure_initialisation() throws RecognitionException {
         mini_rustParser.structure_initialisation_return retval = new mini_rustParser.structure_initialisation_return();
         retval.start = input.LT(1);
 
         Object root_0 = null;
 
-        Token LBRACKET57=null;
-        Token COLON58=null;
-        Token COMMA59=null;
-        Token COLON60=null;
-        Token RBRACKET61=null;
+        Token LBRACKET58=null;
+        Token COLON59=null;
+        Token COMMA60=null;
+        Token COLON61=null;
+        Token RBRACKET62=null;
         Token i=null;
         List list_i=null;
         List list_o=null;
         RuleReturnScope o = null;
-        Object LBRACKET57_tree=null;
-        Object COLON58_tree=null;
-        Object COMMA59_tree=null;
-        Object COLON60_tree=null;
-        Object RBRACKET61_tree=null;
+        Object LBRACKET58_tree=null;
+        Object COLON59_tree=null;
+        Object COMMA60_tree=null;
+        Object COLON61_tree=null;
+        Object RBRACKET62_tree=null;
         Object i_tree=null;
         RewriteRuleTokenStream stream_LBRACKET=new RewriteRuleTokenStream(adaptor,"token LBRACKET");
         RewriteRuleTokenStream stream_COLON=new RewriteRuleTokenStream(adaptor,"token COLON");
@@ -1785,13 +1806,13 @@ public class mini_rustParser extends Parser {
         RewriteRuleTokenStream stream_COMMA=new RewriteRuleTokenStream(adaptor,"token COMMA");
         RewriteRuleSubtreeStream stream_structure_initialisation_expr=new RewriteRuleSubtreeStream(adaptor,"rule structure_initialisation_expr");
         try {
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:146:2: ( LBRACKET (i+= IDF COLON o+= structure_initialisation_expr ( COMMA i+= IDF COLON o+= structure_initialisation_expr )* )? RBRACKET -> ( ^( MEMBER $i $o) )* )
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:147:2: LBRACKET (i+= IDF COLON o+= structure_initialisation_expr ( COMMA i+= IDF COLON o+= structure_initialisation_expr )* )? RBRACKET
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:147:2: ( LBRACKET (i+= IDF COLON o+= structure_initialisation_expr ( COMMA i+= IDF COLON o+= structure_initialisation_expr )* )? RBRACKET -> ( ^( MEMBER $i $o) )* )
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:148:2: LBRACKET (i+= IDF COLON o+= structure_initialisation_expr ( COMMA i+= IDF COLON o+= structure_initialisation_expr )* )? RBRACKET
             {
-            LBRACKET57=(Token)match(input,LBRACKET,FOLLOW_LBRACKET_in_structure_initialisation914);  
-            stream_LBRACKET.add(LBRACKET57);
+            LBRACKET58=(Token)match(input,LBRACKET,FOLLOW_LBRACKET_in_structure_initialisation919);  
+            stream_LBRACKET.add(LBRACKET58);
 
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:147:11: (i+= IDF COLON o+= structure_initialisation_expr ( COMMA i+= IDF COLON o+= structure_initialisation_expr )* )?
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:148:11: (i+= IDF COLON o+= structure_initialisation_expr ( COMMA i+= IDF COLON o+= structure_initialisation_expr )* )?
             int alt18=2;
             int LA18_0 = input.LA(1);
 
@@ -1800,18 +1821,18 @@ public class mini_rustParser extends Parser {
             }
             switch (alt18) {
                 case 1 :
-                    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:147:12: i+= IDF COLON o+= structure_initialisation_expr ( COMMA i+= IDF COLON o+= structure_initialisation_expr )*
+                    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:148:12: i+= IDF COLON o+= structure_initialisation_expr ( COMMA i+= IDF COLON o+= structure_initialisation_expr )*
                     {
-                    i=(Token)match(input,IDF,FOLLOW_IDF_in_structure_initialisation919);  
+                    i=(Token)match(input,IDF,FOLLOW_IDF_in_structure_initialisation924);  
                     stream_IDF.add(i);
 
                     if (list_i==null) list_i=new ArrayList();
                     list_i.add(i);
 
-                    COLON58=(Token)match(input,COLON,FOLLOW_COLON_in_structure_initialisation921);  
-                    stream_COLON.add(COLON58);
+                    COLON59=(Token)match(input,COLON,FOLLOW_COLON_in_structure_initialisation926);  
+                    stream_COLON.add(COLON59);
 
-                    pushFollow(FOLLOW_structure_initialisation_expr_in_structure_initialisation925);
+                    pushFollow(FOLLOW_structure_initialisation_expr_in_structure_initialisation930);
                     o=structure_initialisation_expr();
 
                     state._fsp--;
@@ -1820,7 +1841,7 @@ public class mini_rustParser extends Parser {
                     if (list_o==null) list_o=new ArrayList();
                     list_o.add(o.getTree());
 
-                    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:147:58: ( COMMA i+= IDF COLON o+= structure_initialisation_expr )*
+                    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:148:58: ( COMMA i+= IDF COLON o+= structure_initialisation_expr )*
                     loop17:
                     do {
                         int alt17=2;
@@ -1833,21 +1854,21 @@ public class mini_rustParser extends Parser {
 
                         switch (alt17) {
                     	case 1 :
-                    	    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:147:59: COMMA i+= IDF COLON o+= structure_initialisation_expr
+                    	    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:148:59: COMMA i+= IDF COLON o+= structure_initialisation_expr
                     	    {
-                    	    COMMA59=(Token)match(input,COMMA,FOLLOW_COMMA_in_structure_initialisation928);  
-                    	    stream_COMMA.add(COMMA59);
+                    	    COMMA60=(Token)match(input,COMMA,FOLLOW_COMMA_in_structure_initialisation933);  
+                    	    stream_COMMA.add(COMMA60);
 
-                    	    i=(Token)match(input,IDF,FOLLOW_IDF_in_structure_initialisation932);  
+                    	    i=(Token)match(input,IDF,FOLLOW_IDF_in_structure_initialisation937);  
                     	    stream_IDF.add(i);
 
                     	    if (list_i==null) list_i=new ArrayList();
                     	    list_i.add(i);
 
-                    	    COLON60=(Token)match(input,COLON,FOLLOW_COLON_in_structure_initialisation934);  
-                    	    stream_COLON.add(COLON60);
+                    	    COLON61=(Token)match(input,COLON,FOLLOW_COLON_in_structure_initialisation939);  
+                    	    stream_COLON.add(COLON61);
 
-                    	    pushFollow(FOLLOW_structure_initialisation_expr_in_structure_initialisation938);
+                    	    pushFollow(FOLLOW_structure_initialisation_expr_in_structure_initialisation943);
                     	    o=structure_initialisation_expr();
 
                     	    state._fsp--;
@@ -1871,13 +1892,13 @@ public class mini_rustParser extends Parser {
 
             }
 
-            RBRACKET61=(Token)match(input,RBRACKET,FOLLOW_RBRACKET_in_structure_initialisation944);  
-            stream_RBRACKET.add(RBRACKET61);
+            RBRACKET62=(Token)match(input,RBRACKET,FOLLOW_RBRACKET_in_structure_initialisation949);  
+            stream_RBRACKET.add(RBRACKET62);
 
 
 
             // AST REWRITE
-            // elements: o, i
+            // elements: i, o
             // token labels: 
             // rule labels: retval
             // token list labels: i
@@ -1888,11 +1909,11 @@ public class mini_rustParser extends Parser {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
             RewriteRuleSubtreeStream stream_o=new RewriteRuleSubtreeStream(adaptor,"token o",list_o);
             root_0 = (Object)adaptor.nil();
-            // 147:124: -> ( ^( MEMBER $i $o) )*
+            // 148:124: -> ( ^( MEMBER $i $o) )*
             {
-                // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:147:127: ( ^( MEMBER $i $o) )*
-                while ( stream_o.hasNext()||stream_i.hasNext() ) {
-                    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:147:127: ^( MEMBER $i $o)
+                // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:148:127: ( ^( MEMBER $i $o) )*
+                while ( stream_i.hasNext()||stream_o.hasNext() ) {
+                    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:148:127: ^( MEMBER $i $o)
                     {
                     Object root_1 = (Object)adaptor.nil();
                     root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(MEMBER, "MEMBER"), root_1);
@@ -1904,8 +1925,8 @@ public class mini_rustParser extends Parser {
                     }
 
                 }
-                stream_o.reset();
                 stream_i.reset();
+                stream_o.reset();
 
             }
 
@@ -1936,31 +1957,31 @@ public class mini_rustParser extends Parser {
     };
 
     // $ANTLR start "structure_initialisation_expr"
-    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:150:1: structure_initialisation_expr : expr ( -> expr | structure_initialisation -> ^( OBJ expr structure_initialisation ) ) ;
+    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:151:1: structure_initialisation_expr : expr ( -> expr | structure_initialisation -> ^( OBJ expr structure_initialisation ) ) ;
     public final mini_rustParser.structure_initialisation_expr_return structure_initialisation_expr() throws RecognitionException {
         mini_rustParser.structure_initialisation_expr_return retval = new mini_rustParser.structure_initialisation_expr_return();
         retval.start = input.LT(1);
 
         Object root_0 = null;
 
-        mini_rustParser.expr_return expr62 = null;
+        mini_rustParser.expr_return expr63 = null;
 
-        mini_rustParser.structure_initialisation_return structure_initialisation63 = null;
+        mini_rustParser.structure_initialisation_return structure_initialisation64 = null;
 
 
         RewriteRuleSubtreeStream stream_structure_initialisation=new RewriteRuleSubtreeStream(adaptor,"rule structure_initialisation");
         RewriteRuleSubtreeStream stream_expr=new RewriteRuleSubtreeStream(adaptor,"rule expr");
         try {
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:151:2: ( expr ( -> expr | structure_initialisation -> ^( OBJ expr structure_initialisation ) ) )
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:152:4: expr ( -> expr | structure_initialisation -> ^( OBJ expr structure_initialisation ) )
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:152:2: ( expr ( -> expr | structure_initialisation -> ^( OBJ expr structure_initialisation ) ) )
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:153:4: expr ( -> expr | structure_initialisation -> ^( OBJ expr structure_initialisation ) )
             {
-            pushFollow(FOLLOW_expr_in_structure_initialisation_expr971);
-            expr62=expr();
+            pushFollow(FOLLOW_expr_in_structure_initialisation_expr976);
+            expr63=expr();
 
             state._fsp--;
 
-            stream_expr.add(expr62.getTree());
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:153:4: ( -> expr | structure_initialisation -> ^( OBJ expr structure_initialisation ) )
+            stream_expr.add(expr63.getTree());
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:154:4: ( -> expr | structure_initialisation -> ^( OBJ expr structure_initialisation ) )
             int alt19=2;
             int LA19_0 = input.LA(1);
 
@@ -1978,7 +1999,7 @@ public class mini_rustParser extends Parser {
             }
             switch (alt19) {
                 case 1 :
-                    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:154:7: 
+                    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:155:7: 
                     {
 
                     // AST REWRITE
@@ -1992,7 +2013,7 @@ public class mini_rustParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 154:7: -> expr
+                    // 155:7: -> expr
                     {
                         adaptor.addChild(root_0, stream_expr.nextTree());
 
@@ -2002,14 +2023,14 @@ public class mini_rustParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:155:7: structure_initialisation
+                    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:156:7: structure_initialisation
                     {
-                    pushFollow(FOLLOW_structure_initialisation_in_structure_initialisation_expr994);
-                    structure_initialisation63=structure_initialisation();
+                    pushFollow(FOLLOW_structure_initialisation_in_structure_initialisation_expr999);
+                    structure_initialisation64=structure_initialisation();
 
                     state._fsp--;
 
-                    stream_structure_initialisation.add(structure_initialisation63.getTree());
+                    stream_structure_initialisation.add(structure_initialisation64.getTree());
 
 
                     // AST REWRITE
@@ -2023,9 +2044,9 @@ public class mini_rustParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 155:32: -> ^( OBJ expr structure_initialisation )
+                    // 156:32: -> ^( OBJ expr structure_initialisation )
                     {
-                        // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:155:35: ^( OBJ expr structure_initialisation )
+                        // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:156:35: ^( OBJ expr structure_initialisation )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(OBJ, "OBJ"), root_1);
@@ -2071,46 +2092,46 @@ public class mini_rustParser extends Parser {
     };
 
     // $ANTLR start "if_expr"
-    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:159:1: if_expr : IF expr bloc ( else_expr )? -> ^( IF expr bloc ( else_expr )? ) ;
+    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:160:1: if_expr : IF expr bloc ( else_expr )? -> ^( IF expr bloc ( else_expr )? ) ;
     public final mini_rustParser.if_expr_return if_expr() throws RecognitionException {
         mini_rustParser.if_expr_return retval = new mini_rustParser.if_expr_return();
         retval.start = input.LT(1);
 
         Object root_0 = null;
 
-        Token IF64=null;
-        mini_rustParser.expr_return expr65 = null;
+        Token IF65=null;
+        mini_rustParser.expr_return expr66 = null;
 
-        mini_rustParser.bloc_return bloc66 = null;
+        mini_rustParser.bloc_return bloc67 = null;
 
-        mini_rustParser.else_expr_return else_expr67 = null;
+        mini_rustParser.else_expr_return else_expr68 = null;
 
 
-        Object IF64_tree=null;
+        Object IF65_tree=null;
         RewriteRuleTokenStream stream_IF=new RewriteRuleTokenStream(adaptor,"token IF");
         RewriteRuleSubtreeStream stream_bloc=new RewriteRuleSubtreeStream(adaptor,"rule bloc");
         RewriteRuleSubtreeStream stream_else_expr=new RewriteRuleSubtreeStream(adaptor,"rule else_expr");
         RewriteRuleSubtreeStream stream_expr=new RewriteRuleSubtreeStream(adaptor,"rule expr");
         try {
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:160:2: ( IF expr bloc ( else_expr )? -> ^( IF expr bloc ( else_expr )? ) )
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:161:2: IF expr bloc ( else_expr )?
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:161:2: ( IF expr bloc ( else_expr )? -> ^( IF expr bloc ( else_expr )? ) )
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:162:2: IF expr bloc ( else_expr )?
             {
-            IF64=(Token)match(input,IF,FOLLOW_IF_in_if_expr1021);  
-            stream_IF.add(IF64);
+            IF65=(Token)match(input,IF,FOLLOW_IF_in_if_expr1026);  
+            stream_IF.add(IF65);
 
-            pushFollow(FOLLOW_expr_in_if_expr1023);
-            expr65=expr();
-
-            state._fsp--;
-
-            stream_expr.add(expr65.getTree());
-            pushFollow(FOLLOW_bloc_in_if_expr1025);
-            bloc66=bloc();
+            pushFollow(FOLLOW_expr_in_if_expr1028);
+            expr66=expr();
 
             state._fsp--;
 
-            stream_bloc.add(bloc66.getTree());
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:161:15: ( else_expr )?
+            stream_expr.add(expr66.getTree());
+            pushFollow(FOLLOW_bloc_in_if_expr1030);
+            bloc67=bloc();
+
+            state._fsp--;
+
+            stream_bloc.add(bloc67.getTree());
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:162:15: ( else_expr )?
             int alt20=2;
             int LA20_0 = input.LA(1);
 
@@ -2119,14 +2140,14 @@ public class mini_rustParser extends Parser {
             }
             switch (alt20) {
                 case 1 :
-                    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:161:16: else_expr
+                    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:162:16: else_expr
                     {
-                    pushFollow(FOLLOW_else_expr_in_if_expr1028);
-                    else_expr67=else_expr();
+                    pushFollow(FOLLOW_else_expr_in_if_expr1033);
+                    else_expr68=else_expr();
 
                     state._fsp--;
 
-                    stream_else_expr.add(else_expr67.getTree());
+                    stream_else_expr.add(else_expr68.getTree());
 
                     }
                     break;
@@ -2136,7 +2157,7 @@ public class mini_rustParser extends Parser {
 
 
             // AST REWRITE
-            // elements: else_expr, bloc, IF, expr
+            // elements: else_expr, expr, bloc, IF
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -2146,16 +2167,16 @@ public class mini_rustParser extends Parser {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
             root_0 = (Object)adaptor.nil();
-            // 161:28: -> ^( IF expr bloc ( else_expr )? )
+            // 162:28: -> ^( IF expr bloc ( else_expr )? )
             {
-                // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:161:31: ^( IF expr bloc ( else_expr )? )
+                // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:162:31: ^( IF expr bloc ( else_expr )? )
                 {
                 Object root_1 = (Object)adaptor.nil();
                 root_1 = (Object)adaptor.becomeRoot(stream_IF.nextNode(), root_1);
 
                 adaptor.addChild(root_1, stream_expr.nextTree());
                 adaptor.addChild(root_1, stream_bloc.nextTree());
-                // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:161:46: ( else_expr )?
+                // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:162:46: ( else_expr )?
                 if ( stream_else_expr.hasNext() ) {
                     adaptor.addChild(root_1, stream_else_expr.nextTree());
 
@@ -2194,31 +2215,31 @@ public class mini_rustParser extends Parser {
     };
 
     // $ANTLR start "else_expr"
-    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:164:1: else_expr : ELSE ( bloc -> ^( ELSE bloc ) | if_expr -> ^( ELSE if_expr ) ) ;
+    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:165:1: else_expr : ELSE ( bloc -> ^( ELSE bloc ) | if_expr -> ^( ELSE if_expr ) ) ;
     public final mini_rustParser.else_expr_return else_expr() throws RecognitionException {
         mini_rustParser.else_expr_return retval = new mini_rustParser.else_expr_return();
         retval.start = input.LT(1);
 
         Object root_0 = null;
 
-        Token ELSE68=null;
-        mini_rustParser.bloc_return bloc69 = null;
+        Token ELSE69=null;
+        mini_rustParser.bloc_return bloc70 = null;
 
-        mini_rustParser.if_expr_return if_expr70 = null;
+        mini_rustParser.if_expr_return if_expr71 = null;
 
 
-        Object ELSE68_tree=null;
+        Object ELSE69_tree=null;
         RewriteRuleTokenStream stream_ELSE=new RewriteRuleTokenStream(adaptor,"token ELSE");
         RewriteRuleSubtreeStream stream_bloc=new RewriteRuleSubtreeStream(adaptor,"rule bloc");
         RewriteRuleSubtreeStream stream_if_expr=new RewriteRuleSubtreeStream(adaptor,"rule if_expr");
         try {
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:165:2: ( ELSE ( bloc -> ^( ELSE bloc ) | if_expr -> ^( ELSE if_expr ) ) )
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:166:2: ELSE ( bloc -> ^( ELSE bloc ) | if_expr -> ^( ELSE if_expr ) )
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:166:2: ( ELSE ( bloc -> ^( ELSE bloc ) | if_expr -> ^( ELSE if_expr ) ) )
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:167:2: ELSE ( bloc -> ^( ELSE bloc ) | if_expr -> ^( ELSE if_expr ) )
             {
-            ELSE68=(Token)match(input,ELSE,FOLLOW_ELSE_in_else_expr1057);  
-            stream_ELSE.add(ELSE68);
+            ELSE69=(Token)match(input,ELSE,FOLLOW_ELSE_in_else_expr1062);  
+            stream_ELSE.add(ELSE69);
 
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:166:7: ( bloc -> ^( ELSE bloc ) | if_expr -> ^( ELSE if_expr ) )
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:167:7: ( bloc -> ^( ELSE bloc ) | if_expr -> ^( ELSE if_expr ) )
             int alt21=2;
             int LA21_0 = input.LA(1);
 
@@ -2236,14 +2257,14 @@ public class mini_rustParser extends Parser {
             }
             switch (alt21) {
                 case 1 :
-                    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:166:8: bloc
+                    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:167:8: bloc
                     {
-                    pushFollow(FOLLOW_bloc_in_else_expr1060);
-                    bloc69=bloc();
+                    pushFollow(FOLLOW_bloc_in_else_expr1065);
+                    bloc70=bloc();
 
                     state._fsp--;
 
-                    stream_bloc.add(bloc69.getTree());
+                    stream_bloc.add(bloc70.getTree());
 
 
                     // AST REWRITE
@@ -2257,9 +2278,9 @@ public class mini_rustParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 166:13: -> ^( ELSE bloc )
+                    // 167:13: -> ^( ELSE bloc )
                     {
-                        // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:166:16: ^( ELSE bloc )
+                        // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:167:16: ^( ELSE bloc )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot(stream_ELSE.nextNode(), root_1);
@@ -2275,14 +2296,14 @@ public class mini_rustParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:166:31: if_expr
+                    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:167:31: if_expr
                     {
-                    pushFollow(FOLLOW_if_expr_in_else_expr1072);
-                    if_expr70=if_expr();
+                    pushFollow(FOLLOW_if_expr_in_else_expr1077);
+                    if_expr71=if_expr();
 
                     state._fsp--;
 
-                    stream_if_expr.add(if_expr70.getTree());
+                    stream_if_expr.add(if_expr71.getTree());
 
 
                     // AST REWRITE
@@ -2296,9 +2317,9 @@ public class mini_rustParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 166:39: -> ^( ELSE if_expr )
+                    // 167:39: -> ^( ELSE if_expr )
                     {
-                        // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:166:42: ^( ELSE if_expr )
+                        // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:167:42: ^( ELSE if_expr )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot(stream_ELSE.nextNode(), root_1);
@@ -2343,67 +2364,32 @@ public class mini_rustParser extends Parser {
     };
 
     // $ANTLR start "expr"
-    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:169:1: expr : ( expr_ou | bloc );
+    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:170:1: expr : expr_ou ;
     public final mini_rustParser.expr_return expr() throws RecognitionException {
         mini_rustParser.expr_return retval = new mini_rustParser.expr_return();
         retval.start = input.LT(1);
 
         Object root_0 = null;
 
-        mini_rustParser.expr_ou_return expr_ou71 = null;
-
-        mini_rustParser.bloc_return bloc72 = null;
+        mini_rustParser.expr_ou_return expr_ou72 = null;
 
 
 
         try {
-            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:170:2: ( expr_ou | bloc )
-            int alt22=2;
-            int LA22_0 = input.LA(1);
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:171:2: ( expr_ou )
+            // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:172:4: expr_ou
+            {
+            root_0 = (Object)adaptor.nil();
 
-            if ( (LA22_0==LPAREN||LA22_0==MINUS||(LA22_0>=STAR && LA22_0<=EXCL)||LA22_0==AMPS||(LA22_0>=VEC_MACRO && LA22_0<=PRINT_MACRO)||(LA22_0>=TRUE && LA22_0<=FALSE)||(LA22_0>=IDF && LA22_0<=CSTE_ENT)) ) {
-                alt22=1;
-            }
-            else if ( (LA22_0==LBRACKET) ) {
-                alt22=2;
-            }
-            else {
-                NoViableAltException nvae =
-                    new NoViableAltException("", 22, 0, input);
+            pushFollow(FOLLOW_expr_ou_in_expr1100);
+            expr_ou72=expr_ou();
 
-                throw nvae;
-            }
-            switch (alt22) {
-                case 1 :
-                    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:171:4: expr_ou
-                    {
-                    root_0 = (Object)adaptor.nil();
+            state._fsp--;
 
-                    pushFollow(FOLLOW_expr_ou_in_expr1095);
-                    expr_ou71=expr_ou();
-
-                    state._fsp--;
-
-                    adaptor.addChild(root_0, expr_ou71.getTree());
-
-                    }
-                    break;
-                case 2 :
-                    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:172:4: bloc
-                    {
-                    root_0 = (Object)adaptor.nil();
-
-                    pushFollow(FOLLOW_bloc_in_expr1100);
-                    bloc72=bloc();
-
-                    state._fsp--;
-
-                    adaptor.addChild(root_0, bloc72.getTree());
-
-                    }
-                    break;
+            adaptor.addChild(root_0, expr_ou72.getTree());
 
             }
+
             retval.stop = input.LT(-1);
 
             retval.tree = (Object)adaptor.rulePostProcessing(root_0);
@@ -2451,22 +2437,22 @@ public class mini_rustParser extends Parser {
 
         try {
             // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:176:2: ( IDF -> IDF | LEN LPAREN RPAREN -> LEN )
-            int alt23=2;
-            int LA23_0 = input.LA(1);
+            int alt22=2;
+            int LA22_0 = input.LA(1);
 
-            if ( (LA23_0==IDF) ) {
-                alt23=1;
+            if ( (LA22_0==IDF) ) {
+                alt22=1;
             }
-            else if ( (LA23_0==LEN) ) {
-                alt23=2;
+            else if ( (LA22_0==LEN) ) {
+                alt22=2;
             }
             else {
                 NoViableAltException nvae =
-                    new NoViableAltException("", 23, 0, input);
+                    new NoViableAltException("", 22, 0, input);
 
                 throw nvae;
             }
-            switch (alt23) {
+            switch (alt22) {
                 case 1 :
                     // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:177:4: IDF
                     {
@@ -2608,17 +2594,17 @@ public class mini_rustParser extends Parser {
             }
 
             // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:183:22: ( OR e2= expr_et -> ^( OR $expr_ou $e2) )*
-            loop24:
+            loop23:
             do {
-                int alt24=2;
-                int LA24_0 = input.LA(1);
+                int alt23=2;
+                int LA23_0 = input.LA(1);
 
-                if ( (LA24_0==OR) ) {
-                    alt24=1;
+                if ( (LA23_0==OR) ) {
+                    alt23=1;
                 }
 
 
-                switch (alt24) {
+                switch (alt23) {
             	case 1 :
             	    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:183:23: OR e2= expr_et
             	    {
@@ -2634,7 +2620,7 @@ public class mini_rustParser extends Parser {
 
 
             	    // AST REWRITE
-            	    // elements: e2, OR, expr_ou
+            	    // elements: e2, expr_ou, OR
             	    // token labels: 
             	    // rule labels: retval, e2
             	    // token list labels: 
@@ -2665,7 +2651,7 @@ public class mini_rustParser extends Parser {
             	    break;
 
             	default :
-            	    break loop24;
+            	    break loop23;
                 }
             } while (true);
 
@@ -2749,17 +2735,17 @@ public class mini_rustParser extends Parser {
             }
 
             // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:188:24: ( AND e2= expr_comp -> ^( AND $expr_et $e2) )*
-            loop25:
+            loop24:
             do {
-                int alt25=2;
-                int LA25_0 = input.LA(1);
+                int alt24=2;
+                int LA24_0 = input.LA(1);
 
-                if ( (LA25_0==AND) ) {
-                    alt25=1;
+                if ( (LA24_0==AND) ) {
+                    alt24=1;
                 }
 
 
-                switch (alt25) {
+                switch (alt24) {
             	case 1 :
             	    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:188:25: AND e2= expr_comp
             	    {
@@ -2775,7 +2761,7 @@ public class mini_rustParser extends Parser {
 
 
             	    // AST REWRITE
-            	    // elements: expr_et, AND, e2
+            	    // elements: AND, e2, expr_et
             	    // token labels: 
             	    // rule labels: retval, e2
             	    // token list labels: 
@@ -2806,7 +2792,7 @@ public class mini_rustParser extends Parser {
             	    break;
 
             	default :
-            	    break loop25;
+            	    break loop24;
                 }
             } while (true);
 
@@ -2905,44 +2891,44 @@ public class mini_rustParser extends Parser {
             }
 
             // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:194:2: ( LT e2= expr_plus -> ^( LT $expr_comp $e2) | LE e2= expr_plus -> ^( LE $expr_comp $e2) | GT e2= expr_plus -> ^( GT $expr_comp $e2) | GE e2= expr_plus -> ^( GE $expr_comp $e2) | EQ e2= expr_plus -> ^( EQ $expr_comp $e2) | NE e2= expr_plus -> ^( NE $expr_comp $e2) )*
-            loop26:
+            loop25:
             do {
-                int alt26=7;
+                int alt25=7;
                 switch ( input.LA(1) ) {
                 case LT:
                     {
-                    alt26=1;
+                    alt25=1;
                     }
                     break;
                 case LE:
                     {
-                    alt26=2;
+                    alt25=2;
                     }
                     break;
                 case GT:
                     {
-                    alt26=3;
+                    alt25=3;
                     }
                     break;
                 case GE:
                     {
-                    alt26=4;
+                    alt25=4;
                     }
                     break;
                 case EQ:
                     {
-                    alt26=5;
+                    alt25=5;
                     }
                     break;
                 case NE:
                     {
-                    alt26=6;
+                    alt25=6;
                     }
                     break;
 
                 }
 
-                switch (alt26) {
+                switch (alt25) {
             	case 1 :
             	    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:195:5: LT e2= expr_plus
             	    {
@@ -2958,7 +2944,7 @@ public class mini_rustParser extends Parser {
 
 
             	    // AST REWRITE
-            	    // elements: LT, expr_comp, e2
+            	    // elements: expr_comp, e2, LT
             	    // token labels: 
             	    // rule labels: retval, e2
             	    // token list labels: 
@@ -3002,7 +2988,7 @@ public class mini_rustParser extends Parser {
 
 
             	    // AST REWRITE
-            	    // elements: expr_comp, LE, e2
+            	    // elements: expr_comp, e2, LE
             	    // token labels: 
             	    // rule labels: retval, e2
             	    // token list labels: 
@@ -3046,7 +3032,7 @@ public class mini_rustParser extends Parser {
 
 
             	    // AST REWRITE
-            	    // elements: e2, GT, expr_comp
+            	    // elements: GT, e2, expr_comp
             	    // token labels: 
             	    // rule labels: retval, e2
             	    // token list labels: 
@@ -3178,7 +3164,7 @@ public class mini_rustParser extends Parser {
 
 
             	    // AST REWRITE
-            	    // elements: NE, expr_comp, e2
+            	    // elements: expr_comp, NE, e2
             	    // token labels: 
             	    // rule labels: retval, e2
             	    // token list labels: 
@@ -3209,7 +3195,7 @@ public class mini_rustParser extends Parser {
             	    break;
 
             	default :
-            	    break loop26;
+            	    break loop25;
                 }
             } while (true);
 
@@ -3296,20 +3282,20 @@ public class mini_rustParser extends Parser {
             }
 
             // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:207:2: ( PLUS e2= expr_mult -> ^( PLUS $expr_plus $e2) | MINUS e2= expr_mult -> ^( MINUS $expr_plus $e2) )*
-            loop27:
+            loop26:
             do {
-                int alt27=3;
-                int LA27_0 = input.LA(1);
+                int alt26=3;
+                int LA26_0 = input.LA(1);
 
-                if ( (LA27_0==PLUS) ) {
-                    alt27=1;
+                if ( (LA26_0==PLUS) ) {
+                    alt26=1;
                 }
-                else if ( (LA27_0==MINUS) ) {
-                    alt27=2;
+                else if ( (LA26_0==MINUS) ) {
+                    alt26=2;
                 }
 
 
-                switch (alt27) {
+                switch (alt26) {
             	case 1 :
             	    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:208:8: PLUS e2= expr_mult
             	    {
@@ -3325,7 +3311,7 @@ public class mini_rustParser extends Parser {
 
 
             	    // AST REWRITE
-            	    // elements: e2, PLUS, expr_plus
+            	    // elements: PLUS, expr_plus, e2
             	    // token labels: 
             	    // rule labels: retval, e2
             	    // token list labels: 
@@ -3369,7 +3355,7 @@ public class mini_rustParser extends Parser {
 
 
             	    // AST REWRITE
-            	    // elements: e2, MINUS, expr_plus
+            	    // elements: e2, expr_plus, MINUS
             	    // token labels: 
             	    // rule labels: retval, e2
             	    // token list labels: 
@@ -3400,7 +3386,7 @@ public class mini_rustParser extends Parser {
             	    break;
 
             	default :
-            	    break loop27;
+            	    break loop26;
                 }
             } while (true);
 
@@ -3487,20 +3473,20 @@ public class mini_rustParser extends Parser {
             }
 
             // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:216:2: ( STAR e2= expr_unaire -> ^( MUL $expr_mult $e2) | DIV e2= expr_unaire -> ^( DIV $expr_mult $e2) )*
-            loop28:
+            loop27:
             do {
-                int alt28=3;
-                int LA28_0 = input.LA(1);
+                int alt27=3;
+                int LA27_0 = input.LA(1);
 
-                if ( (LA28_0==STAR) ) {
-                    alt28=1;
+                if ( (LA27_0==STAR) ) {
+                    alt27=1;
                 }
-                else if ( (LA28_0==DIV) ) {
-                    alt28=2;
+                else if ( (LA27_0==DIV) ) {
+                    alt27=2;
                 }
 
 
-                switch (alt28) {
+                switch (alt27) {
             	case 1 :
             	    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:217:5: STAR e2= expr_unaire
             	    {
@@ -3560,7 +3546,7 @@ public class mini_rustParser extends Parser {
 
 
             	    // AST REWRITE
-            	    // elements: e2, DIV, expr_mult
+            	    // elements: DIV, e2, expr_mult
             	    // token labels: 
             	    // rule labels: retval, e2
             	    // token list labels: 
@@ -3591,7 +3577,7 @@ public class mini_rustParser extends Parser {
             	    break;
 
             	default :
-            	    break loop28;
+            	    break loop27;
                 }
             } while (true);
 
@@ -3671,18 +3657,18 @@ public class mini_rustParser extends Parser {
         RewriteRuleSubtreeStream stream_expr_unaire=new RewriteRuleSubtreeStream(adaptor,"rule expr_unaire");
         try {
             // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:223:2: ( MINUS expr_unaire -> ^( UNARY_MINUS expr_unaire ) | ( EXCL expr_unaire -> ^( NEG expr_unaire ) | STAR expr_unaire -> ^( POINTER expr_unaire ) | AMPS expr_unaire -> ^( REF expr_unaire ) ) | (a= atom -> $a) ( LSQBRACKET expr RSQBRACKET -> ^( INDEX $expr_unaire expr ) | DOT dot_factorisation -> ^( DOT $expr_unaire dot_factorisation ) )* )
-            int alt31=3;
+            int alt30=3;
             switch ( input.LA(1) ) {
             case MINUS:
                 {
-                alt31=1;
+                alt30=1;
                 }
                 break;
             case STAR:
             case EXCL:
             case AMPS:
                 {
-                alt31=2;
+                alt30=2;
                 }
                 break;
             case LPAREN:
@@ -3693,17 +3679,17 @@ public class mini_rustParser extends Parser {
             case IDF:
             case CSTE_ENT:
                 {
-                alt31=3;
+                alt30=3;
                 }
                 break;
             default:
                 NoViableAltException nvae =
-                    new NoViableAltException("", 31, 0, input);
+                    new NoViableAltException("", 30, 0, input);
 
                 throw nvae;
             }
 
-            switch (alt31) {
+            switch (alt30) {
                 case 1 :
                     // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:224:4: MINUS expr_unaire
                     {
@@ -3750,31 +3736,31 @@ public class mini_rustParser extends Parser {
                     // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:225:4: ( EXCL expr_unaire -> ^( NEG expr_unaire ) | STAR expr_unaire -> ^( POINTER expr_unaire ) | AMPS expr_unaire -> ^( REF expr_unaire ) )
                     {
                     // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:225:4: ( EXCL expr_unaire -> ^( NEG expr_unaire ) | STAR expr_unaire -> ^( POINTER expr_unaire ) | AMPS expr_unaire -> ^( REF expr_unaire ) )
-                    int alt29=3;
+                    int alt28=3;
                     switch ( input.LA(1) ) {
                     case EXCL:
                         {
-                        alt29=1;
+                        alt28=1;
                         }
                         break;
                     case STAR:
                         {
-                        alt29=2;
+                        alt28=2;
                         }
                         break;
                     case AMPS:
                         {
-                        alt29=3;
+                        alt28=3;
                         }
                         break;
                     default:
                         NoViableAltException nvae =
-                            new NoViableAltException("", 29, 0, input);
+                            new NoViableAltException("", 28, 0, input);
 
                         throw nvae;
                     }
 
-                    switch (alt29) {
+                    switch (alt28) {
                         case 1 :
                             // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:226:8: EXCL expr_unaire
                             {
@@ -3943,20 +3929,20 @@ public class mini_rustParser extends Parser {
                     }
 
                     // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:231:4: ( LSQBRACKET expr RSQBRACKET -> ^( INDEX $expr_unaire expr ) | DOT dot_factorisation -> ^( DOT $expr_unaire dot_factorisation ) )*
-                    loop30:
+                    loop29:
                     do {
-                        int alt30=3;
-                        int LA30_0 = input.LA(1);
+                        int alt29=3;
+                        int LA29_0 = input.LA(1);
 
-                        if ( (LA30_0==LSQBRACKET) ) {
-                            alt30=1;
+                        if ( (LA29_0==LSQBRACKET) ) {
+                            alt29=1;
                         }
-                        else if ( (LA30_0==DOT) ) {
-                            alt30=2;
+                        else if ( (LA29_0==DOT) ) {
+                            alt29=2;
                         }
 
 
-                        switch (alt30) {
+                        switch (alt29) {
                     	case 1 :
                     	    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:232:7: LSQBRACKET expr RSQBRACKET
                     	    {
@@ -3975,7 +3961,7 @@ public class mini_rustParser extends Parser {
 
 
                     	    // AST REWRITE
-                    	    // elements: expr_unaire, expr
+                    	    // elements: expr, expr_unaire
                     	    // token labels: 
                     	    // rule labels: retval
                     	    // token list labels: 
@@ -4018,7 +4004,7 @@ public class mini_rustParser extends Parser {
 
 
                     	    // AST REWRITE
-                    	    // elements: expr_unaire, DOT, dot_factorisation
+                    	    // elements: DOT, dot_factorisation, expr_unaire
                     	    // token labels: 
                     	    // rule labels: retval
                     	    // token list labels: 
@@ -4048,7 +4034,7 @@ public class mini_rustParser extends Parser {
                     	    break;
 
                     	default :
-                    	    break loop30;
+                    	    break loop29;
                         }
                     } while (true);
 
@@ -4146,51 +4132,51 @@ public class mini_rustParser extends Parser {
         RewriteRuleSubtreeStream stream_expr=new RewriteRuleSubtreeStream(adaptor,"rule expr");
         try {
             // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:238:2: ( CSTE_ENT | TRUE | FALSE | IDF ( -> IDF | LPAREN ( expr ( COMMA expr )* )? RPAREN -> ^( FUNCTION_CALL IDF ( expr )* ) ) | LPAREN expr RPAREN -> expr | VEC_MACRO EXCL LSQBRACKET (e+= expr ( COMMA e+= expr )* )? RSQBRACKET -> ^( VEC_MACRO ( $e)* ) | PRINT_MACRO EXCL LPAREN expr RPAREN -> ^( PRINT_MACRO expr ) )
-            int alt37=7;
+            int alt36=7;
             switch ( input.LA(1) ) {
             case CSTE_ENT:
                 {
-                alt37=1;
+                alt36=1;
                 }
                 break;
             case TRUE:
                 {
-                alt37=2;
+                alt36=2;
                 }
                 break;
             case FALSE:
                 {
-                alt37=3;
+                alt36=3;
                 }
                 break;
             case IDF:
                 {
-                alt37=4;
+                alt36=4;
                 }
                 break;
             case LPAREN:
                 {
-                alt37=5;
+                alt36=5;
                 }
                 break;
             case VEC_MACRO:
                 {
-                alt37=6;
+                alt36=6;
                 }
                 break;
             case PRINT_MACRO:
                 {
-                alt37=7;
+                alt36=7;
                 }
                 break;
             default:
                 NoViableAltException nvae =
-                    new NoViableAltException("", 37, 0, input);
+                    new NoViableAltException("", 36, 0, input);
 
                 throw nvae;
             }
 
-            switch (alt37) {
+            switch (alt36) {
                 case 1 :
                     // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:239:4: CSTE_ENT
                     {
@@ -4234,22 +4220,22 @@ public class mini_rustParser extends Parser {
                     stream_IDF.add(IDF105);
 
                     // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:243:6: ( -> IDF | LPAREN ( expr ( COMMA expr )* )? RPAREN -> ^( FUNCTION_CALL IDF ( expr )* ) )
-                    int alt34=2;
-                    int LA34_0 = input.LA(1);
+                    int alt33=2;
+                    int LA33_0 = input.LA(1);
 
-                    if ( ((LA34_0>=RPAREN && LA34_0<=STAR)||(LA34_0>=ASSIGN && LA34_0<=DOT)||(LA34_0>=COMMA && LA34_0<=SEMICOLON)) ) {
-                        alt34=1;
+                    if ( ((LA33_0>=RPAREN && LA33_0<=STAR)||(LA33_0>=ASSIGN && LA33_0<=DOT)||(LA33_0>=COMMA && LA33_0<=SEMICOLON)) ) {
+                        alt33=1;
                     }
-                    else if ( (LA34_0==LPAREN) ) {
-                        alt34=2;
+                    else if ( (LA33_0==LPAREN) ) {
+                        alt33=2;
                     }
                     else {
                         NoViableAltException nvae =
-                            new NoViableAltException("", 34, 0, input);
+                            new NoViableAltException("", 33, 0, input);
 
                         throw nvae;
                     }
-                    switch (alt34) {
+                    switch (alt33) {
                         case 1 :
                             // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:244:12: 
                             {
@@ -4281,13 +4267,13 @@ public class mini_rustParser extends Parser {
                             stream_LPAREN.add(LPAREN106);
 
                             // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:245:19: ( expr ( COMMA expr )* )?
-                            int alt33=2;
-                            int LA33_0 = input.LA(1);
+                            int alt32=2;
+                            int LA32_0 = input.LA(1);
 
-                            if ( (LA33_0==LPAREN||LA33_0==LBRACKET||LA33_0==MINUS||(LA33_0>=STAR && LA33_0<=EXCL)||LA33_0==AMPS||(LA33_0>=VEC_MACRO && LA33_0<=PRINT_MACRO)||(LA33_0>=TRUE && LA33_0<=FALSE)||(LA33_0>=IDF && LA33_0<=CSTE_ENT)) ) {
-                                alt33=1;
+                            if ( (LA32_0==LPAREN||LA32_0==MINUS||(LA32_0>=STAR && LA32_0<=EXCL)||LA32_0==AMPS||(LA32_0>=VEC_MACRO && LA32_0<=PRINT_MACRO)||(LA32_0>=TRUE && LA32_0<=FALSE)||(LA32_0>=IDF && LA32_0<=CSTE_ENT)) ) {
+                                alt32=1;
                             }
-                            switch (alt33) {
+                            switch (alt32) {
                                 case 1 :
                                     // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:245:20: expr ( COMMA expr )*
                                     {
@@ -4298,17 +4284,17 @@ public class mini_rustParser extends Parser {
 
                                     stream_expr.add(expr107.getTree());
                                     // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:245:25: ( COMMA expr )*
-                                    loop32:
+                                    loop31:
                                     do {
-                                        int alt32=2;
-                                        int LA32_0 = input.LA(1);
+                                        int alt31=2;
+                                        int LA31_0 = input.LA(1);
 
-                                        if ( (LA32_0==COMMA) ) {
-                                            alt32=1;
+                                        if ( (LA31_0==COMMA) ) {
+                                            alt31=1;
                                         }
 
 
-                                        switch (alt32) {
+                                        switch (alt31) {
                                     	case 1 :
                                     	    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:245:26: COMMA expr
                                     	    {
@@ -4326,7 +4312,7 @@ public class mini_rustParser extends Parser {
                                     	    break;
 
                                     	default :
-                                    	    break loop32;
+                                    	    break loop31;
                                         }
                                     } while (true);
 
@@ -4342,7 +4328,7 @@ public class mini_rustParser extends Parser {
 
 
                             // AST REWRITE
-                            // elements: expr, IDF
+                            // elements: IDF, expr
                             // token labels: 
                             // rule labels: retval
                             // token list labels: 
@@ -4431,13 +4417,13 @@ public class mini_rustParser extends Parser {
                     stream_LSQBRACKET.add(LSQBRACKET116);
 
                     // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:248:30: (e+= expr ( COMMA e+= expr )* )?
-                    int alt36=2;
-                    int LA36_0 = input.LA(1);
+                    int alt35=2;
+                    int LA35_0 = input.LA(1);
 
-                    if ( (LA36_0==LPAREN||LA36_0==LBRACKET||LA36_0==MINUS||(LA36_0>=STAR && LA36_0<=EXCL)||LA36_0==AMPS||(LA36_0>=VEC_MACRO && LA36_0<=PRINT_MACRO)||(LA36_0>=TRUE && LA36_0<=FALSE)||(LA36_0>=IDF && LA36_0<=CSTE_ENT)) ) {
-                        alt36=1;
+                    if ( (LA35_0==LPAREN||LA35_0==MINUS||(LA35_0>=STAR && LA35_0<=EXCL)||LA35_0==AMPS||(LA35_0>=VEC_MACRO && LA35_0<=PRINT_MACRO)||(LA35_0>=TRUE && LA35_0<=FALSE)||(LA35_0>=IDF && LA35_0<=CSTE_ENT)) ) {
+                        alt35=1;
                     }
-                    switch (alt36) {
+                    switch (alt35) {
                         case 1 :
                             // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:248:31: e+= expr ( COMMA e+= expr )*
                             {
@@ -4451,17 +4437,17 @@ public class mini_rustParser extends Parser {
                             list_e.add(e.getTree());
 
                             // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:248:39: ( COMMA e+= expr )*
-                            loop35:
+                            loop34:
                             do {
-                                int alt35=2;
-                                int LA35_0 = input.LA(1);
+                                int alt34=2;
+                                int LA34_0 = input.LA(1);
 
-                                if ( (LA35_0==COMMA) ) {
-                                    alt35=1;
+                                if ( (LA34_0==COMMA) ) {
+                                    alt34=1;
                                 }
 
 
-                                switch (alt35) {
+                                switch (alt34) {
                             	case 1 :
                             	    // D:\\_Dev\\Java\\Compilation2018-AGHENDA-HURET-VANTOUROUT-WILLAIME\\src\\grammar\\mini_rust.g:248:40: COMMA e+= expr
                             	    {
@@ -4482,7 +4468,7 @@ public class mini_rustParser extends Parser {
                             	    break;
 
                             	default :
-                            	    break loop35;
+                            	    break loop34;
                                 }
                             } while (true);
 
@@ -4650,43 +4636,43 @@ public class mini_rustParser extends Parser {
     public static final BitSet FOLLOW_expr_in_instruction_bloc757 = new BitSet(new long[]{0x0800000000000002L});
     public static final BitSet FOLLOW_SEMICOLON_in_instruction_bloc762 = new BitSet(new long[]{0xEB1D8A6800500000L});
     public static final BitSet FOLLOW_instruction_bloc_in_instruction_bloc764 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LET_in_instruction788 = new BitSet(new long[]{0xE318126800500000L});
+    public static final BitSet FOLLOW_LET_in_instruction788 = new BitSet(new long[]{0xC318126800100000L});
     public static final BitSet FOLLOW_instruction_let_in_instruction790 = new BitSet(new long[]{0x0800000000000000L});
     public static final BitSet FOLLOW_SEMICOLON_in_instruction792 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_WHILE_in_instruction801 = new BitSet(new long[]{0xE318026800500000L});
+    public static final BitSet FOLLOW_WHILE_in_instruction801 = new BitSet(new long[]{0xC318026800100000L});
     public static final BitSet FOLLOW_expr_in_instruction803 = new BitSet(new long[]{0x2000000000400000L});
     public static final BitSet FOLLOW_bloc_in_instruction805 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_RETURN_in_instruction820 = new BitSet(new long[]{0xEB18026800500000L});
+    public static final BitSet FOLLOW_RETURN_in_instruction820 = new BitSet(new long[]{0xCB18026800100000L});
     public static final BitSet FOLLOW_expr_in_instruction823 = new BitSet(new long[]{0x0800000000000000L});
     public static final BitSet FOLLOW_SEMICOLON_in_instruction827 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_if_expr_in_instruction841 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MUT_in_instruction_let855 = new BitSet(new long[]{0xE318026800500000L});
-    public static final BitSet FOLLOW_expr_in_instruction_let857 = new BitSet(new long[]{0x0000008000000002L});
-    public static final BitSet FOLLOW_ASSIGN_in_instruction_let860 = new BitSet(new long[]{0xE318026800500000L});
-    public static final BitSet FOLLOW_structure_initialisation_expr_in_instruction_let862 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_expr_in_instruction_let882 = new BitSet(new long[]{0x0000008000000002L});
-    public static final BitSet FOLLOW_ASSIGN_in_instruction_let885 = new BitSet(new long[]{0xE318026800500000L});
-    public static final BitSet FOLLOW_structure_initialisation_expr_in_instruction_let887 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LBRACKET_in_structure_initialisation914 = new BitSet(new long[]{0x4000000000800000L});
-    public static final BitSet FOLLOW_IDF_in_structure_initialisation919 = new BitSet(new long[]{0x1000000000000000L});
-    public static final BitSet FOLLOW_COLON_in_structure_initialisation921 = new BitSet(new long[]{0xE318026800500000L});
-    public static final BitSet FOLLOW_structure_initialisation_expr_in_structure_initialisation925 = new BitSet(new long[]{0x0400000000800000L});
-    public static final BitSet FOLLOW_COMMA_in_structure_initialisation928 = new BitSet(new long[]{0x4000000000000000L});
-    public static final BitSet FOLLOW_IDF_in_structure_initialisation932 = new BitSet(new long[]{0x1000000000000000L});
-    public static final BitSet FOLLOW_COLON_in_structure_initialisation934 = new BitSet(new long[]{0xE318026800500000L});
-    public static final BitSet FOLLOW_structure_initialisation_expr_in_structure_initialisation938 = new BitSet(new long[]{0x0400000000800000L});
-    public static final BitSet FOLLOW_RBRACKET_in_structure_initialisation944 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_expr_in_structure_initialisation_expr971 = new BitSet(new long[]{0x0000000000400002L});
-    public static final BitSet FOLLOW_structure_initialisation_in_structure_initialisation_expr994 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_IF_in_if_expr1021 = new BitSet(new long[]{0xE318026800500000L});
-    public static final BitSet FOLLOW_expr_in_if_expr1023 = new BitSet(new long[]{0x2000000000400000L});
-    public static final BitSet FOLLOW_bloc_in_if_expr1025 = new BitSet(new long[]{0x0002000000000002L});
-    public static final BitSet FOLLOW_else_expr_in_if_expr1028 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ELSE_in_else_expr1057 = new BitSet(new long[]{0x2005880000400000L});
-    public static final BitSet FOLLOW_bloc_in_else_expr1060 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_if_expr_in_else_expr1072 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_expr_ou_in_expr1095 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_bloc_in_expr1100 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_bloc_in_instruction846 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MUT_in_instruction_let860 = new BitSet(new long[]{0xC318026800100000L});
+    public static final BitSet FOLLOW_expr_in_instruction_let862 = new BitSet(new long[]{0x0000008000000002L});
+    public static final BitSet FOLLOW_ASSIGN_in_instruction_let865 = new BitSet(new long[]{0xC318026800100000L});
+    public static final BitSet FOLLOW_structure_initialisation_expr_in_instruction_let867 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_expr_in_instruction_let887 = new BitSet(new long[]{0x0000008000000002L});
+    public static final BitSet FOLLOW_ASSIGN_in_instruction_let890 = new BitSet(new long[]{0xC318026800100000L});
+    public static final BitSet FOLLOW_structure_initialisation_expr_in_instruction_let892 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LBRACKET_in_structure_initialisation919 = new BitSet(new long[]{0x4000000000800000L});
+    public static final BitSet FOLLOW_IDF_in_structure_initialisation924 = new BitSet(new long[]{0x1000000000000000L});
+    public static final BitSet FOLLOW_COLON_in_structure_initialisation926 = new BitSet(new long[]{0xC318026800100000L});
+    public static final BitSet FOLLOW_structure_initialisation_expr_in_structure_initialisation930 = new BitSet(new long[]{0x0400000000800000L});
+    public static final BitSet FOLLOW_COMMA_in_structure_initialisation933 = new BitSet(new long[]{0x4000000000000000L});
+    public static final BitSet FOLLOW_IDF_in_structure_initialisation937 = new BitSet(new long[]{0x1000000000000000L});
+    public static final BitSet FOLLOW_COLON_in_structure_initialisation939 = new BitSet(new long[]{0xC318026800100000L});
+    public static final BitSet FOLLOW_structure_initialisation_expr_in_structure_initialisation943 = new BitSet(new long[]{0x0400000000800000L});
+    public static final BitSet FOLLOW_RBRACKET_in_structure_initialisation949 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_expr_in_structure_initialisation_expr976 = new BitSet(new long[]{0x0000000000400002L});
+    public static final BitSet FOLLOW_structure_initialisation_in_structure_initialisation_expr999 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_IF_in_if_expr1026 = new BitSet(new long[]{0xC318026800100000L});
+    public static final BitSet FOLLOW_expr_in_if_expr1028 = new BitSet(new long[]{0x2000000000400000L});
+    public static final BitSet FOLLOW_bloc_in_if_expr1030 = new BitSet(new long[]{0x0002000000000002L});
+    public static final BitSet FOLLOW_else_expr_in_if_expr1033 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ELSE_in_else_expr1062 = new BitSet(new long[]{0x2001000000400000L});
+    public static final BitSet FOLLOW_bloc_in_else_expr1065 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_if_expr_in_else_expr1077 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_expr_ou_in_expr1100 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_IDF_in_dot_factorisation1114 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_LEN_in_dot_factorisation1123 = new BitSet(new long[]{0x0000000000100000L});
     public static final BitSet FOLLOW_LPAREN_in_dot_factorisation1125 = new BitSet(new long[]{0x0000000000200000L});
@@ -4729,7 +4715,7 @@ public class mini_rustParser extends Parser {
     public static final BitSet FOLLOW_AMPS_in_expr_unaire1605 = new BitSet(new long[]{0xC318026800100000L});
     public static final BitSet FOLLOW_expr_unaire_in_expr_unaire1607 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_atom_in_expr_unaire1628 = new BitSet(new long[]{0x0000010001000002L});
-    public static final BitSet FOLLOW_LSQBRACKET_in_expr_unaire1647 = new BitSet(new long[]{0xE318026800500000L});
+    public static final BitSet FOLLOW_LSQBRACKET_in_expr_unaire1647 = new BitSet(new long[]{0xC318026800100000L});
     public static final BitSet FOLLOW_expr_in_expr_unaire1649 = new BitSet(new long[]{0x0000000002000000L});
     public static final BitSet FOLLOW_RSQBRACKET_in_expr_unaire1651 = new BitSet(new long[]{0x0000010001000002L});
     public static final BitSet FOLLOW_DOT_in_expr_unaire1670 = new BitSet(new long[]{0x4000040000000000L});
@@ -4738,24 +4724,24 @@ public class mini_rustParser extends Parser {
     public static final BitSet FOLLOW_TRUE_in_atom1708 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_FALSE_in_atom1713 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_IDF_in_atom1718 = new BitSet(new long[]{0x0000000000100002L});
-    public static final BitSet FOLLOW_LPAREN_in_atom1753 = new BitSet(new long[]{0xE318026800700000L});
+    public static final BitSet FOLLOW_LPAREN_in_atom1753 = new BitSet(new long[]{0xC318026800300000L});
     public static final BitSet FOLLOW_expr_in_atom1756 = new BitSet(new long[]{0x0400000000200000L});
-    public static final BitSet FOLLOW_COMMA_in_atom1759 = new BitSet(new long[]{0xE318026800500000L});
+    public static final BitSet FOLLOW_COMMA_in_atom1759 = new BitSet(new long[]{0xC318026800100000L});
     public static final BitSet FOLLOW_expr_in_atom1761 = new BitSet(new long[]{0x0400000000200000L});
     public static final BitSet FOLLOW_RPAREN_in_atom1767 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LPAREN_in_atom1790 = new BitSet(new long[]{0xE318026800500000L});
+    public static final BitSet FOLLOW_LPAREN_in_atom1790 = new BitSet(new long[]{0xC318026800100000L});
     public static final BitSet FOLLOW_expr_in_atom1792 = new BitSet(new long[]{0x0000000000200000L});
     public static final BitSet FOLLOW_RPAREN_in_atom1794 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_VEC_MACRO_in_atom1803 = new BitSet(new long[]{0x0000004000000000L});
     public static final BitSet FOLLOW_EXCL_in_atom1805 = new BitSet(new long[]{0x0000000001000000L});
-    public static final BitSet FOLLOW_LSQBRACKET_in_atom1807 = new BitSet(new long[]{0xE318026802500000L});
+    public static final BitSet FOLLOW_LSQBRACKET_in_atom1807 = new BitSet(new long[]{0xC318026802100000L});
     public static final BitSet FOLLOW_expr_in_atom1812 = new BitSet(new long[]{0x0400000002000000L});
-    public static final BitSet FOLLOW_COMMA_in_atom1815 = new BitSet(new long[]{0xE318026800500000L});
+    public static final BitSet FOLLOW_COMMA_in_atom1815 = new BitSet(new long[]{0xC318026800100000L});
     public static final BitSet FOLLOW_expr_in_atom1819 = new BitSet(new long[]{0x0400000002000000L});
     public static final BitSet FOLLOW_RSQBRACKET_in_atom1825 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_PRINT_MACRO_in_atom1842 = new BitSet(new long[]{0x0000004000000000L});
     public static final BitSet FOLLOW_EXCL_in_atom1844 = new BitSet(new long[]{0x0000000000100000L});
-    public static final BitSet FOLLOW_LPAREN_in_atom1846 = new BitSet(new long[]{0xE318026800500000L});
+    public static final BitSet FOLLOW_LPAREN_in_atom1846 = new BitSet(new long[]{0xC318026800100000L});
     public static final BitSet FOLLOW_expr_in_atom1848 = new BitSet(new long[]{0x0000000000200000L});
     public static final BitSet FOLLOW_RPAREN_in_atom1850 = new BitSet(new long[]{0x0000000000000002L});
 

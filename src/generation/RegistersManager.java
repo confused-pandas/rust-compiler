@@ -58,8 +58,4 @@ public class RegistersManager {
 
         return register;
     }
-
-    public int returnRegistersSize() {
-        return this.returnRegisters.size();
-    }
 }

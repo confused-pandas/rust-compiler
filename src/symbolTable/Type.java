@@ -63,7 +63,7 @@ public class Type {
     }
 
     public boolean isUnknown() {
-        return this.type == EnumType.UNKNOWN;
+        return this.type.equals(EnumType.UNKNOWN) && this.structure == null;
     }
 
     public boolean isInt() {

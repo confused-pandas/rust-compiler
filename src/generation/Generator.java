@@ -268,7 +268,7 @@ public class Generator {
         this.code
                 .append(op + " R" + r1 + ", R" + r2 + ", R" + r3 + "");
     }
-    
+
     private void generateLogicalExpr(Tree logicalExprNode, SymbolTable currentSymbolTable) throws IOException {
     	/*
          * Une expression logique a deux membres, chacun des membres
@@ -276,18 +276,18 @@ public class Generator {
          *
          * Par exemple 3 < 5, 3 sera assigné à R0 et 5 sera assigné à R1
          * (s'ils sont libres)
-		 *	
+		 *
          */
-    	
+
     	this.generateExpr(logicalExprNode.getChild(0), currentSymbolTable);
     	this.generateExpr(logicalExprNode.getChild(1), currentSymbolTable);
-    	
+
     	int r2 = this.registersManager.getReturnRegister();
     	int r1 = this.registersManager.getReturnRegister();
-    	
+
     	int r3 = this.registersManager.setReturnRegister();
     	String op;
-    	
+
     	switch (logicalExprNode.getType()) {
     		case mini_rustLexer.EQ:
     			op = "BNE";
@@ -308,7 +308,7 @@ public class Generator {
     			op = "BEQ";
     			break;
     	}
-    	
+
     	this.code
     			.append("CMP "+ "R" + r1 + "," + " R"+ r2)
     			.append(op + " 6")

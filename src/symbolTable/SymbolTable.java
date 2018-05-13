@@ -1,5 +1,6 @@
 package symbolTable;
 
+import org.antlr.runtime.tree.Tree;
 import symbolTable.symbols.*;
 import utils.Utils;
 
@@ -14,10 +15,12 @@ public class SymbolTable {
 	public static int TYPE_COL_WIDTH = 15;
 
     private final SymbolTable parent;
-    private final HashMap<String,Symbol> symbols;
+    private EnumSymbolTableType symbolTableType;
+    private final Map<String,Symbol> symbols;
 	private final int nestingLevel;
 	private final int regionNum;
 	private int offsetCount;
+	private Map<Integer, SymbolTable> blocs;
 
 	public SymbolTable(SymbolTable parent, int nestingLevel) {
 		this.parent = parent;
@@ -25,6 +28,7 @@ public class SymbolTable {
 		this.nestingLevel = nestingLevel;
 		this.symbols = new HashMap<>();
 		this.offsetCount = 0;
+		this.blocs = new HashMap<>();
 	}
 
 	public boolean symbolExists(Symbol symbol,boolean checkParent){
@@ -108,10 +112,10 @@ public class SymbolTable {
 
         for(Symbol symbol: structureSymbol.getSymbolTable().getSymbols().values()) {
             if(symbol instanceof VariableSymbol) {
-                size = this.getVariableSize((VariableSymbol) symbol);
+                size += this.getVariableSize((VariableSymbol) symbol);
             }
             else if(symbol instanceof StructureSymbol) {
-                size = this.getStructureSize((StructureSymbol) symbol);
+                size += this.getStructureSize((StructureSymbol) symbol);
             }
         }
 
@@ -141,7 +145,7 @@ public class SymbolTable {
 		return (VariableSymbol) getSymbol(name + EnumSymbolType.VARIABLE.getSuffix(), checkParent);
 	}
 
-	public HashMap<String,Symbol> getSymbols(){
+	public Map<String,Symbol> getSymbols(){
 		return symbols;
 	}
 	
@@ -197,4 +201,20 @@ public class SymbolTable {
 
 		return str.toString();
 	}
+
+	public void addBloc(int line, SymbolTable symbolTable) {
+	    this.blocs.put(line, symbolTable);
+    }
+
+    public SymbolTable getBloc(int line) {
+	    return this.blocs.get(line);
+    }
+
+    public EnumSymbolTableType getSymbolTableType() {
+        return symbolTableType;
+    }
+
+    public void setSymbolTableType(EnumSymbolTableType symbolTableType) {
+        this.symbolTableType = symbolTableType;
+    }
 }
