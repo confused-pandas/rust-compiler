@@ -105,7 +105,7 @@ public class TreeTraversal {
 
             this.symbolTableManager.openSymbolTable(functionSymbol.getSymbolTable());
             BlocType blocType = this.traverseBloc(functionNode.getChild(1), false);
-            if (!blocType.equals(functionSymbol.getReturnType())) {
+            if (!(blocType.equals(functionSymbol.getReturnType()) || (!blocType.isDeterminedByReturn() && functionSymbol.getReturnType().isVoid()))) {
             	throw new WrongTypeReturnException("Type returned in function " + idf + " differs from type defined in declaration. (" + blocType + " instead of " + functionSymbol.getReturnType() + "). Line : "+ blocType.getLastNode().getLine() +".");
             }
 

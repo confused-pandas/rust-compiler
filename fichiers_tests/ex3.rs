@@ -1,33 +1,12 @@
-fn fibonacci_computation(generations : i32, previous : i32, pprevious : i32) -> i32
-{
-    if generations < 0
-    {
-        return previous;
-    }
-
-    return fibonacci_computation(generations - 1, previous + pprevious, previous);
-}
-
-
-fn fibonacci(generations : i32) -> i32
-{
-    let mut result;
-
-    if generations == 0 || generations == 1
-    {
-        let result = generations;
-    }
-
-    else
-    {
-        let result = {
-            fibonacci_computation(generations - 2, 1, 0)
-        };
-    }
-
-    return result;
-}
-
 fn main() {
-    print!(fibonacci(12));
+    let a = 2;
+    let b = 5;
+    let c = 1 + 2 * 3 + 4 - 5;
+    let mut d;
+    let e = b + c * c * c;
+    let mut x = 1;
+    let x = x + 1;
+    let x = x + 1;
+    let x = x + 1;
+    let x = x + 1;
 }

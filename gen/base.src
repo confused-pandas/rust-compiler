@@ -28,8 +28,24 @@ LDW BP, #NIL        // bp initial (fin de liste chaînée d'environnements)
 STW BP, -(SP)
 LDW BP, SP
 
-// code à tester
+LDQ 2*2, R1
+SUB SP, R1, SP
 
+LDW R0, #2
+STW R0, (BP)-2
+
+LDW R0, #10
+STW R0, (BP)-4
+
+LDW R0, (BP)-4
+LDW R1, (BP)-2
+CMP R0, R1
+BLE #else_1-$-2
+LDW R8, #1
+JEA @end_if_1
+else_1
+LDW R8, #2
+end_if_1
 // fermeture environnement
 LDW SP, BP
 LDW BP, (SP)+

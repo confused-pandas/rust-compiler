@@ -20,14 +20,14 @@ public class BufferedStringBuilder {
         this.writer = null;
     }
 
-    public StringBuilder append(String str) throws IOException {
-        this.stringBuilder.append(str);
+    public BufferedStringBuilder append(String str) throws IOException {
+        this.stringBuilder.append(str).append("\n");
 
         if(this.doDump()) {
             this.dump();
         }
 
-        return this.stringBuilder;
+        return this;
     }
 
     private void dump() throws IOException {

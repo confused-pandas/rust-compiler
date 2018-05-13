@@ -9,11 +9,13 @@ import utils.Utils;
 public class VariableSymbol extends Symbol {
 	public Type type;
 	public boolean isMutable;
+	private boolean isDefined;
 
 	public VariableSymbol(Tree node, String name, Scope scope, Type type, boolean isMutable) {
 		super(node, EnumSymbolType.VARIABLE, name, scope);
 		this.type = type;
 		this.isMutable = isMutable;
+		this.isDefined = false;
 	}
 
 	public boolean isMutable(){
@@ -26,6 +28,14 @@ public class VariableSymbol extends Symbol {
 
 	public void setType(Type type){
 		this.type = type;
+	}
+
+	public boolean isDefined() {
+		return isDefined;
+	}
+
+	public void setDefined(boolean defined) {
+		isDefined = defined;
 	}
 
 	@Override
