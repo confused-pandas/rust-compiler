@@ -223,6 +223,7 @@ public class Generator {
             case mini_rustLexer.FUNCTION_CALL:
                 break;
             case mini_rustLexer.VEC_MACRO:
+                this.generateVec(exprNode, currentSymbolTable);
                 break;
             case mini_rustLexer.PRINT_MACRO:
                 break;
@@ -248,8 +249,8 @@ public class Generator {
 
     private void generateArithmeticExpr(Tree arithmeticExprNode, SymbolTable currentSymbolTable) throws IOException {
         /*
-         * Une expression arithmétique à deux membres, chacun des membres
-         * vont assigner leurs valeurs à un registre
+         * Une expression arithmétique a deux membres, chacun des membres
+         * va assigner leur valeur à un registre
          *
          * Par exemple 3 + 5, 3 sera assigné à R0 et 5 sera assigné à R1
          * (s'ils sont libres)
@@ -307,7 +308,7 @@ public class Generator {
     private void generateLogicalExpr(Tree logicalExprNode, SymbolTable currentSymbolTable) throws IOException {
     	/*
          * Une expression logique a deux membres, chacun des membres
-         * vont assigner leurs valeurs à un registre
+         * va assigner leurs valeurs à un registre
          *
          * Par exemple 3 < 5, 3 sera assigné à R0 et 5 sera assigné à R1
          * (s'ils sont libres)
@@ -362,4 +363,18 @@ public class Generator {
     }
 
     private String op;
+
+    private void generateVec(Tree vecNode, SymbolTable currentSymbolTable) throws IOException {
+        /*
+         * Un vecteur a un ou plusieurs paramètres qui
+         * vont assigner leur valeur à un registre
+         */
+
+        for (int i = 0; i < vecNode.getChildCount(); i++){
+            this.generateExpr(vecNode.getChild(i), currentSymbolTable);
+            int register = this.registersManager.getFreeRegister();
+            this.code
+                 .append("LDW R" + register + ", #" + vecNode.getChild(i));
+        }
+    }
 }
