@@ -86,6 +86,9 @@ public class Generator {
                 .append("TRP #EXIT_EXC")
                 .append("JEA @main_");
 
+        this.generatePrintFunction();
+        this.generateItoaFunction();
+
         // Dump le buffer restant dans le fichier
         this.code.close();
     }
@@ -139,6 +142,9 @@ public class Generator {
                 case mini_rustLexer.IF:
                     this.generateIf(child, currentSymbolTable.getBloc(child.getChild(1).hashCode()));
                     break;
+                case mini_rustLexer.PRINT_MACRO:
+                    this.generatePrint(child, currentSymbolTable);
+                    break;
             }
         }
     }
@@ -153,15 +159,13 @@ public class Generator {
         this.code
                 .append("bwhile_" + bloc.hashCode());
 
-        this.generateExpr(condition, currentSymbolTable);
-
-        this.code
-                .append(this.op + " ewhile_" + bloc.hashCode() + "-$-2");
-
+        this.generateExpr(condition, currentSymbolTable, "ewhile_" + bloc.hashCode());
         this.generateBloc(bloc, currentSymbolTable);
+
         this.code
                 .append("BMP bwhile_" + bloc.hashCode() + "-$-2")
                 .append("ewhile_" + bloc.hashCode());
+
         this.closeEnvironment();
     }
 
@@ -178,7 +182,7 @@ public class Generator {
         // on ne la génère donc pas
         if(!variableSymbol.getType().isUnknown()) {
             if(letNode.getChildCount() > 1) {
-                this.generateExpr(letNode.getChild(1), currentSymbolTable);
+                this.generateExpr(letNode.getChild(1), currentSymbolTable, null);
                 int register = this.registersManager.getReturnRegister();
 
                 this.code
@@ -187,7 +191,7 @@ public class Generator {
         }
     }
 
-    private void generateExpr(Tree exprNode, SymbolTable currentSymbolTable) throws IOException {
+    private void generateExpr(Tree exprNode, SymbolTable currentSymbolTable, String label) throws IOException {
         int register;
 
         switch(exprNode.getType()) {
@@ -202,13 +206,13 @@ public class Generator {
             case mini_rustLexer.GE:
             case mini_rustLexer.EQ:
             case mini_rustLexer.NE:
-            	this.generateLogicalExpr(exprNode, currentSymbolTable);
+            	this.generateLogicalExpr(exprNode, currentSymbolTable, label);
                 break;
             case mini_rustLexer.PLUS:
             case mini_rustLexer.MINUS:
             case mini_rustLexer.MUL:
             case mini_rustLexer.DIV:
-                this.generateArithmeticExpr(exprNode, currentSymbolTable);
+                this.generateArithmeticExpr(exprNode, currentSymbolTable, label);
                 break;
             case mini_rustLexer.UNARY_MINUS:
                 break;
@@ -224,8 +228,6 @@ public class Generator {
                 break;
             case mini_rustLexer.VEC_MACRO:
                 this.generateVec(exprNode, currentSymbolTable);
-                break;
-            case mini_rustLexer.PRINT_MACRO:
                 break;
             case mini_rustLexer.CSTE_ENT:
                 register = this.registersManager.setReturnRegister();
@@ -247,7 +249,7 @@ public class Generator {
         }
     }
 
-    private void generateArithmeticExpr(Tree arithmeticExprNode, SymbolTable currentSymbolTable) throws IOException {
+    private void generateArithmeticExpr(Tree arithmeticExprNode, SymbolTable currentSymbolTable, String label) throws IOException {
         /*
          * Une expression arithmétique a deux membres, chacun des membres
          * va assigner leur valeur à un registre
@@ -259,8 +261,8 @@ public class Generator {
          * ne sont pas forcément arithmétique, appel de fonction qui retourne
          * une valeur, une variable entière, ...
          */
-        this.generateExpr(arithmeticExprNode.getChild(0), currentSymbolTable);
-        this.generateExpr(arithmeticExprNode.getChild(1), currentSymbolTable);
+        this.generateExpr(arithmeticExprNode.getChild(0), currentSymbolTable, label);
+        this.generateExpr(arithmeticExprNode.getChild(1), currentSymbolTable, label);
 
         /*
          * L'ordre est important pour la soustraction, les registres sont
@@ -305,7 +307,7 @@ public class Generator {
                 .append(op + " R" + r1 + ", R" + r2 + ", R" + r3 + "");
     }
 
-    private void generateLogicalExpr(Tree logicalExprNode, SymbolTable currentSymbolTable) throws IOException {
+    private void generateLogicalExpr(Tree logicalExprNode, SymbolTable currentSymbolTable, String label) throws IOException {
     	/*
          * Une expression logique a deux membres, chacun des membres
          * va assigner leurs valeurs à un registre
@@ -315,13 +317,12 @@ public class Generator {
 		 *
          */
 
-    	this.generateExpr(logicalExprNode.getChild(0), currentSymbolTable);
-    	this.generateExpr(logicalExprNode.getChild(1), currentSymbolTable);
+    	this.generateExpr(logicalExprNode.getChild(0), currentSymbolTable, label);
+    	this.generateExpr(logicalExprNode.getChild(1), currentSymbolTable, label);
 
     	int r2 = this.registersManager.getReturnRegister();
     	int r1 = this.registersManager.getReturnRegister();
 
-    	int r3 = this.registersManager.setReturnRegister();
     	String op;
 
     	switch (logicalExprNode.getType()) {
@@ -346,23 +347,9 @@ public class Generator {
     	}
 
     	this.code
-    			.append("CMP "+ "R" + r1 + "," + " R"+ r2);
-
-    	// TEMPORAIRE, JUSTE POUR TESTER LE WHILE
-        // il faudra gérer les labels pour jump les conditions avec cette fonction
-        // les labels des blocs gérer par les blocs eux mêmes
-    	this.op = op;
-
-    	/*
-    	    			.append(op + " 6")
-                .append("LDW" + " R"+ r3 + ", #0")
-                .append("BMP" + " 2")
-                .append("LDW" + " R" + r3 + ", #1")
-        ;
-        */
+    			.append("CMP "+ "R" + r1 + "," + " R"+ r2)
+                .append(op + " " + label + "-$-2");
     }
-
-    private String op;
 
     private void generateVec(Tree vecNode, SymbolTable currentSymbolTable) throws IOException {
         /*
@@ -371,10 +358,166 @@ public class Generator {
          */
 
         for (int i = 0; i < vecNode.getChildCount(); i++){
-            this.generateExpr(vecNode.getChild(i), currentSymbolTable);
+            this.generateExpr(vecNode.getChild(i), currentSymbolTable, null);
             int register = this.registersManager.getFreeRegister();
             this.code
                  .append("LDW R" + register + ", #" + vecNode.getChild(i));
         }
+    }
+
+    private void generatePrint(Tree exprNode, SymbolTable currentSymbolTable) throws IOException {
+        this.generateExpr(exprNode.getChild(0), currentSymbolTable, null);
+        int r = this.registersManager.getReturnRegister();
+
+        this.code
+                .append("// char toto[7];\n" +
+                        "   // réserve 7+1 = 8 caractères en pile\n" +
+                        "   // (entier pair supérieur à 7 demandé pour pas désaligner pile)\n" +
+                        "        adi SP, SP, #-8   // réserve place pour text sur pile (8 octets); \n" +
+                        "                          // déplacement du début du tableau est -8\n" +
+                        "\n" +
+                        "// int value;\n" +
+                        "        adi SP, SP, #-2   // réserve place pour variable value;\n" +
+                        "                          // déplacement de value est -10\n" +
+                        "\n" +
+                        "// value = -23; \n" +
+                        "        ldw r0, r" + r + "// charge r0 avec -23 = C2(23) = FFE9\n" +
+                        "        stw r0, (BP)-10   // sauve r0 à l'adresse BP-10       \n" +
+                        "\n" +
+                        "// itoa(value, text, 10); // appelle itoa avec i = value, p = text, b = 10\n" +
+                        "\n" +
+                        "        ldw r0, #10       // charge 10 (pour base décimale) dans r0\n" +
+                        "        stw r0, -(SP)     // empile contenu de r0 (paramètre b)\n" +
+                        "\n" +
+                        "        adi BP, r0, #-8   // r0 = BP - 8 = adresse du tableau text\n" +
+                        "        stw r0, -(SP)     // empile contenu de r0 (paramètre p)\n" +
+                        "\n" +
+                        "        ldw r0, (BP)-10   // charge r0 avec value\n" +
+                        "        stw r0, -(SP)     // empile contenu de r0 (paramètre i)\n" +
+                        "\n" +
+                        "        jsr @itoa_        // appelle fonction itoa d'adresse itoa_\n" +
+                        "\n" +
+                        "        adi SP, SP, #6    // nettoie la pile des paramètres \n" +
+                        "                          // de taille totale 6 octets\n" +
+                        "\n" +
+                        "// print(text);\n" +
+                        "\n" +
+                        "        adi BP, r0, #-8   // r0 = BP - 8 = adresse du tableau text\n" +
+                        "        stw r0, -(SP)     // empile contenu de r0 (paramètre p)\n" +
+                        "        \n" +
+                        "        jsr @print_       // appelle fonction print d'adresse print_\n" +
+                        "\n" +
+                        "        adi SP, SP, #2    // nettoie la pile des paramètres\n" +
+                        "                          // de taille totale 2 octets");
+    }
+
+    private void generateItoaFunction() throws IOException {
+        this.code
+        .append("ITOA_I      equ 4      // offset du paramètre i\n" +
+                "ITOA_P      equ 6      // offset du paramètre p\n" +
+                "ITOA_B      equ 8      // offset du paramètre b\n" +
+                "\n" +
+                "ASCII_MINUS equ 45     // code ASCII de -\n" +
+                "ASCII_PLUS  equ 43     // code ASCII de +\n" +
+                "ASCII_SP    equ 32     // code ASCII d'eSPace SP\n" +
+                "ASCII_0     equ 48     // code ASCII de zéro (les autres chiffres jusqu'à 9 suivent dans l'ordre)\n" +
+                "ASCII_A     equ 65     // code ASCII de A (les autres lettres jusqu'à Z suivent dans l'ordre alphabétique)\n" +
+                "\n" +
+                "// LNK: crée environnement du main pour permettre des variables locales \n" +
+                "// mais sans encore les réserver\n" +
+                "itoa_   stw BP, -(SP)\n" +
+                "        ldw BP, SP\n" +
+                "\n" +
+                "// récupération des paramètres depuis pile vers registres\n" +
+                "        ldw r0, (BP)ITOA_I    // r0 = i    \n" +
+                "        ldw r1, (BP)ITOA_B    // r1 = b\n" +
+                "        \n" +
+                "// gère le signe: normalement itoa gère des int c'est à dire des entiers signés, \n" +
+                "// mais en fait seulement pour b=10;\n" +
+                "// dans ce cas calcule le signe dans r3 et charge r0 avec la valeur absolue de i\n" +
+                "        ldq ASCII_SP, r3      // code ASCII de eSPace (SPace) -> r3\n" +
+                "        ldq 10, WR            // 10 -> WR\n" +
+                "        cmp r1, WR            // charge les indicateurs de b - 10\n" +
+                "        bne NOSIGN-$-2        // si non égal (donc si b != 10) saute en NOSIGN, sinon calcule signe\n" +
+                "        ldq ASCII_PLUS, r3    // charge le code ASCII du signe plus + dans r3\n" +
+                "        tst r0                // charge les indicateurs de r0 et donc de i\n" +
+                "        bge POSIT-$-2         // saute en POSIT si i >= 0\n" +
+                "        neg r0, r0            // change le signe de r0\n" +
+                "        ldq ASCII_MINUS, r3   // charge le code ASCII du signe moins - dans r3\n" +
+                "POSIT   NOP                   // r3 = code ASCII de signe: SP pour aucun, - ou +\n" +
+                "\n" +
+                "\n" +
+                "// convertit l'entier i en chiffres et les empile de droite à gauche\n" +
+                "NOSIGN  ldw r2, r0            // r2 <- r0\n" +
+                "CNVLOOP ldw r0, r2            // r0 <- r2\n" +
+                "   \n" +
+                "   // effectue \"créativement\" la division par b supposé pair (car l'instruction div est hélas signée ...)\n" +
+                "   // d=2*d' , D = d * q + r  , D = 2*D'+r\" , D' = d' * q + r' => r = 2*r'+r\"\n" +
+                "   // un bug apparaît avec SRL R0, R0 avec R0 = 2 : met CF à 1 !!\n" +
+                "        srl r1, r1            // r1 = b/2\n" +
+                "        ani r0, r4, #1        // ANd Immédiate entre r0 et 00...01 vers r4:\n" +
+                "                              // bit n°0 de r0 -> r4; r4 = reste\" de r0/2\n" +
+                "        srl r0, r0            // r0 / 2 -> r0\n" +
+                "        div r0, r1, r2        // quotient = r0 / r1 -> r2, reste' = r0 % r1 -> r0\n" +
+                "        shl r0, r0            // r0 = 2 * reste'\n" +
+                "        add r0, r4, r0        // r0 = reste = 2 * reste' + reste\" => r0 = chiffre\n" +
+                "        shl r1, r1            // r1 = b\n" +
+                "\n" +
+                "        adq -10, r0           // chiffre - 10 -> r0 \n" +
+                "        bge LETTER-$-2        // saute en LETTER si chiffre >= 10\n" +
+                "        adq 10+ASCII_0, r0    // ajoute 10 => r0 = chiffre, ajoute code ASCII de 0 \n" +
+                "                              // => r0 = code ASCII de chiffre\n" +
+                "        bmp STKCHR-$-2        // saute en STKCHR \n" +
+                "\n" +
+                "LETTER  adq ASCII_A, r0       // r0 = ASCII(A) pour chiffre = 10, ASCII(B) pour 11 ...\n" +
+                "                              // ajoute code ASCII de A => r = code ASCII de chiffre\n" +
+                "STKCHR  stw r0, -(SP)         // empile code ASCII du chiffre \n" +
+                "                              // (sur un mot complet pour pas désaligner pile)\n" +
+                "        tst r2                // charge les indicateurs en fonction du quotient ds r2)\n" +
+                "        bne CNVLOOP-$-2       // boucle si quotient non nul; sinon sort\n" +
+                "\n" +
+                "// les caractères sont maintenant empilés : gauche en haut et droit en bas\n" +
+                "\n" +
+                "// recopie les caractères dans le tampon dans le bon ordre: de gauche à droite\n" +
+                "        ldw r1, (BP)ITOA_P    // r1 pointe sur le début du tampon déjà alloué \n" +
+                "        stb r3, (r1)+         // copie le signe dans le tampon\n" +
+                "CPYLOOP ldw r0, (SP)+         // dépile code du chiffre gauche (sur un mot) dans r0\n" +
+                "        stb r0, (r1)+         // copie code du chiffre dans un Byte du tampon de gauche à droite\n" +
+                "        cmp SP, BP            // compare SP et sa valeur avant empilement des caractères qui était BP\n" +
+                "        bne CPYLOOP-$-2       // boucle s'il reste au moins un chiffre sur la pile\n" +
+                "        ldq NUL, r0           // charge le code du caractère NUL dans r0\n" +
+                "        stb r0, (r1)+         // sauve code NUL pour terminer la chaîne de caractères\n" +
+                "\n" +
+                "// termine\n" +
+                "        ldw r0, (BP)ITOA_P    // retourne le pointeur sur la chaîne de caractères\n" +
+                "\n" +
+                "    // UNLINK: fermeture de l'environnement de la fonction itoa\n" +
+                "        ldw SP, BP            // SP <- BP : abandonne infos locales; SP pointe sur ancinne valeur de BP\n" +
+                "        ldw BP, (SP)+         // dépile ancienne valeur de BP dans BP; SP pointe sur adresse de retour\n" +
+                "\n" +
+                "        rts                   // retourne au programme appelant");
+    }
+
+    private void generatePrintFunction() throws IOException {
+        this.code
+                .append("print_");
+        this.openEnvironment(0);
+
+        this.code
+                .append("STW BP, -(SP)")
+                .append("STW BP, SP");
+
+        int r = this.registersManager.setReturnRegister();
+
+        this.code
+                .append("LDW R" + r + ", (BP)4")
+                .append("TRP #WRITE_EXC");
+
+        this.registersManager.getReturnRegister();
+
+        this.closeEnvironment();
+
+        this.code
+                .append("RTS");
     }
 }
