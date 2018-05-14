@@ -90,33 +90,40 @@ public class Generator {
         this.code.close();
     }
 
+    private void openEnvironment(int environmentSize) throws IOException {
+        this.code
+                .append("// Ouverture de l'environnement")
+                .append("STW BP, -(SP)")
+                .append("LDW BP, SP")
+                .append("// Reservation sur la pile des variables")
+                .append("LDQ " + environmentSize + ", R0")
+                .append("SUB SP, R0, SP");
+    }
+
+    private void closeEnvironment() throws IOException {
+        this.code
+                .append("// Fermeture de l'environnement")
+                .append("LDW SP, BP")
+                .append("LDW BP, (SP)+");
+    }
+
     private void generateFunction(Tree functionNode, FunctionSymbol functionSymbol) throws IOException {
         String functionLabel = functionSymbol.getName() + "_";
 
         this.code
                 .append(functionLabel);
 
+        this.openEnvironment(functionSymbol.getSymbolTable().getEnvironmentSize());
+
         this.generateBloc(
                 functionNode.getChild(1),
                 functionSymbol.getSymbolTable()
         );
+
+        this.closeEnvironment();
     }
 
     private void generateBloc(Tree blocNode, SymbolTable currentSymbolTable) throws IOException {
-        // Ouverture de l'environnement
-        this.code
-                .append("// Ouverture de l'environnement")
-                .append("STW BP, -(SP)")
-                .append("LDW BP, SP");
-
-        int environmentSize = currentSymbolTable.getEnvironmentSize();
-
-        // Réservation mémoire pour les variables de l'environnement
-        this.code
-                .append("// Reservation sur la pile des variables")
-                .append("LDQ " + environmentSize + ", R0")
-                .append("SUB SP, R0, SP");
-
         // Parcours des instructions du bloc
         for(int i = 0; i < blocNode.getChildCount(); i++) {
             Tree child = blocNode.getChild(i);
@@ -126,14 +133,42 @@ public class Generator {
                 case mini_rustLexer.LETMUT:
                     this.generateLet(child, currentSymbolTable);
                     break;
+                case mini_rustLexer.WHILE:
+                    this.generateWhile(child, currentSymbolTable.getBloc(child.getChild(1).hashCode()));
+                    break;
+                case mini_rustLexer.IF:
+                    this.generateIf(child, currentSymbolTable.getBloc(child.getChild(1).hashCode()));
+                    break;
             }
         }
+    }
 
-        // Fermeture de l'environnement
+
+    // PROTOYPE DE WHILE
+    private void generateWhile(Tree whileNode, SymbolTable currentSymbolTable) throws IOException {
+        Tree condition = whileNode.getChild(0);
+        Tree bloc = whileNode.getChild(1);
+
+        this.openEnvironment(currentSymbolTable.getEnvironmentSize());
         this.code
-                .append("// Fermeture de l'environnement")
-                .append("LDW SP, BP")
-                .append("LDW BP, (SP)+");
+                .append("bwhile_" + bloc.hashCode());
+
+        this.generateExpr(condition, currentSymbolTable);
+
+        this.code
+                .append(this.op + " ewhile_" + bloc.hashCode() + "-$-2");
+
+        this.generateBloc(bloc, currentSymbolTable);
+        this.code
+                .append("BMP bwhile_" + bloc.hashCode() + "-$-2")
+                .append("ewhile_" + bloc.hashCode());
+        this.closeEnvironment();
+    }
+
+    private void generateIf(Tree ifNode, SymbolTable currentSymbolTable) throws IOException {
+        this.openEnvironment(currentSymbolTable.getEnvironmentSize());
+
+        this.closeEnvironment();
     }
 
     private void generateLet(Tree letNode, SymbolTable currentSymbolTable) throws IOException {
@@ -310,11 +345,21 @@ public class Generator {
     	}
 
     	this.code
-    			.append("CMP "+ "R" + r1 + "," + " R"+ r2)
-    			.append(op + " 6")
-    			.append("LDW" + " R"+ r3 + ", #0")
-    			.append("BMP" + " 2")
-    			.append("LDW" + " R" + r3 + ", #1")
-    			;
+    			.append("CMP "+ "R" + r1 + "," + " R"+ r2);
+
+    	// TEMPORAIRE, JUSTE POUR TESTER LE WHILE
+        // il faudra gérer les labels pour jump les conditions avec cette fonction
+        // les labels des blocs gérer par les blocs eux mêmes
+    	this.op = op;
+
+    	/*
+    	    			.append(op + " 6")
+                .append("LDW" + " R"+ r3 + ", #0")
+                .append("BMP" + " 2")
+                .append("LDW" + " R" + r3 + ", #1")
+        ;
+        */
     }
+
+    private String op;
 }
