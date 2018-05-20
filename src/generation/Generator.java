@@ -1,9 +1,12 @@
 package generation;
 
 import grammar.mini_rustLexer;
+import grammar.mini_rustParser;
+import javafx.util.Pair;
 import org.antlr.runtime.tree.Tree;
 import symbolTable.SymbolTable;
 import symbolTable.symbols.FunctionSymbol;
+import symbolTable.symbols.StructureSymbol;
 import symbolTable.symbols.VariableSymbol;
 
 import java.io.File;
@@ -166,22 +169,78 @@ public class Generator {
                 .append(endLabel);
     }
 
+    private Pair<Integer, VariableSymbol> getOffset(Tree variableNode, SymbolTable currentSymbolTable) {
+        int offset = 0;
+        Stack<Pair<String, Integer>> nodes = new Stack<>();
+        Tree currentNode = variableNode;
+        boolean b = true;
+
+        while(b) {
+            switch (currentNode.getType()) {
+                case mini_rustParser.INDEX:
+                case mini_rustParser.DOT:
+                    int typePair = currentNode.getType();
+
+                    if(currentNode.getChild(1).getType() == mini_rustParser.LEN) {
+                        typePair = mini_rustParser.LEN;
+                    }
+
+                    nodes.push(new Pair<>(currentNode.getChild(1).getText(), typePair));
+                    currentNode = currentNode.getChild(0);
+                    break;
+                default:
+                    nodes.push(new Pair<>(currentNode.getText(), 0));
+                    b = false;
+            }
+        }
+
+        String idf = nodes.pop().getKey();
+        VariableSymbol variableSymbol = currentSymbolTable.getVariableSymbol(idf, true);
+        offset += variableSymbol.getOffset();
+
+        while(!nodes.isEmpty()) {
+            Pair<String, Integer> node = nodes.pop();
+
+            switch (node.getValue()) {
+                case mini_rustParser.DOT:
+                    StructureSymbol structureSymbol = currentSymbolTable
+                            .getStructureSymbol(variableSymbol.getType().getStructure(), true);
+                    variableSymbol = structureSymbol
+                            .getSymbolTable()
+                            .getVariableSymbol(node.getKey(), false);
+
+                    offset += variableSymbol.getOffset() - 2;
+                    break;
+                case mini_rustParser.INDEX:
+                    // TODO : vectors
+                    break;
+            }
+        }
+
+        return new Pair<>(offset, variableSymbol);
+    }
+
     private void generateIf(Tree ifNode, SymbolTable currentSymbolTable) throws IOException {
 
     }
 
     private void generateLet(Tree letNode, SymbolTable currentSymbolTable) throws IOException {
-        VariableSymbol variableSymbol = currentSymbolTable.getVariableSymbol(letNode.getChild(0).getText(), true);
+        Pair<Integer, VariableSymbol> offset = this.getOffset(letNode.getChild(0), currentSymbolTable);
 
         // Si le type de la variable n'est pas défini, elle n'est pas utilisée
         // on ne la génère donc pas
-        if(!variableSymbol.getType().isUnknown()) {
+        if(!offset.getValue().getType().isUnknown()) {
             if(letNode.getChildCount() > 1) {
-                this.generateExpr(letNode.getChild(1), currentSymbolTable);
-                int register = this.registersManager.getReturnRegister();
+                if(offset.getValue().getType().isStructure()) {
+                    this.generateStructureInitialization(letNode.getChild(1), currentSymbolTable, offset.getKey());
+                }
+                else {
+                    this.generateExpr(letNode.getChild(1), currentSymbolTable);
+                    int register = this.registersManager.getReturnRegister();
 
-                this.code
-                        .append("STW R" + register + ", (BP)-" + variableSymbol.getOffset() + "");
+                    this.code
+                            .append("STW R" + register + ", (BP)-" + offset.getKey() + "");
+                }
             }
         }
     }
@@ -209,6 +268,7 @@ public class Generator {
                 break;
             case mini_rustLexer.INDEX:
             case mini_rustLexer.DOT:
+                this.getIndexDotValue(exprNode, currentSymbolTable);
                 break;
             case mini_rustLexer.FUNCTION_CALL:
                 break;
@@ -221,8 +281,41 @@ public class Generator {
             case mini_rustLexer.IDF:
                 this.generateAssignation(exprNode, currentSymbolTable);
                 break;
-            case mini_rustLexer.OBJ:
-                break;
+        }
+    }
+
+    private void getIndexDotValue(Tree exprNode, SymbolTable currentSymbolTable) throws IOException {
+        int r0 = this.registersManager.setReturnRegister();
+        int offset = this.getOffset(exprNode, currentSymbolTable).getKey();
+
+        this.code
+                .append("LDW R" + r0 + ", (BP)-" + offset);
+    }
+
+    private void generateStructureInitialization(Tree exprNode, SymbolTable currentSymbolTable, int offset) throws IOException {
+        StructureSymbol structureSymbol = currentSymbolTable
+                .getStructureSymbol(exprNode.getChild(0).getText(), true);
+
+        for(int i = 1; i < exprNode.getChildCount(); i++) {
+            Tree child = exprNode.getChild(i);
+            VariableSymbol variableSymbol = structureSymbol
+                    .getSymbolTable()
+                    .getVariableSymbol(child.getChild(0).getText(), false);
+
+            this.generateMemberInitialization(child, structureSymbol.getSymbolTable(), offset + variableSymbol.getOffset() - 2);
+        }
+    }
+
+    private void generateMemberInitialization(Tree exprNode, SymbolTable currentSymbolTable, int offset) throws IOException {
+        if(exprNode.getChild(1).getType() == mini_rustParser.OBJ) {
+            this.generateStructureInitialization(exprNode.getChild(1), currentSymbolTable, offset);
+        }
+        else {
+            this.generateExpr(exprNode.getChild(1), currentSymbolTable);
+            int r0 = this.registersManager.getReturnRegister();
+
+            this.code
+                    .append("STW R" + r0 + ", (BP)-" + offset);
         }
     }
 
