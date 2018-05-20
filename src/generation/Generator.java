@@ -28,6 +28,7 @@ public class Generator {
 
     private final RegistersManager registersManager;
     private final EnvironmentManager environmentManager;
+    private Stack<FunctionSymbol> usedFunctions;
 
     public Generator(File genFile, SymbolTable symbolTable) throws FileNotFoundException {
         if(genFile.exists() && genFile.length() > 0) {
@@ -38,6 +39,7 @@ public class Generator {
         this.symbolTable = symbolTable;
         this.registersManager = new RegistersManager(0, 10);
         this.environmentManager = new EnvironmentManager();
+        this.usedFunctions = new Stack<>();
     }
 
     /**
@@ -84,14 +86,11 @@ public class Generator {
          */
         this.generateFunction(
                 mainNode,
-                main
+                main,
+                true
         );
 
-        // Code fin du programme
-        this.code
-                .append("TRP #EXIT_EXC")
-                .append("JEA @main_");
-
+        this.generateUsedFunction();
         this.generatePrintFunction();
         this.generatePrintiFunction();
         this.generateItoaFunction();
@@ -100,7 +99,18 @@ public class Generator {
         this.code.close();
     }
 
-    private void generateFunction(Tree functionNode, FunctionSymbol functionSymbol) throws IOException {
+    private void generateUsedFunction() throws IOException {
+        while(!this.usedFunctions.empty()) {
+            FunctionSymbol functionSymbol = this.usedFunctions.pop();
+
+            this.generateFunction(
+                    functionSymbol.getNode(),
+                    functionSymbol,
+                    false);
+        }
+    }
+
+    private void generateFunction(Tree functionNode, FunctionSymbol functionSymbol, boolean isMain) throws IOException {
         String functionLabel = functionSymbol.getName() + "_";
 
         this.code
@@ -115,6 +125,16 @@ public class Generator {
         );
 
         this.environmentManager.closeEnvironment(this.code);
+
+        if(isMain) {
+            this.code
+                    .append("TRP #EXIT_EXC")
+                    .append("JEA @main_");
+        }
+        else {
+            this.code
+                    .append("RTS");
+        }
     }
 
     private void generateBloc(Tree blocNode, SymbolTable currentSymbolTable) throws IOException {
@@ -227,7 +247,7 @@ public class Generator {
     	Tree condition = ifNode.getChild(0);
         Tree bloc = ifNode.getChild(1);
 
-        this.generateCondition(condition, bloc, currentSymbolTable, "if_" + ifNode.hashCode());
+        //this.generateCondition(condition, bloc, currentSymbolTable, "if_" + ifNode.hashCode());
     }
 
     private void generateLet(Tree letNode, SymbolTable currentSymbolTable) throws IOException {
@@ -293,32 +313,33 @@ public class Generator {
     }
 
     private void generateFunctionCall(Tree functionCallNode, SymbolTable currentSymbolTable) throws IOException {
-        this.generateFunction(functionCallNode, currentSymbolTable.getFunctionSymbol(functionCallNode.getChild(0).getText(),true));
-        int register = this.registersManager.setReturnRegister();
+        this.usedFunctions.push(currentSymbolTable.getFunctionSymbol(functionCallNode.getChild(0).getText(), true));
+
         int nbParametre = functionCallNode.getChildCount()-1;
         this.code
                 .append("//Appel de la fonction : " + functionCallNode.getChild(0).getText())
                 .append("//Gestion des potentiels paramètres");
 
-        if (nbParametre >0){
+        if (nbParametre > 0){
             for(int i = nbParametre; i>0; i--){
                 this.generateExpr(functionCallNode.getChild(i), currentSymbolTable);
+                int register = this.registersManager.getReturnRegister();
+
                 this.code
-                        .append("STW R" + register + ", (SP)+       //On empile les paramètres de la fonction appelée");
+                        .append("STW R" + register + ", -(SP)       //On empile les paramètres de la fonction appelée");
             }
         }
 
         String functionName = functionCallNode.getChild(0).getText()+"_";
+
         this.code
-                .append("JSR @"+ functionName +"          //on appelle la fonction à l'aide de son adresse");
+                    .append("JSR @"+ functionName +"          //on appelle la fonction à l'aide de son adresse");
 
         if (nbParametre>0) {
             this.code
             // .append("ADI SP, SP, #"+nbParametre +"         //On dépile les paramètres");
                 .append("ADQ 2*" + nbParametre + ", SP");
         }
-
-
 }
     private void getIndexDotValue(Tree exprNode, SymbolTable currentSymbolTable) throws IOException {
         int r0 = this.registersManager.setReturnRegister();
@@ -368,12 +389,30 @@ public class Generator {
                         .append("LDQ 0, R" + register);
                 break;
             case mini_rustLexer.IDF:
+                int offset = currentSymbolTable.getVariableSymbol(exprNode.getText(), true).getOffset();
+                String bp;
+
+                if(offset < 0) {
+                    bp = String.valueOf(-offset);
+                }
+                else {
+                    bp = "-" + offset;
+                }
+
                 this.code
-                        .append("LDW R" + register + ", (BP)-" + currentSymbolTable.getVariableSymbol(exprNode.getText(), true).getOffset());
+                        .append("LDW R" + register + ", (BP)" + bp);
                 break;
             case mini_rustLexer.CSTE_ENT:
-                this.code
-                        .append("LDQ " + Integer.parseInt(exprNode.getText()) + ", R" + register + "");
+                int value = Integer.parseInt(exprNode.getText());
+
+                if(value >= -128 && value <= 127) {
+                    this.code
+                            .append("LDQ " + value + ", R" + register + "");
+                }
+                else {
+                    this.code
+                            .append("LDW R" + register + ", #" + value);
+                }
                 break;
         }
     }
