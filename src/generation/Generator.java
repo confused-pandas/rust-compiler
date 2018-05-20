@@ -219,9 +219,15 @@ public class Generator {
 
         return new Pair<>(offset, variableSymbol);
     }
-
+    
+    /*
+     * Function to generate assembly code for if
+     */
     private void generateIf(Tree ifNode, SymbolTable currentSymbolTable) throws IOException {
+    	Tree condition = ifNode.getChild(0);
+        Tree bloc = ifNode.getChild(1);
 
+        this.generateCondition(condition, bloc, currentSymbolTable, "if_" + ifNode.hashCode());
     }
 
     private void generateLet(Tree letNode, SymbolTable currentSymbolTable) throws IOException {
@@ -294,20 +300,25 @@ public class Generator {
                 .append("//Gestion des potentiels paramètres");
 
         if (nbParametre >0){
-            for(int i = nbParametre - 1; i>0; i--){
+            for(int i = nbParametre; i>0; i--){
                 this.generateExpr(functionCallNode.getChild(i), currentSymbolTable);
                 this.code
-                        .append("STW R" + register + ", (SP)       //On empile les paramètres de la fonction appelée");
+                        .append("STW R" + register + ", (SP)+       //On empile les paramètres de la fonction appelée");
             }
-
-            String functionName = functionCallNode.getChild(0).getText()+"_";
-            this.code
-                    .append("JSR @"+ functionName +"          //on appelle la fonction à l'aide de son adresse")
-                    .append("ADI SP, SP, #"+nbParametre +"         //On dépile les paramètres");
-
         }
 
-    }
+        String functionName = functionCallNode.getChild(0).getText()+"_";
+        this.code
+                .append("JSR @"+ functionName +"          //on appelle la fonction à l'aide de son adresse");
+
+        if (nbParametre>0) {
+            this.code
+            // .append("ADI SP, SP, #"+nbParametre +"         //On dépile les paramètres");
+                .append("ADQ 2*" + nbParametre + ", SP");
+        }
+
+
+}
     private void getIndexDotValue(Tree exprNode, SymbolTable currentSymbolTable) throws IOException {
         int r0 = this.registersManager.setReturnRegister();
         int offset = this.getOffset(exprNode, currentSymbolTable).getKey();
