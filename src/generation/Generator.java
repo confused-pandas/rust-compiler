@@ -266,6 +266,7 @@ public class Generator {
                 this.generateArithmeticExpr(exprNode, currentSymbolTable);
                 break;
             case mini_rustLexer.UNARY_MINUS:
+                this.generateUnaryMinus();
                 break;
             case mini_rustLexer.NEG:
                 break;
@@ -522,7 +523,16 @@ public class Generator {
             int register = this.registersManager.getFreeRegister();
             this.code
                  .append("LDW R" + register + ", #" + vecNode.getChild(i));
+                 //.append("STW R" + register + ", (BP)-" + offset);
         }
+    }
+
+    private void generateUnaryMinus() throws  IOException{
+        this.generateExpr(exprNode.getChild(0), currentSymbolTable);
+        int register = this.registersManager.getFreeRegister();
+        this.code
+                .append("LDW R" + register + ", #-" + exprNode.getChild(0));
+
     }
 
     private void generatePrint(Tree exprNode, SymbolTable currentSymbolTable) throws IOException {
@@ -668,4 +678,6 @@ public class Generator {
         this.code
                 .append("RTS");
     }
+
+
 }
