@@ -219,7 +219,10 @@ public class Generator {
 
         return new Pair<>(offset, variableSymbol);
     }
-
+    
+    /*
+     * Function to generate assembly code for if
+     */
     private void generateIf(Tree ifNode, SymbolTable currentSymbolTable) throws IOException {
     	Tree condition = ifNode.getChild(0);
         Tree bloc = ifNode.getChild(1);
