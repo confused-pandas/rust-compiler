@@ -136,6 +136,9 @@ public class Generator {
                 case mini_rustLexer.PRINT_MACRO:
                     this.generatePrint(child, currentSymbolTable);
                     break;
+                case mini_rustLexer.FUNCTION_CALL:
+                    this.generateFunctionCall(child, currentSymbolTable);
+                    break;
             }
         }
     }
@@ -144,10 +147,7 @@ public class Generator {
         Tree condition = whileNode.getChild(0);
         Tree bloc = whileNode.getChild(1);
 
-        this.generateCondition(condition, bloc, currentSymbolTable, "while_" + whileNode.hashCode());
-    }
-
-    private void generateCondition(Tree condition, Tree bloc, SymbolTable currentSymbolTable, String label) throws IOException {
+        String label = "while" + whileNode.hashCode();
         String beginLabel = "begin_cond_" + label;
         String endLabel = "end_cond_" + label;
 
