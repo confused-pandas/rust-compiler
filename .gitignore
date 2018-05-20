@@ -7,3 +7,8 @@ src/eu/telecomnancy/mini_rust/output/
 src/eu/telecomnancy/mini_rust/mini_rust.tokens
 .idea/
 out/
+*.iml
+gen.iup
+gen.src
+gen.src$tmp
+gen/
