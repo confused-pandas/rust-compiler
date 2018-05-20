@@ -187,8 +187,6 @@ public class Generator {
     }
 
     private void generateExpr(Tree exprNode, SymbolTable currentSymbolTable) throws IOException {
-        int register;
-
         switch(exprNode.getType()) {
             case mini_rustLexer.BLOC:
                 break;
@@ -218,21 +216,35 @@ public class Generator {
                 this.generateVec(exprNode, currentSymbolTable);
                 break;
             case mini_rustLexer.CSTE_ENT:
-                register = this.registersManager.setReturnRegister();
-
-                this.code
-                        .append("LDQ " + Integer.parseInt(exprNode.getText()) + ", R" + register + "");
-                break;
             case mini_rustLexer.TRUE:
             case mini_rustLexer.FALSE:
+            case mini_rustLexer.IDF:
+                this.generateAssignation(exprNode, currentSymbolTable);
+                break;
+            case mini_rustLexer.OBJ:
+                break;
+        }
+    }
+
+    private void generateAssignation(Tree exprNode, SymbolTable currentSymbolTable) throws IOException {
+        int register = this.registersManager.setReturnRegister();
+
+        switch (exprNode.getType()) {
+            case mini_rustLexer.TRUE:
+                this.code
+                        .append("LDQ 1, R" + register);
+                break;
+            case mini_rustLexer.FALSE:
+                this.code
+                        .append("LDQ 0, R" + register);
                 break;
             case mini_rustLexer.IDF:
-                register = this.registersManager.setReturnRegister();
-
                 this.code
                         .append("LDW R" + register + ", (BP)-" + currentSymbolTable.getVariableSymbol(exprNode.getText(), true).getOffset());
                 break;
-            case mini_rustLexer.OBJ:
+            case mini_rustLexer.CSTE_ENT:
+                this.code
+                        .append("LDQ " + Integer.parseInt(exprNode.getText()) + ", R" + register + "");
                 break;
         }
     }

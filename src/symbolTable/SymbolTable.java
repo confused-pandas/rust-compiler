@@ -91,7 +91,7 @@ public class SymbolTable {
             size = 2;
         }
         else if(type.isBool()) {
-            size = 1;
+            size = 2;
         }
         else if(type.isInt()) {
             size = 2;

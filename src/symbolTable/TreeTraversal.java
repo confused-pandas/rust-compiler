@@ -483,12 +483,6 @@ public class TreeTraversal {
                 break;
             case mini_rustParser.TRUE :
             case mini_rustParser.FALSE :
-                leftExpr = this.traverseExpr(exprNode.getChild(0));
-
-                if(!leftExpr.isBool()){
-                    throw new IsNotWithoutBoolException("");
-                }
-
                 type = new Type(EnumType.BOOL);
                 break;
             case mini_rustParser.IDF :
