@@ -1,0 +1,9 @@
+IF0
+LDW R10,#1   // afin de tester avec CMP
+// Résultat dans R0
+CMP R0,R10
+BEQ THEN0 //on branche sur le tag THEN0
+BNE FI0 //on branche sur le tag FI0
+THEN0
+//Generation du code
+FI0
