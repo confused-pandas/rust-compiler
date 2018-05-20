@@ -271,6 +271,7 @@ public class Generator {
                 this.getIndexDotValue(exprNode, currentSymbolTable);
                 break;
             case mini_rustLexer.FUNCTION_CALL:
+                this.generateFunctionCall(exprNode, currentSymbolTable);
                 break;
             case mini_rustLexer.VEC_MACRO:
                 this.generateVec(exprNode, currentSymbolTable);
@@ -284,6 +285,29 @@ public class Generator {
         }
     }
 
+    private void generateFunctionCall(Tree functionCallNode, SymbolTable currentSymbolTable) throws IOException {
+        this.generateFunction(functionCallNode, currentSymbolTable.getFunctionSymbol(functionCallNode.getChild(0).getText(),true));
+        int register = this.registersManager.setReturnRegister();
+        int nbParametre = functionCallNode.getChildCount()-1;
+        this.code
+                .append("//Appel de la fonction : " + functionCallNode.getChild(0).getText())
+                .append("//Gestion des potentiels paramètres");
+
+        if (nbParametre >0){
+            for(int i = nbParametre - 1; i>0; i--){
+                this.generateExpr(functionCallNode.getChild(i), currentSymbolTable);
+                this.code
+                        .append("STW R" + register + ", (SP)       //On empile les paramètres de la fonction appelée");
+            }
+
+            String functionName = functionCallNode.getChild(0).getText()+"_";
+            this.code
+                    .append("JSR @"+ functionName +"          //on appelle la fonction à l'aide de son adresse")
+                    .append("ADI SP, SP, #"+nbParametre +"         //On dépile les paramètres");
+
+        }
+
+    }
     private void getIndexDotValue(Tree exprNode, SymbolTable currentSymbolTable) throws IOException {
         int r0 = this.registersManager.setReturnRegister();
         int offset = this.getOffset(exprNode, currentSymbolTable).getKey();

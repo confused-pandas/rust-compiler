@@ -179,7 +179,7 @@ public class TreeTraversal {
         int realSize = functionCallNode.getChildCount()-1;
 
         if (size != realSize){
-            throw new WrongNbArgumentException("The function "+ idf + " has been called with wrong number of arguments (" + size + " instead of " + realSize + "). Line :" + functionCallNode.getLine());
+            throw new WrongNbArgumentException("The function "+ idf + " has been called with wrong number of arguments (" + realSize + " instead of " + size + "). Line :" + functionCallNode.getLine());
         }
 
         for (int i = 1; i < realSize + 1; i++){
