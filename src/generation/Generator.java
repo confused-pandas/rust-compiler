@@ -221,7 +221,10 @@ public class Generator {
     }
 
     private void generateIf(Tree ifNode, SymbolTable currentSymbolTable) throws IOException {
+    	Tree condition = ifNode.getChild(0);
+        Tree bloc = ifNode.getChild(1);
 
+        this.generateCondition(condition, bloc, currentSymbolTable, "if_" + ifNode.hashCode());
     }
 
     private void generateLet(Tree letNode, SymbolTable currentSymbolTable) throws IOException {
