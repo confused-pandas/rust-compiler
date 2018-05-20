@@ -221,7 +221,7 @@ public class Generator {
                 register = this.registersManager.setReturnRegister();
 
                 this.code
-                        .append("LDW R" + register + ", #" + Integer.parseInt(exprNode.getText()) + "");
+                        .append("LDQ " + Integer.parseInt(exprNode.getText()) + ", R" + register + "");
                 break;
             case mini_rustLexer.TRUE:
             case mini_rustLexer.FALSE:
@@ -336,10 +336,10 @@ public class Generator {
 
             this.code
                     .append("CMP R" + r1 + ", R" + r2)
-                    .append(op + " 6")
-                    .append("LDW R" + r3 + ", #1")
+                    .append(op + " 4")
+                    .append("LDQ 1, R" + r3 + "")
                     .append("BMP 2")
-                    .append("LDW R" + r3 + ", #0");
+                    .append("LDQ 0, R" + r3 + "");
         }
     }
 
