@@ -319,7 +319,7 @@ public class Generator {
                 .append("//Appel de la fonction : " + functionCallNode.getChild(0).getText())
                 .append("//Gestion des potentiels paramètres");
 
-        if (nbParametre >0){
+        if (nbParametre > 0){
             for(int i = nbParametre; i>0; i--){
                 this.generateExpr(functionCallNode.getChild(i), currentSymbolTable);
                 int register = this.registersManager.getReturnRegister();
@@ -402,8 +402,16 @@ public class Generator {
                         .append("LDW R" + register + ", (BP)" + bp);
                 break;
             case mini_rustLexer.CSTE_ENT:
-                this.code
-                        .append("LDQ " + Integer.parseInt(exprNode.getText()) + ", R" + register + "");
+                int value = Integer.parseInt(exprNode.getText());
+
+                if(value >= -128 && value <= 127) {
+                    this.code
+                            .append("LDQ " + value + ", R" + register + "");
+                }
+                else {
+                    this.code
+                            .append("LDW R" + register + ", #" + value);
+                }
                 break;
         }
     }
