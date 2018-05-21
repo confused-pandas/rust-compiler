@@ -3,9 +3,9 @@ package symbolTable;
 public class Type {
 	private final EnumType type;
 	private final String structure;
-	private final int vec;
-    private final int pointer;
-	private final int ref;
+	private int vec;
+    private int pointer;
+	private int ref;
 
     public static boolean isDefaultType(String type) {
         switch (type) {
@@ -88,6 +88,18 @@ public class Type {
 
     public int getVec() {
         return vec;
+    }
+
+    public void setVec(int vec) {
+        this.vec = vec;
+    }
+
+    public void setPointer(int pointer) {
+        this.pointer = pointer;
+    }
+
+    public void setRef(int ref) {
+        this.ref = ref;
     }
 
     public int getRef() {

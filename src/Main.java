@@ -16,7 +16,8 @@ import java.io.IOException;
 
 public class Main {
     public static void main(String args[]) throws IOException {
-        mini_rustLexer lex = new mini_rustLexer(new ANTLRFileStream("fichiers_tests/ex2.rs", "UTF8"));
+        String source = "fichiers_tests/ex2.rs";
+        mini_rustLexer lex = new mini_rustLexer(new ANTLRFileStream(source, "UTF8"));
         CommonTokenStream tokens = new CommonTokenStream(lex);
         mini_rustParser g = new mini_rustParser(tokens, null);
 
@@ -27,8 +28,9 @@ public class Main {
             SymbolTable symbolTable = treeTraversal.buildSymbolTable();
             System.out.println(symbolTable.toTable());
 
+            File sourceFile = new File(source);
             File genFile = new File("gen.src");
-            Generator generator = new Generator(genFile, symbolTable);
+            Generator generator = new Generator(sourceFile, genFile, symbolTable);
             generator.generate();
 
             Compiler compiler = new Compiler(genFile);

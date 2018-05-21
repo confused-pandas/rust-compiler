@@ -661,6 +661,9 @@ public class TreeTraversal {
         }
         else {
             type = exprRightType;
+            // TODO : check pointer type
+            type.setPointer(exprLeftType.getPointer());
+            type.setRef(0);
         }
 
         VariableSymbol variableSymbol = new VariableSymbol(

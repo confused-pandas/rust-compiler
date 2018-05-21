@@ -28,9 +28,10 @@ public class Generator {
 
     private final RegistersManager registersManager;
     private final EnvironmentManager environmentManager;
+    private final SourceManager sourceManager;
     private Stack<FunctionSymbol> usedFunctions;
 
-    public Generator(File genFile, SymbolTable symbolTable) throws FileNotFoundException {
+    public Generator(File sourceFile, File genFile, SymbolTable symbolTable) throws FileNotFoundException {
         if(genFile.exists() && genFile.length() > 0) {
             genFile.delete();
         }
@@ -39,6 +40,7 @@ public class Generator {
         this.symbolTable = symbolTable;
         this.registersManager = new RegistersManager(0, 10);
         this.environmentManager = new EnvironmentManager();
+        this.sourceManager = new SourceManager(sourceFile);
         this.usedFunctions = new Stack<>();
     }
 
@@ -76,9 +78,7 @@ public class Generator {
                 .append("// Adresse debut de programme")
                 .append("LOAD_ADDRS EQU 0xF000")
                 .append("ORG LOAD_ADDRS")
-                .append("START main_")
-                .append("LDW SP, #STACK_ADDRS")
-                .append("LDW BP, #NIL");
+                .append("START main_");
 
         /*
          * Génération du code, point de départ :
@@ -115,6 +115,12 @@ public class Generator {
 
         this.code
                 .append(functionLabel);
+
+        if(isMain) {
+            this.code
+                    .append("LDW SP, #STACK_ADDRS")
+                    .append("LDW BP, #NIL");
+        }
 
         Environment environment = this.environmentManager.createEnvironment(functionSymbol.getSymbolTable().getEnvironmentSize());
         environment.openEnvironment(this.code);
@@ -184,7 +190,7 @@ public class Generator {
         this.code
                 .append(beginLabel);
 
-        this.generateLogicalExpr(condition, currentSymbolTable);
+        this.generateExpr(condition, currentSymbolTable);
 
         int r0 = this.registersManager.unlockRegister();
         this.code
@@ -264,21 +270,43 @@ public class Generator {
     }
 
     private void generateLet(Tree letNode, SymbolTable currentSymbolTable) throws IOException {
-        Pair<Integer, VariableSymbol> offset = this.getOffset(letNode.getChild(0), currentSymbolTable);
+        Pair<Integer, VariableSymbol> temp = this.getOffset(letNode.getChild(0), currentSymbolTable);
+        int offset = temp.getKey();
+        VariableSymbol variableSymbol = temp.getValue();
 
         // Si le type de la variable n'est pas défini, elle n'est pas utilisée
         // on ne la génère donc pas
-        if(!offset.getValue().getType().isUnknown()) {
+        if(!variableSymbol.getType().isUnknown()) {
             if(letNode.getChildCount() > 1) {
-                if(offset.getValue().getType().isStructure()) {
-                    this.generateStructureInitialization(letNode.getChild(1), currentSymbolTable, offset.getKey());
+                this.code
+                        .append("// " + this.sourceManager.getLine(letNode.getLine()));
+
+                if(variableSymbol.getType().isStructure()) {
+                    this.generateStructureInitialization(letNode.getChild(1), currentSymbolTable, offset);
                 }
                 else {
                     this.generateExpr(letNode.getChild(1), currentSymbolTable);
-                    int register = this.registersManager.unlockRegister();
 
-                    this.code
-                            .append("STW R" + register + ", (BP)-" + offset.getKey() + "");
+
+                    if(letNode.getChild(0).getType() == mini_rustParser.POINTER
+                            && letNode.getChild(1).getType() != mini_rustParser.REF) {
+
+                        int r0 = this.registersManager.peekRegister();
+                        int r1 = this.registersManager.lockRegister();
+
+                        this.code
+                                .append("LDW R" + r1 + ", (BP)-" + offset)
+                                .append("STW R" + r0 + ", (R" + r1 + ")");
+
+                        this.registersManager.unlockRegister();
+                        this.registersManager.unlockRegister();
+                    }
+                    else {
+                        int r0 = this.registersManager.unlockRegister();
+
+                        this.code
+                                .append("STW R" + r0 + ", (BP)-" + offset + "");
+                    }
                 }
             }
         }
@@ -288,6 +316,11 @@ public class Generator {
         switch(exprNode.getType()) {
             case mini_rustLexer.OR:
             case mini_rustLexer.AND:
+            case mini_rustLexer.EQ:
+            case mini_rustLexer.LE:
+            case mini_rustLexer.LT:
+            case mini_rustLexer.GE:
+            case mini_rustLexer.GT:
                 this.generateLogicalExpr(exprNode, currentSymbolTable);
                 break;
             case mini_rustLexer.PLUS:
@@ -302,6 +335,7 @@ public class Generator {
             case mini_rustLexer.NEG:
                 break;
             case mini_rustLexer.POINTER:
+                this.generatePointer(exprNode, currentSymbolTable);
                 break;
             case mini_rustLexer.REF:
                 this.generateReference(exprNode, currentSymbolTable);
@@ -325,8 +359,23 @@ public class Generator {
         }
     }
 
-    private void generateReference(Tree exprNode, SymbolTable currentSymbolTable) throws IOException {
+    private void generatePointer(Tree exprNode, SymbolTable currentSymbolTable) throws IOException {
+        // Pour le moment ne gère que les pointeurs simple (pas de let a = **p)
+        int r0 = this.registersManager.lockRegister();
+        Pair<Integer, VariableSymbol> offset = this.getOffset(exprNode.getChild(0), currentSymbolTable);
 
+        this.code
+                .append("LDW R" + r0 + ", (BP)-" + offset.getKey())
+                .append("LDW R" + r0 + ", (R" + r0 + ")");
+    }
+
+    private void generateReference(Tree exprNode, SymbolTable currentSymbolTable) throws IOException {
+        Pair<Integer, VariableSymbol> offset = this.getOffset(exprNode.getChild(0), currentSymbolTable);
+        int r0 = this.registersManager.lockRegister();
+
+        this.code
+                .append("LDW R" + r0 + ", #-" + offset.getKey())
+                .append("ADD R" + r0 + ", BP, R" + r0);
     }
 
     private void generateFunctionCall(Tree functionCallNode, SymbolTable currentSymbolTable) throws IOException {
@@ -409,7 +458,8 @@ public class Generator {
                         .append("LDQ 0, R" + register);
                 break;
             case mini_rustLexer.IDF:
-                int offset = currentSymbolTable.getVariableSymbol(exprNode.getText(), true).getOffset();
+                VariableSymbol variableSymbol = currentSymbolTable.getVariableSymbol(exprNode.getText(), true);
+                int offset = variableSymbol.getOffset();
                 String bp;
 
                 if(offset < 0) {
@@ -587,10 +637,17 @@ public class Generator {
     }
 
     private void generateUnaryMinus(Tree exprNode, SymbolTable currentSymbolTable) throws  IOException{
+        this.generateExpr(exprNode.getChild(0), currentSymbolTable);
+        int register = this.registersManager.lockRegister();
+        this.code
+                .append("LDW R" + register + ", #-" + exprNode.getChild(0));
 
     }
 
     private void generatePrint(Tree exprNode, SymbolTable currentSymbolTable) throws IOException {
+        this.code
+                .append("// " + this.sourceManager.getLine(exprNode.getLine()));
+
         this.generateExpr(exprNode.getChild(0), currentSymbolTable);
         int r0 = this.registersManager.unlockRegister();
 
