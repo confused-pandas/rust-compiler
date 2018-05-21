@@ -317,8 +317,8 @@ public class TreeTraversal {
                 enumType,
                 structureType,
                 vec,
-                ref,
-                pointer
+                pointer,
+                ref
         );
     }
 
@@ -628,8 +628,8 @@ public class TreeTraversal {
                 type.getType(),
                 type.getStructure(),
                 type.getVec(),
-                type.getPointer() - pointer,
-                type.getRef() - ref
+                pointer,
+                ref
         );
     }
 
@@ -781,10 +781,11 @@ public class TreeTraversal {
         if(node.getType() == mini_rustParser.IDF) {
             return node.getText();
         }
-        else if(node.getType() == mini_rustParser.DOT) {
+        else if(node.getType() == mini_rustParser.DOT || node.getType() == mini_rustParser.POINTER) {
             Tree currentNode = node;
 
-            while(currentNode.getType() == mini_rustParser.DOT) {
+            while(currentNode.getType() == mini_rustParser.DOT
+                    || currentNode.getType() == mini_rustParser.POINTER) {
                 currentNode = currentNode.getChild(0);
             }
 

@@ -159,8 +159,18 @@ public class Generator {
                 case mini_rustLexer.FUNCTION_CALL:
                     this.generateFunctionCall(child, currentSymbolTable);
                     break;
+                case mini_rustLexer.BLOC:
+                    this.generateBloc(child, currentSymbolTable.getBloc(child.hashCode()));
+                    break;
+                case mini_rustLexer.RETURN:
+                    this.generateReturn(child, currentSymbolTable);
+                    return;
             }
         }
+    }
+
+    private void generateReturn(Tree child, SymbolTable currentSymbolTable) throws IOException {
+
     }
 
     private void generateWhile(Tree whileNode, SymbolTable currentSymbolTable) throws IOException {
@@ -176,7 +186,7 @@ public class Generator {
 
         this.generateLogicalExpr(condition, currentSymbolTable);
 
-        int r0 = this.registersManager.getReturnRegister();
+        int r0 = this.registersManager.unlockRegister();
         this.code
                 .append("// cond")
                 .append("TST R" + r0)
@@ -206,6 +216,9 @@ public class Generator {
                     }
 
                     nodes.push(new Pair<>(currentNode.getChild(1).getText(), typePair));
+                    currentNode = currentNode.getChild(0);
+                    break;
+                case mini_rustParser.POINTER:
                     currentNode = currentNode.getChild(0);
                     break;
                 default:
@@ -262,7 +275,7 @@ public class Generator {
                 }
                 else {
                     this.generateExpr(letNode.getChild(1), currentSymbolTable);
-                    int register = this.registersManager.getReturnRegister();
+                    int register = this.registersManager.unlockRegister();
 
                     this.code
                             .append("STW R" + register + ", (BP)-" + offset.getKey() + "");
@@ -273,8 +286,6 @@ public class Generator {
 
     private void generateExpr(Tree exprNode, SymbolTable currentSymbolTable) throws IOException {
         switch(exprNode.getType()) {
-            case mini_rustLexer.BLOC:
-                break;
             case mini_rustLexer.OR:
             case mini_rustLexer.AND:
                 this.generateLogicalExpr(exprNode, currentSymbolTable);
@@ -286,12 +297,14 @@ public class Generator {
                 this.generateArithmeticExpr(exprNode, currentSymbolTable);
                 break;
             case mini_rustLexer.UNARY_MINUS:
-                this.generateUnaryMinus();
+                this.generateUnaryMinus(exprNode, currentSymbolTable);
                 break;
             case mini_rustLexer.NEG:
                 break;
             case mini_rustLexer.POINTER:
+                break;
             case mini_rustLexer.REF:
+                this.generateReference(exprNode, currentSymbolTable);
                 break;
             case mini_rustLexer.INDEX:
             case mini_rustLexer.DOT:
@@ -312,6 +325,10 @@ public class Generator {
         }
     }
 
+    private void generateReference(Tree exprNode, SymbolTable currentSymbolTable) throws IOException {
+
+    }
+
     private void generateFunctionCall(Tree functionCallNode, SymbolTable currentSymbolTable) throws IOException {
         this.usedFunctions.push(currentSymbolTable.getFunctionSymbol(functionCallNode.getChild(0).getText(), true));
 
@@ -323,7 +340,7 @@ public class Generator {
         if (nbParametre > 0){
             for(int i = nbParametre; i>0; i--){
                 this.generateExpr(functionCallNode.getChild(i), currentSymbolTable);
-                int register = this.registersManager.getReturnRegister();
+                int register = this.registersManager.unlockRegister();
 
                 this.code
                         .append("STW R" + register + ", -(SP)       //On empile les paramètres de la fonction appelée");
@@ -340,9 +357,12 @@ public class Generator {
             // .append("ADI SP, SP, #"+nbParametre +"         //On dépile les paramètres");
                 .append("ADQ 2*" + nbParametre + ", SP");
         }
-}
+
+        this.registersManager.lockRegister();
+    }
+
     private void getIndexDotValue(Tree exprNode, SymbolTable currentSymbolTable) throws IOException {
-        int r0 = this.registersManager.setReturnRegister();
+        int r0 = this.registersManager.lockRegister();
         int offset = this.getOffset(exprNode, currentSymbolTable).getKey();
 
         this.code
@@ -369,7 +389,7 @@ public class Generator {
         }
         else {
             this.generateExpr(exprNode.getChild(1), currentSymbolTable);
-            int r0 = this.registersManager.getReturnRegister();
+            int r0 = this.registersManager.unlockRegister();
 
             this.code
                     .append("STW R" + r0 + ", (BP)-" + offset);
@@ -377,7 +397,7 @@ public class Generator {
     }
 
     private void generateAssignation(Tree exprNode, SymbolTable currentSymbolTable) throws IOException {
-        int register = this.registersManager.setReturnRegister();
+        int register = this.registersManager.lockRegister();
 
         switch (exprNode.getType()) {
             case mini_rustLexer.TRUE:
@@ -440,8 +460,8 @@ public class Generator {
          * Si on inverse pas les variables r1 et r2, on fera l'opération :
          * 5 - 3
          */
-        int r2 = this.registersManager.getReturnRegister();
-        int r1 = this.registersManager.getReturnRegister();
+        int r2 = this.registersManager.unlockRegister();
+        int r1 = this.registersManager.unlockRegister();
 
         /*
          * Réserve un registre pour le retour de l'opération (récupéré
@@ -453,7 +473,7 @@ public class Generator {
          * R0 et R1 registres "d'entrée" pour l'opération ADD
          * R2 registre de "retour"
          */
-        int r3 = this.registersManager.setReturnRegister();
+        int r3 = this.registersManager.lockRegister();
         String op;
 
         switch (arithmeticExprNode.getType()) {
@@ -486,8 +506,8 @@ public class Generator {
             this.generateExpr(logicalExprNode.getChild(0), currentSymbolTable);
             this.generateExpr(logicalExprNode.getChild(1), currentSymbolTable);
 
-            int r2 = this.registersManager.getReturnRegister();
-            int r1 = this.registersManager.getReturnRegister();
+            int r2 = this.registersManager.unlockRegister();
+            int r1 = this.registersManager.unlockRegister();
 
             String op;
 
@@ -512,7 +532,7 @@ public class Generator {
                     break;
             }
 
-            int r3 = this.registersManager.setReturnRegister();
+            int r3 = this.registersManager.lockRegister();
 
             this.code
                     .append("CMP R" + r1 + ", R" + r2)
@@ -529,9 +549,9 @@ public class Generator {
                 .append("// or");
         this.generateLogicalExpr(logicalExprNode.getChild(1), currentSymbolTable);
 
-        int r1 = this.registersManager.getReturnRegister();
-        int r2 = this.registersManager.getReturnRegister();
-        int r3 = this.registersManager.setReturnRegister();
+        int r1 = this.registersManager.unlockRegister();
+        int r2 = this.registersManager.unlockRegister();
+        int r3 = this.registersManager.lockRegister();
 
         this.code
                 .append("OR R" + r2 + ", R" + r1 + ", R" + r3);
@@ -543,9 +563,9 @@ public class Generator {
                 .append("// and");
         this.generateLogicalExpr(logicalExprNode.getChild(1), currentSymbolTable);
 
-        int r1 = this.registersManager.getReturnRegister();
-        int r2 = this.registersManager.getReturnRegister();
-        int r3 = this.registersManager.setReturnRegister();
+        int r1 = this.registersManager.unlockRegister();
+        int r2 = this.registersManager.unlockRegister();
+        int r3 = this.registersManager.lockRegister();
 
         this.code
                 .append("AND R" + r2 + ", R" + r1 + ", R" + r3);
@@ -559,25 +579,20 @@ public class Generator {
 
         for (int i = 0; i < vecNode.getChildCount(); i++){
             this.generateExpr(vecNode.getChild(i), currentSymbolTable);
-            int register = this.registersManager.getFreeRegister();
+            int register = this.registersManager.lockRegister();
             this.code
                  .append("LDW R" + register + ", #" + vecNode.getChild(i));
                  //.append("STW R" + register + ", (BP)-" + offset);
         }
     }
 
-    private void generateUnaryMinus() throws  IOException{
-        this.generateExpr(exprNode.getChild(0), currentSymbolTable);
-        int register = this.registersManager.getFreeRegister();
-        this.code
-                .append("LDW R" + register + ", #-" + exprNode.getChild(0));
+    private void generateUnaryMinus(Tree exprNode, SymbolTable currentSymbolTable) throws  IOException{
 
     }
 
     private void generatePrint(Tree exprNode, SymbolTable currentSymbolTable) throws IOException {
-
         this.generateExpr(exprNode.getChild(0), currentSymbolTable);
-        int r0 = this.registersManager.getReturnRegister();
+        int r0 = this.registersManager.unlockRegister();
 
         this.code
                 .append("STW R" + r0 + ", -(SP)")
@@ -667,13 +682,13 @@ public class Generator {
         Environment environment = this.environmentManager.createEnvironment(0);
         environment.openEnvironment(this.code);
 
-        int r = this.registersManager.setReturnRegister();
+        int r = this.registersManager.lockRegister();
 
         this.code
                 .append("LDW R" + r + ", (BP)4")
                 .append("TRP #WRITE_EXC");
 
-        this.registersManager.getReturnRegister();
+        this.registersManager.unlockRegister();
         this.environmentManager.closeEnvironment(this.code);
 
         this.code

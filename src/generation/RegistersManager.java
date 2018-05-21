@@ -23,7 +23,7 @@ public class RegistersManager {
         System.out.println();
     }
 
-    public int getFreeRegister() {
+    private int getFreeRegister() {
         int freeRegister = -1;
 
         for(int i = 0; i < this.registersState.size(); i++) {
@@ -36,15 +36,15 @@ public class RegistersManager {
         return freeRegister;
     }
 
-    public void useRegister(int register) {
+    private void useRegister(int register) {
         this.registersState.set(register - this.min, true);
     }
 
-    public void freeRegister(int register) {
+    private void freeRegister(int register) {
         this.registersState.set(register - this.min, false);
     }
 
-    public int setReturnRegister() {
+    public int lockRegister() {
         int register = this.getFreeRegister();
         this.useRegister(register);
         this.returnRegisters.push(register);
@@ -52,10 +52,14 @@ public class RegistersManager {
         return register;
     }
 
-    public int getReturnRegister() {
+    public int unlockRegister() {
         int register = this.returnRegisters.pop();
         this.freeRegister(register);
 
         return register;
+    }
+
+    public int peekRegister() {
+        return this.returnRegisters.peek();
     }
 }
