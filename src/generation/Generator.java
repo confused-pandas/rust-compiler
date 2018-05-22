@@ -341,6 +341,8 @@ public class Generator {
                 this.generateReference(exprNode, currentSymbolTable);
                 break;
             case mini_rustLexer.INDEX:
+            	this.generateIndex(exprNode, currentSymbolTable);
+            	break;
             case mini_rustLexer.DOT:
                 this.getIndexDotValue(exprNode, currentSymbolTable);
                 break;
@@ -629,15 +631,28 @@ public class Generator {
         
         Pair<Integer, VariableSymbol> tempName = this.getOffset(vecNode.getParent().getChild(0), currentSymbolTable);
      	int offset = tempName.getKey();
+     	int register = this.registersManager.lockRegister();
+     	
         for (int i = 0; i < vecNode.getChildCount(); i++){
             this.generateExpr(vecNode.getChild(i), currentSymbolTable);
-            int register = this.registersManager.lockRegister();
-
+            
             this.code
                  .append("LDW R" + register + ", #" + vecNode.getChild(i))
                  .append("STW R" + register + ", (BP)-" + offset);
                  offset = offset + 2;
         }
+        
+    }
+    
+    private void generateIndex(Tree exprNode, SymbolTable currentSymbolTable) throws IOException {
+    	VariableSymbol variable = currentSymbolTable.getVariableSymbol(exprNode.getChild(0).getText(), false);
+    	int idx = Integer.parseInt(exprNode.getChild(1).getText());
+    	int offset = variable.getOffset() + idx*2;
+    	int register = this.registersManager.lockRegister();
+    	
+    	this.code
+    		.append("LDW R" + register + ", (BP)-" + offset);
+    	
     }
 
     private void generateUnaryMinus(Tree exprNode, SymbolTable currentSymbolTable) throws  IOException{
