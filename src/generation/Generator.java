@@ -635,13 +635,16 @@ public class Generator {
          * vont assigner leur valeur à un registre
          */
 
-
+        Pair<Integer, VariableSymbol> tempName = this.getOffset(vecNode.getParent().getChild(0), currentSymbolTable);
+     	int offset = tempName.getKey();
         for (int i = 0; i < vecNode.getChildCount(); i++){
             this.generateExpr(vecNode.getChild(i), currentSymbolTable);
             int register = this.registersManager.lockRegister();
+
             this.code
-                 .append("LDW R" + register + ", #" + vecNode.getChild(i));
-                 //.append("STW R" + register + ", (BP)-" + offset);
+                 .append("LDW R" + register + ", #" + vecNode.getChild(i))
+                 .append("STW R" + register + ", (BP)-" + offset);
+                 offset = offset + 2;
         }
     }
 
