@@ -35,7 +35,7 @@ fn main()
     let d3 = data {v: vecteur{x: 2, y: 2}, to_add: false};
     let d4 = data {v: vecteur{x: 3, y: 4}, to_add: true};
 
-    let l = Vec![d1, d2, d3, d4];
+    let l = vec![d1, d2, d3, d4];
     let result = addition_vecteurs(l);
 
     print!(result.x);

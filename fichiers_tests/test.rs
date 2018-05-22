@@ -1,16 +1,14 @@
-fn moyenne(x:i32, y:i32) -> i32 {
-	let mut i = 1;
-	let mut j = 1;
-
-	while i < 5 {
-		let j = j + 1;
-		let i = i + 1;
-	}
-	return j;
-}
-
 fn main() {
-	let l = vec![3, 4, 5];
+	let mut a =1;
+	let mut b=0;
+	if a<2 {
+	    let a = 2;
+	    print!(a)
+	    }
+	 else if a==1{
+	 print!(b)
+	 }
+
 }
 
 

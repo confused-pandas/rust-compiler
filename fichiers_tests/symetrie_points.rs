@@ -17,28 +17,28 @@ fn affiche_y(p: Point){
 }
 fn symetrique(p : Point, choix: i32) -> i32 {
 	if choix == 0 {
-		let x_2 = p.x;
-		let y_2 = -p.y;
-		let p.x = x_2;
-		let p.y = y_2;
+		let mut x_2 = p.x;
+		let mut y_2 = -p.y;
+		let mut p.x = x_2;
+		let mut p.y = y_2;
 		affiche_x(p);
 		affiche_y(p);
 		return 1;
 	}
 	else if choix == 1 {
-		let x_2 = -p.x;
-		let y_2 = p.y;
-		let p.x = x_2;
-		let p.y = y_2;
+		let mut x_2 = -p.x;
+		let mut y_2 = p.y;
+		let mut p.x = x_2;
+		let mut p.y = y_2;
 		affiche_x(p);
 		affiche_y(p);
 		return 1;
 	}
 	else if choix == 2 {
-		let x_2 = -p.x;
-		let y_2 = -p.y;
-		let p.x = x_2;
-		let p.y = y_2;
+		let mut x_2 = -p.x;
+		let mut y_2 = -p.y;
+		let mut p.x = x_2;
+		let mut p.y = y_2;
 		affiche_x(p);
 		affiche_y(p);
 		return 1;
@@ -50,8 +50,8 @@ fn symetrique(p : Point, choix: i32) -> i32 {
 
 
 fn main(){
-	let A  = Point {id : "12",x : 4,y : 3};
-	let B = Point {id : 15, x : 9, y : -3};
+	let A  = Point{id : 12,x : 4,y : 3};
+	let B = Point{id : 15, x : 9, y : -3};
 	affiche_id(A);
 	affiche_id(B);
 	symetrique(A,0);
