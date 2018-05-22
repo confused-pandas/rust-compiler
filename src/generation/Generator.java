@@ -304,7 +304,7 @@ public class Generator {
                 if (ifNode.getChild(2).getChild(0).getType() == mini_rustParser.IF) {
                     this.generateIf(ifNode.getChild(2).getChild(0), currentSymbolTable);
                 } else {
-                    this.generateBloc(ifNode.getChild(2).getChild(0), currentSymbolTable);
+                    this.generateBloc(ifNode.getChild(2).getChild(0), currentSymbolTable.getParent().getBloc(ifNode.getChild(2).getChild(0).hashCode()));
                 }
             }
         }

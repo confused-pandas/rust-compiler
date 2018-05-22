@@ -199,6 +199,10 @@ public class SymbolTable {
 					.append(symbolTable.toTable());
 		}
 
+		for(Map.Entry<Integer, SymbolTable> entry: this.blocs.entrySet()) {
+			System.out.println(entry.getValue().toTable());
+		}
+
 		return str.toString();
 	}
 
