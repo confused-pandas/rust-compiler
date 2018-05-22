@@ -32,6 +32,7 @@ public class Generator {
     private final EnvironmentManager environmentManager;
     private final SourceManager sourceManager;
     private Stack<FunctionSymbol> usedFunctions;
+    private String currentFunction;
 
     public Generator(File sourceFile, File genFile, SymbolTable symbolTable) throws FileNotFoundException {
         if(genFile.exists() && genFile.length() > 0) {
@@ -115,6 +116,7 @@ public class Generator {
     }
 
     private void generateFunction(Tree functionNode, FunctionSymbol functionSymbol, boolean isMain) throws IOException {
+        this.currentFunction = functionSymbol.getName();
         String functionLabel = functionSymbol.getName() + "_";
 
         this.code
@@ -133,6 +135,9 @@ public class Generator {
                 functionNode.getChild(1),
                 functionSymbol.getSymbolTable()
         );
+
+        this.code
+                .append(this.currentFunction + "_end");
 
         this.environmentManager.closeEnvironment(this.code);
 
@@ -189,6 +194,9 @@ public class Generator {
                         .append("LDW R0, R" + r0);
             }
         }
+
+        this.code
+                .append("JMP #" + this.currentFunction + "_end-$-2");
     }
 
     private void generateWhile(Tree whileNode, SymbolTable currentSymbolTable) throws IOException {
