@@ -176,7 +176,15 @@ public class Generator {
     }
 
     private void generateReturn(Tree child, SymbolTable currentSymbolTable) throws IOException {
+        if(child.getChildCount() > 0) {
+            this.generateExpr(child.getChild(0), currentSymbolTable);
+            int r0 = this.registersManager.unlockRegister();
 
+            if(r0 != 0) {
+                this.code
+                        .append("LDW R0, R" + r0);
+            }
+        }
     }
 
     private void generateWhile(Tree whileNode, SymbolTable currentSymbolTable) throws IOException {
@@ -627,6 +635,7 @@ public class Generator {
          * vont assigner leur valeur à un registre
          */
 
+
         for (int i = 0; i < vecNode.getChildCount(); i++){
             this.generateExpr(vecNode.getChild(i), currentSymbolTable);
             int register = this.registersManager.lockRegister();
@@ -638,10 +647,10 @@ public class Generator {
 
     private void generateUnaryMinus(Tree exprNode, SymbolTable currentSymbolTable) throws  IOException{
         this.generateExpr(exprNode.getChild(0), currentSymbolTable);
-        int register = this.registersManager.lockRegister();
-        this.code
-                .append("LDW R" + register + ", #-" + exprNode.getChild(0));
+        int r0 = this.registersManager.peekRegister();
 
+        this.code
+                .append("NEG R" + r0 + ", R" + r0);
     }
 
     private void generatePrint(Tree exprNode, SymbolTable currentSymbolTable) throws IOException {
