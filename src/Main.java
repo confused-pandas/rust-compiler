@@ -16,7 +16,7 @@ import java.io.IOException;
 
 public class Main {
     public static void main(String args[]) throws IOException {
-        String source = "fichiers_tests/ex2.rs";
+        String source = "fichiers_tests/test1.rs";
         mini_rustLexer lex = new mini_rustLexer(new ANTLRFileStream(source, "UTF8"));
         CommonTokenStream tokens = new CommonTokenStream(lex);
         mini_rustParser g = new mini_rustParser(tokens, null);
