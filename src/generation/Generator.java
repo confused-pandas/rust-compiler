@@ -338,8 +338,17 @@ public class Generator {
                         int r0 = this.registersManager.peekRegister();
                         int r1 = this.registersManager.lockRegister();
 
+                        String strOffset;
+
+                        if(offset < 0) {
+                            strOffset = String.valueOf(-offset);
+                        }
+                        else {
+                            strOffset = String.valueOf(offset);
+                        }
+
                         this.code
-                                .append("LDW R" + r1 + ", (BP)-" + offset)
+                                .append("LDW R" + r1 + ", (BP)" + strOffset)
                                 .append("STW R" + r0 + ", (R" + r1 + ")");
 
                         this.registersManager.unlockRegister();
@@ -408,10 +417,20 @@ public class Generator {
     private void generatePointer(Tree exprNode, SymbolTable currentSymbolTable) throws IOException {
         // Pour le moment ne gère que les pointeurs simple (pas de let a = **p)
         int r0 = this.registersManager.lockRegister();
-        Pair<Integer, VariableSymbol> offset = this.getOffset(exprNode.getChild(0), currentSymbolTable);
+        Pair<Integer, VariableSymbol> temp = this.getOffset(exprNode.getChild(0), currentSymbolTable);
+
+        int offset = temp.getKey();
+        String strOffset;
+
+        if(offset < 0) {
+            strOffset = String.valueOf(-offset);
+        }
+        else {
+            strOffset = String.valueOf(offset);
+        }
 
         this.code
-                .append("LDW R" + r0 + ", (BP)-" + offset.getKey())
+                .append("LDW R" + r0 + ", (BP)" + strOffset)
                 .append("LDW R" + r0 + ", (R" + r0 + ")");
     }
 
