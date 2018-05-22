@@ -1,16 +1,16 @@
 fn echange(tab : Vec<i32>, i : i32, j : i32){
-	let interm = tab[i];
-	let tab[i] = tab[j];
-	let tab[j] = interm;
+	let mut interm = tab[i];
+	let mut tab[i] = tab[j];
+	let mut tab[j] = interm;
 }
 
 fn tribubulles (tab : Vec<i32>, taille : i32 ){
-	let test = true;
+	let mut test = 0;
 	if tab.len() > 0 {
-		while test == true{
-			let test = false;
-			let i = 0;
-			let j = 1;
+		while test == 0{
+			let test = 1;
+			let mut i = 0;
+			let mut j = 1;
 			while i < tab.len() {
 				if tab [i] > tab [j] {
 					echange(i,j);
@@ -24,6 +24,6 @@ fn tribubulles (tab : Vec<i32>, taille : i32 ){
 }
 
 fn main(){
-	tab = vec{1,8,9,10,1452,31553,81,0};
+	let tab = vec![1,8,9,10,1452,31553,81,0];
 	tribubulles(tab);
 }

@@ -263,10 +263,41 @@ public class Generator {
      * Function to generate assembly code for if
      */
     private void generateIf(Tree ifNode, SymbolTable currentSymbolTable) throws IOException {
-    	Tree condition = ifNode.getChild(0);
+        Tree condition = ifNode.getChild(0);
         Tree bloc = ifNode.getChild(1);
 
-        //this.generateCondition(condition, bloc, currentSymbolTable, "if_" + ifNode.hashCode());
+        String label = "if" + ifNode.hashCode();
+        String beginLabel = "begin_cond_" + label;
+        String endLabel = "end_cond_" + label;
+        String endifLabel = "end_cond_if_" + label;
+
+        this.code
+                .append(beginLabel);
+
+        this.generateExpr(condition, currentSymbolTable);
+
+        int r0 = this.registersManager.unlockRegister();
+        this.code
+                .append("// cond")
+                .append("TST R" + r0)
+                .append("JEQ #" + endLabel + "-$-2");
+
+        this.generateBloc(bloc, currentSymbolTable);
+        this.code
+                .append("JMP #" + endifLabel + "-$-2")
+                .append(endLabel);
+
+        if (ifNode.getChildCount() > 2) {
+            if (ifNode.getChild(2).getType() == mini_rustParser.ELSE) {
+                if (ifNode.getChild(2).getChild(0).getType() == mini_rustParser.IF) {
+                    this.generateIf(ifNode.getChild(2).getChild(0), currentSymbolTable);
+                } else {
+                    this.generateBloc(ifNode.getChild(2).getChild(0), currentSymbolTable);
+                }
+            }
+        }
+        this.code
+                .append(endifLabel);
     }
 
     private void generateLet(Tree letNode, SymbolTable currentSymbolTable) throws IOException {
