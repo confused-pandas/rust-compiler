@@ -271,10 +271,41 @@ public class Generator {
      * Function to generate assembly code for if
      */
     private void generateIf(Tree ifNode, SymbolTable currentSymbolTable) throws IOException {
-    	Tree condition = ifNode.getChild(0);
+        Tree condition = ifNode.getChild(0);
         Tree bloc = ifNode.getChild(1);
 
-        //this.generateCondition(condition, bloc, currentSymbolTable, "if_" + ifNode.hashCode());
+        String label = "if" + ifNode.hashCode();
+        String beginLabel = "begin_cond_" + label;
+        String endLabel = "end_cond_" + label;
+        String endifLabel = "end_cond_if_" + label;
+
+        this.code
+                .append(beginLabel);
+
+        this.generateExpr(condition, currentSymbolTable);
+
+        int r0 = this.registersManager.unlockRegister();
+        this.code
+                .append("// cond")
+                .append("TST R" + r0)
+                .append("JEQ #" + endLabel + "-$-2");
+
+        this.generateBloc(bloc, currentSymbolTable);
+        this.code
+                .append("JMP #" + endifLabel + "-$-2")
+                .append(endLabel);
+
+        if (ifNode.getChildCount() > 2) {
+            if (ifNode.getChild(2).getType() == mini_rustParser.ELSE) {
+                if (ifNode.getChild(2).getChild(0).getType() == mini_rustParser.IF) {
+                    this.generateIf(ifNode.getChild(2).getChild(0), currentSymbolTable);
+                } else {
+                    this.generateBloc(ifNode.getChild(2).getChild(0), currentSymbolTable);
+                }
+            }
+        }
+        this.code
+                .append(endifLabel);
     }
 
     private void generateLet(Tree letNode, SymbolTable currentSymbolTable) throws IOException {
@@ -349,6 +380,8 @@ public class Generator {
                 this.generateReference(exprNode, currentSymbolTable);
                 break;
             case mini_rustLexer.INDEX:
+            	this.generateIndex(exprNode, currentSymbolTable);
+            	break;
             case mini_rustLexer.DOT:
                 this.getIndexDotValue(exprNode, currentSymbolTable);
                 break;
@@ -637,15 +670,28 @@ public class Generator {
 
         Pair<Integer, VariableSymbol> tempName = this.getOffset(vecNode.getParent().getChild(0), currentSymbolTable);
      	int offset = tempName.getKey();
+     	int register = this.registersManager.lockRegister();
+     	
         for (int i = 0; i < vecNode.getChildCount(); i++){
             this.generateExpr(vecNode.getChild(i), currentSymbolTable);
-            int register = this.registersManager.lockRegister();
-
+            
             this.code
                  .append("LDW R" + register + ", #" + vecNode.getChild(i))
                  .append("STW R" + register + ", (BP)-" + offset);
                  offset = offset + 2;
         }
+        
+    }
+    
+    private void generateIndex(Tree exprNode, SymbolTable currentSymbolTable) throws IOException {
+    	VariableSymbol variable = currentSymbolTable.getVariableSymbol(exprNode.getChild(0).getText(), false);
+    	int idx = Integer.parseInt(exprNode.getChild(1).getText());
+    	int offset = variable.getOffset() + idx*2;
+    	int register = this.registersManager.lockRegister();
+    	
+    	this.code
+    		.append("LDW R" + register + ", (BP)-" + offset);
+    	
     }
 
     private void generateUnaryMinus(Tree exprNode, SymbolTable currentSymbolTable) throws  IOException{
