@@ -13,6 +13,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 public class Generator {
@@ -98,6 +100,8 @@ public class Generator {
         // Dump le buffer restant dans le fichier
         this.code.close();
     }
+
+    private List<String> genratedFunction = new ArrayList<>();
 
     private void generateUsedFunction() throws IOException {
         while(!this.usedFunctions.empty()) {
@@ -304,6 +308,7 @@ public class Generator {
                 }
             }
         }
+
         this.code
                 .append(endifLabel);
     }
@@ -420,7 +425,12 @@ public class Generator {
     }
 
     private void generateFunctionCall(Tree functionCallNode, SymbolTable currentSymbolTable) throws IOException {
-        this.usedFunctions.push(currentSymbolTable.getFunctionSymbol(functionCallNode.getChild(0).getText(), true));
+        String functionIdf = functionCallNode.getChild(0).getText();
+
+        if (!this.genratedFunction.contains(functionIdf)) {
+            this.genratedFunction.add(functionIdf);
+            this.usedFunctions.push(currentSymbolTable.getFunctionSymbol(functionIdf, true));
+        }
 
         int nbParametre = functionCallNode.getChildCount()-1;
         this.code
@@ -793,59 +803,42 @@ public class Generator {
 
     private void generatePrintFunction() throws IOException {
         this.code
-                .append("print_");
-        Environment environment = this.environmentManager.createEnvironment(0);
-        environment.openEnvironment(this.code);
-
-        int r = this.registersManager.lockRegister();
-
-        this.code
-                .append("LDW R" + r + ", (BP)4")
-                .append("TRP #WRITE_EXC");
-
-        this.registersManager.unlockRegister();
-        this.environmentManager.closeEnvironment(this.code);
-
-        this.code
-                .append("RTS");
+                .append("print_     \n" +
+                        "LDQ 0, R1\n" +
+                        "STW BP, -(SP)\n" +
+                        "LDW BP, SP\n" +
+                        "SUB SP, R1, SP\n" +
+                        "LDW R0, (BP)4\n" +
+                        "TRP #WRITE_EXC\n" +
+                        "LDW SP, BP\n" +
+                        "LDW BP, (SP)+\n" +
+                        "RTS ");
     }
 
     private void generatePrintiFunction() throws IOException {
         this.code
-                .append("printi_");
-
-        Environment environment = this.environmentManager.createEnvironment(0);
-        environment.openEnvironment(this.code);
-
-        this.code
-                .append("\t\t\t\t\t// réserve 7+1 = 8 caractères en pile\n" +
-                        "\t\t\t\t\t// (entier pair supérieur à 7 demandé pour pas désaligner pile)\n" +
+                .append("printi_\n" +
+                        "STW BP, -(SP)\n" +
+                        "LDW BP, SP\n" +
                         "ADI SP, SP, #-8\n" +
                         "ADI SP, SP, #-2\n" +
                         "LDW R0, (BP)4\n" +
-                        "stw r0, (BP)-10   \t// sauve r0 à l'adresse BP-10       \n" +
-                        "\t\t\t\t\t// itoa(value, text, 10);\n" +
-                        "\t\t\t\t\t// appelle itoa avec i = value, p = text, b = 10\n" +
-                        "ldw r0, #10       \t// charge 10 (pour base décimale) dans r0\n" +
-                        "stw r0, -(SP)     \t// empile contenu de r0 (paramètre b)\n" +
-                        "adi BP, r0, #-8   \t// r0 = BP - 8 = adresse du tableau text\n" +
-                        "stw r0, -(SP)     \t// empile contenu de r0 (paramètre p)\n" +
-                        "ldw r0, (BP)-10   \t// charge r0 avec value\n" +
-                        "stw r0, -(SP)     \t// empile contenu de r0 (paramètre i)\n" +
-                        "jsr @itoa_        \t// appelle fonction itoa d'adresse itoa_\n" +
-                        "adi SP, SP, #6    \t// nettoie la pile des paramètres \n" +
-                        "\t\t\t\t\t// de taille totale 6 octets\n" +
-                        "\t\t\t\t\t// print(text);\n" +
-                        "adi BP, r0, #-8   \t// r0 = BP - 8 = adresse du tableau text\n" +
-                        "stw r0, -(SP)    \t// empile contenu de r0 (paramètre p)\n" +
-                        "jsr @print_       \t// appelle fonction print d'adresse print_\n" +
-                        "adi SP, SP, #2    \t// nettoie la pile des paramètres\n" +
-                        "\t\t\t\t\t// de taille totale 2 octets");
-
-        this.environmentManager.closeEnvironment(this.code);
-
-        this.code
-                .append("RTS");
+                        "STW R0, (BP)-10\n" +
+                        "LDW R0, #10\n" +
+                        "STW R0, -(SP)\n" +
+                        "ADI BP, R0, #-8\n" +
+                        "STW R0, -(SP)\n" +
+                        "LDW R0, (BP)-10\n" +
+                        "STW R0, -(SP)\n" +
+                        "JSR @itoa_\n" +
+                        "ADI SP, SP, #6\n" +
+                        "ADI BP, R0, #-8\n" +
+                        "STW R0, -(SP)\n" +
+                        "JSR @print_\n" +
+                        "ADI SP, SP, #2\n" +
+                        "LDW SP, BP\n" +
+                        "LDW BP, (SP)+\n" +
+                        "RTS");
     }
 
 
