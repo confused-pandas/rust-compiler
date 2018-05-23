@@ -11,12 +11,37 @@ import org.antlr.runtime.tree.Tree;
 import symbolTable.SymbolTable;
 import symbolTable.TreeTraversal;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 
 public class Main {
     public static void main(String args[]) throws IOException {
-        String source = "fichiers_tests/test1.rs";
+        String source = "";
+        String out = "";
+        String outSt = "";
+
+        for(int i = 0; i < args.length; i++) {
+            if(args[i].equals("-s")) {
+                source = args[++i];
+            }
+            else if(args[i].equals("-o")) {
+                out = args[++i];
+            }
+            else if(args[i].equals("-sto")) {
+                outSt = args[++i];
+            }
+            else if(args[i].equals("-h")) {
+                String str = "" +
+                        "Utilisation du générateur de code :\n" +
+                        "-s : Fichier source en .rs\n" +
+                        "-o : Fichier de sortie .src\n" +
+                        "-sto : Fichier de sortie pour la table des symboles\n";
+
+                System.out.println(str);
+                return;
+            }
+        }
+
+        //source = "fichiers_tests/ex3.rs";
         mini_rustLexer lex = new mini_rustLexer(new ANTLRFileStream(source, "UTF8"));
         CommonTokenStream tokens = new CommonTokenStream(lex);
         mini_rustParser g = new mini_rustParser(tokens, null);
@@ -26,10 +51,15 @@ public class Main {
             Tree root = (Tree)ret.getTree();
             TreeTraversal treeTraversal = new TreeTraversal(root);
             SymbolTable symbolTable = treeTraversal.buildSymbolTable();
-            System.out.println(symbolTable.toTable());
+
+            if(!outSt.equals("")) {
+                BufferedWriter writer = new BufferedWriter(new FileWriter(outSt));
+                writer.write(symbolTable.toTable());
+                writer.close();
+            }
 
             File sourceFile = new File(source);
-            File genFile = new File("gen.src");
+            File genFile = new File(out);
             Generator generator = new Generator(sourceFile, genFile, symbolTable);
             generator.generate();
 

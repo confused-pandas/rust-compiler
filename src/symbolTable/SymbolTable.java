@@ -200,7 +200,7 @@ public class SymbolTable {
 		}
 
 		for(Map.Entry<Integer, SymbolTable> entry: this.blocs.entrySet()) {
-			System.out.println(entry.getValue().toTable());
+			str.append("\n").append("\n").append(entry.getValue().toTable());
 		}
 
 		return str.toString();
