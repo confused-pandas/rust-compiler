@@ -20,6 +20,7 @@ fn pascal(i : i32, j : i32) -> i32 {
 fn triangle(taille : i32) {
 	let mut i = 0;
 	let mut j = 0;
+	let mut pij=0;
 	while i <= taille {
 		while j <= i {
 			let mut pij = pascal(i,j);
