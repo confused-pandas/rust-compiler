@@ -363,7 +363,7 @@ public class TreeTraversal {
 		    BlocType elseType = traverseElse(ifNode.getChild(2));
 
 		    if(!elseType.equals(ifType)) {
-		        throw new DifferentTypeException("Different block types : " + ifType.toString() + " : " + elseType.toString());
+		        throw new DifferentTypeException("Line " + ifNode.getLine() + " Different block types : " + ifType.toString() + " : " + elseType.toString());
             }
 
             ifType = elseType;
@@ -418,7 +418,7 @@ public class TreeTraversal {
                 leftExpr = this.traverseExpr(exprNode.getChild(0));
                 rightExpr = this.traverseExpr(exprNode.getChild(1));
 
-                if(!leftExpr.isInt() || !rightExpr.isInt()) {
+                if(!(leftExpr.isInt() && rightExpr.isInt() || leftExpr.isBool() && rightExpr.isBool())) {
                     throw new OperationWithNoIntException("Mathematical inequalities or comparisons should be done between two integers. Line : "+ exprNode.getLine());
                 }
 

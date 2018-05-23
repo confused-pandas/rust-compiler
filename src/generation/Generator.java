@@ -434,7 +434,7 @@ public class Generator {
             strOffset = String.valueOf(-offset);
         }
         else {
-            strOffset = String.valueOf(offset);
+            strOffset = "-" + offset;
         }
 
         this.code
